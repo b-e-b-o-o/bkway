@@ -1,0 +1,282 @@
+---
+
+openapi: 3.0.3
+info:
+  title: BKWay API specification
+  version: 1.0.0
+servers:
+  - url: http://192.168.0.66:3333
+    description: Local development server
+paths:
+  /nearby_stops:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Stop"
+      parameters:
+        - name: lat
+          in: query
+          description: Latitude
+          required: true
+          schema:
+            type: number
+            minimum: -90
+            maximum: 90
+        - name: lon
+          in: query
+          description: Longitude
+          required: true
+          schema:
+            type: number
+            minimum: -90
+            maximum: 90
+        - name: radius
+          in: query
+          description: Bounding box side length in meters
+          required: true
+          schema:
+            type: number
+            minimum: 0
+            maximum: 1000
+  /stops:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Stop"
+      parameters:
+        - name: q
+          in: query
+          description: Search query
+          schema:
+            type: string
+  /stops/{stopId}:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Stop"
+      parameters:
+        - name: stopId
+          in: path
+          description: Stop ID
+          required: true
+          schema:
+            type: string
+            minLength: 1
+  /stops/{stopId}/nearby:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Stop"
+      parameters:
+        - name: stopId
+          in: path
+          description: Stop ID
+          required: true
+          schema:
+            type: string
+            minLength: 1
+        - name: radius
+          in: query
+          description: Bounding box side length in meters
+          required: true
+          schema:
+            type: number
+            minimum: 0
+            maximum: 1000
+  /stops/{stopId}/routes:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Route"
+      parameters:
+        - name: stopId
+          in: path
+          description: Stop ID
+          required: true
+          schema:
+            type: string
+            minLength: 1
+  /routes:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Route"
+      parameters:
+        - name: q
+          in: query
+          description: Search query
+          schema:
+            type: string
+  /routes/{routeId}:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+      parameters:
+        - name: routeId
+          in: path
+          description: Route ID
+          required: true
+          schema:
+            type: string
+            minLength: 1
+
+components:
+  schemas:
+    Stop:
+      type: object
+      properties:
+        stopId:
+          type: string
+          minLength: 1
+          description: |
+            Identifies a location: stop/platform, station, entrance/exit, generic node or boarding area (see `location_type`).
+
+            ID must be unique across all `stops.stop_id`, locations.geojson `id`, and `location_groups.location_group_id` values.
+
+            Multiple routes may use the same `stop_id`.
+        stopCode:
+          type: string
+          description: |
+            Short text or a number that identifies the location for riders. These codes are often used in phone-based transit information systems or printed on signage to make it easier for riders to get information for a particular location. The *stopCode* may be the same as *stopId* if it is public facing. This field should be left empty for locations without a code presented to riders.
+        stopName:
+          type: string
+        ttsStopName:
+          type: string
+        stopDesc:
+          type: string
+        stopLat:
+          type: number
+        stopLon:
+          type: number
+        zoneId:
+          type: string
+        stopUrl:
+          type: string
+        locationType:
+          type: integer
+          enum: [0, 1, 2, 3, 4]
+          description: |
+            Location type. Valid options are:
+
+            `0` (or blank) - **Stop** (or **Platform**). A location where passengers board or disembark from a transit vehicle. Is called a platform when defined within a `parentStation`. 
+            
+            `1` - **Station**. A physical structure or area that contains one or more platform.
+            
+            `2` - **Entrance/Exit**. A location where passengers can enter or exit a station from the street. If an entrance/exit belongs to multiple stations, it may be linked by pathways to both, but the data provider must pick one of them as parent.
+            
+            `3` - **Generic Node**. A location within a station, not matching any other `locationType`, that may be used to link together pathways define in pathways.txt.
+            
+            `4` - **Boarding Area**. A specific location on a platform, where passengers can board and/or alight vehicles.
+        parentStation:
+          type: string
+        stopTimezone:
+          type: string
+        wheelchairBoarding:
+          type: integer
+          enum: [0, 1, 2]
+        levelId:
+          type: string
+        platformCode:
+          type: string
+      required:
+        - stopId
+    Route:
+      type: object
+      properties:
+        routeId:
+          type: string
+          minLength: 1
+        agencyId:
+          type: string
+          minLength: 1
+        routeShortName:
+          type: string
+        routeLongName:
+          type: string
+        routeDesc:
+          type: string
+        routeType:
+          type: integer
+          enum: [0, 1, 2, 3, 4, 5, 6, 7, 11, 12, 109]
+          description: |
+            Indicates the type of transportation used on a route. Valid options are:
+
+            `0` - Tram, Streetcar, Light rail. Any light rail or street level system within a metropolitan area.
+            
+            `1` - Subway, Metro. Any underground rail system within a metropolitan area.
+            
+            `2` - Rail. Used for intercity or long-distance travel.
+            
+            `3` - Bus. Used for short- and long-distance bus routes.
+            
+            `4` - Ferry. Used for short- and long-distance boat service.
+            
+            `5` - Cable tram. Used for street-level rail cars where the cable runs beneath the vehicle (e.g., cable car in San Francisco).
+            
+            `6` - Aerial lift, suspended cable car (e.g., gondola lift, aerial tramway). Cable transport where cabins, cars, gondolas or open chairs are suspended by means of one or more cables.
+            
+            `7` - Funicular. Any rail system designed for steep inclines.
+            
+            `11` - Trolleybus. Electric buses that draw power from overhead wires using poles.
+            
+            `12` - Monorail. Railway in which the track consists of a single rail or a beam.
+            
+            `109` - Budapest HÉV. Rapid transit and commuter rail lines in and around Budapest. Not part of the official GTFS specification.
+        routeUrl:
+          type: string
+        routeColor:
+          type: string
+        routeTextColor:
+          type: string
+        routeSortOrder:
+          type: integer
+        continuousPickup:
+          type: integer
+          enum: [0, 1, 2, 3]
+        continuousDropoff:
+          type: integer
+          enum: [0, 1, 2, 3]
+        networkId:
+          type: string
+      required:
+        - routeId
+        - routeType

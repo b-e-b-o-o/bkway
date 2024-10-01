@@ -1,0 +1,11 @@
+                                                     ↓propertyk amiket kérek (SELECT, [] == *)
+getStops({stop_lat: 47.501051, stop_lon: 19.118839}, [], [], {bounding_box_side_m: 150})
+    lehet állítható a bounding box amin belül számol átszállással
+    de 150m jó default
+    (példa a pillangó utcáról)
+
+next up
+    dbt volumeba (még mindig)
+    normális networking
+    1-2 .env cucc (db ramba?)
+    https://www.npmjs.com/package/react-hotkeys-hook

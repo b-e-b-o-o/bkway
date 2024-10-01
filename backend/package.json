@@ -1,0 +1,27 @@
+{
+  "name": "bkway-backend",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx --watch src/index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.33.0",
+    "express": "^5.0.0",
+    "gtfs": "^4.14.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/express": "^4.17.21",
+    "drizzle-kit": "^0.24.2",
+    "gtfs-types": "^4.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.2"
+  }
+}
