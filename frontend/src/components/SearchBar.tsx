@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './SearchBar.css';
 import { FlyToInterpolator, MapViewState } from 'deck.gl';
 
-const BACKEND = import.meta.env.BACKEND ?? 'http://192.168.0.66:3333';
+const BACKEND = import.meta.env.BACKEND ?? 'http://127.0.0.1:3333';
 
 export default function SearchBar({
         placeholder = '',

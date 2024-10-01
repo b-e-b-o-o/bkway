@@ -35,11 +35,11 @@ catch (e) {
 }
 
 app.get('/stops.geo.json', async (req: Request, res: Response) => {
-  res.sendFile('/usr/data/stops.geo.json');
+  res.sendFile('/data/stops.geo.json', { root: '../' });
 });
 
 app.get('/shapes.geo.json', async (req: Request, res: Response) => {
-  res.sendFile('/usr/data/shapes.geo.json');
+  res.sendFile('/data/shapes.geo.json', { root: '../' });
 });
 
 app.get('/stops', (req: Request, res: Response) => {

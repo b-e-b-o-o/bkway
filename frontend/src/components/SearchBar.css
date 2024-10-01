@@ -48,21 +48,20 @@ input {
     border-radius: 2rem;
     border-color: var(--accent-color);
     background-color: var(--primary-color);
-
-    /* for hiding */
-    pointer-events: all;
-    overflow: hidden;
 }
+
+.search-container:hover,
 .search-container:focus-within {
     z-index: 2;
 }
 
+.search-container:hover .search-icon,
 .search-container:focus-within .search-icon {
     color: white;
 }
 
-.search-container:not(:focus-within) .search-results {
-    /* max-height: 0; */
+.search-container:not(:focus-within):not(:hover) .search-results {
+    display: none;
 }
 
 .search-result {
