@@ -12,7 +12,8 @@ const stopsLayer = new GeoJsonLayer({
   data: BACKEND + '/data/stops.geo.json',
   pointType: 'circle',
   getFillColor: (f: any) => {
-    const hex = f.properties.routes[0]?.route_color;
+    // node-gtfs guarantees that only stops with at least one route are included in the geojson
+    const hex = f.properties.routes[0].route_color;
     return hex ? hex.match(/[0-9a-f]{2}/gi).map((x: string) => parseInt(x, 16)) : [0, 0, 0];
   },
   getLineWidth: 1,
