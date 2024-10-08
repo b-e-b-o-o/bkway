@@ -1,0 +1,17 @@
+export interface Stop {
+    stopId: string,
+    stopCode?: undefined | string,
+    stopName: string,
+    ttsStopName?: undefined | string,
+    stopDesc?: undefined | string,
+    stopLat: number,
+    stopLon: number,
+    zoneId?: undefined | string,
+    stopUrl?: undefined | string,
+    locationType?: undefined | 0 | 1 | 2 | 3 | 4,
+    parentStation?: undefined | string,
+    stopTimezone?: undefined | string,
+    wheelchairBoarding?: undefined | 0 | 1 | 2,
+    levelId?: undefined | string,
+    platformCode?: undefined | string,
+}

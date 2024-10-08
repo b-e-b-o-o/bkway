@@ -50,17 +50,19 @@ input {
     background-color: var(--primary-color);
 }
 
-.search-container:hover,
 .search-container:focus-within {
     z-index: 2;
 }
 
-.search-container:hover .search-icon,
+.search-container:hover .search-icon {
+    color: #bbd6ff;
+}   
+
 .search-container:focus-within .search-icon {
     color: white;
 }
 
-.search-container:not(:focus-within):not(:hover) .search-results {
+.search-container:not(:focus-within) .search-results {
     display: none;
 }
 

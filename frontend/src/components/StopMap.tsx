@@ -1,14 +1,15 @@
-import { GeoJsonLayer } from '@deck.gl/layers';
-import { BASEMAP } from '@deck.gl/carto';
-import DeckGL from '@deck.gl/react';
 import Map from 'react-map-gl/maplibre'
-import { MapViewState } from 'deck.gl';
+import { BASEMAP } from '@deck.gl/carto';
+import { GeoJsonLayer, PathLayer } from '@deck.gl/layers';
+import DeckGL from '@deck.gl/react';
+import { useViewStateContext } from '../contexts/viewState.context';
+import { useRoutePlanContext } from '../contexts/routePlan.context';
 
 const BACKEND = import.meta.env.BACKEND ?? 'http://127.0.0.1:3333';
 
 const stopsLayer = new GeoJsonLayer({
   id: 'stops-layer',
-  data: BACKEND + '/stops.geo.json',
+  data: BACKEND + '/data/stops.geo.json',
   pointType: 'circle',
   getFillColor: (f: any) => {
     const hex = f.properties.routes[0]?.route_color;
@@ -27,7 +28,7 @@ const stopsLayer = new GeoJsonLayer({
 
 const shapesLayer = new GeoJsonLayer({
   id: 'shapes-layer',
-  data: BACKEND + '/shapes.geo.json',
+  data: BACKEND + '/data/shapes.geo.json',
   pointType: 'circle',
   getLineColor: (f: any) => {
     const hex = f.properties.route_color;
@@ -38,11 +39,33 @@ const shapesLayer = new GeoJsonLayer({
   filled: true
 });
 
-export default function StopMap({ initialViewState }: { initialViewState: MapViewState }) {
+export default function StopMap() {
+  const { initialViewState: viewState } = useViewStateContext();
+
+  const { startStop, endStop } = useRoutePlanContext();
+
+  const PATH_DATA = [
+    {
+      path: [[startStop?.stopLon, startStop?.stopLat], [endStop?.stopLon, endStop?.stopLat] /*, ... */ ],
+      name: 'Richmond - Millbrae',
+      color: [255, 0, 0]
+    },
+    // ...
+  ];
+
+  const routeLayer = new PathLayer<{ path: [number, number][], name: string, color: [number, number, number] }>({
+    id: 'route-layer',
+    data: PATH_DATA,
+    getPath: ({ path }) => path,
+    getColor: ({ color }) => color,
+    getWidth: 4,
+    pickable: true,
+  });
+
   return <DeckGL
-    initialViewState={initialViewState}
-    getTooltip={({ object }) => object && object.properties.stop_name}
-    layers={[stopsLayer, shapesLayer]}
+    initialViewState={viewState}
+    getTooltip={({ object }) => object && object.name}
+    layers={[stopsLayer, shapesLayer, routeLayer]}
     controller={true}
   >
     <Map mapStyle={BASEMAP.DARK_MATTER} reuseMaps />

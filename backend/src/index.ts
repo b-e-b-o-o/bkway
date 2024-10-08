@@ -20,6 +20,8 @@ app.use(function (_req: Request, res: Response, next: VoidFunction) {
   next();
 });
 
+app.use('/data', express.static('/usr/data/public/', { index: false }));
+
 try {
   openDb(config);
   getAgencies();
@@ -33,14 +35,6 @@ catch (e) {
     throw e;
   }
 }
-
-app.get('/stops.geo.json', async (req: Request, res: Response) => {
-  res.sendFile('/data/stops.geo.json', { root: '../' });
-});
-
-app.get('/shapes.geo.json', async (req: Request, res: Response) => {
-  res.sendFile('/data/shapes.geo.json', { root: '../' });
-});
 
 app.get('/stops', (req: Request, res: Response) => {
   let filter: Record<string, any> = {};

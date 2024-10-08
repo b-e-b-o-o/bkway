@@ -16,4 +16,4 @@ RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=cache,target=/home/node/.npm,uid=1000 \
     npm ci --include dev
 COPY . .
-CMD npm run dev
+CMD ["npm", "run", "dev"]

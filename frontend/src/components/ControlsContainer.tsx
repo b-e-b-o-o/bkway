@@ -1,12 +1,16 @@
 import SearchBar from './SearchBar'
 import './ControlsContainer.css'
-import { MapViewState } from 'deck.gl'
+import { useRoutePlanContext } from '../contexts/routePlan.context';
+import { TimePicker } from '@mui/x-date-pickers';
 
-export default function ControlsContainer({ setInitialViewState }: { setInitialViewState: React.Dispatch<React.SetStateAction<MapViewState>> }) {   
+export default function ControlsContainer() {
+    const { startStop, setStartStop, endStop, setEndStop, startTime, setStartTime } = useRoutePlanContext(); 
+
     return <div className='controls-container'>
         <div className='menu-container'>
-            <SearchBar setInitialViewState={setInitialViewState} placeholder='Indulás...' />
-            <SearchBar setInitialViewState={setInitialViewState} placeholder='Érkezés...' />
+            <SearchBar placeholder='Indulás...' stop={startStop} setStop={setStartStop} />
+            <SearchBar placeholder='Érkezés...' stop={endStop} setStop={setEndStop} />
+            <TimePicker ampm={false} defaultValue={startTime} onChange={(e) => e && setStartTime?.(e)} />
         </div>
     </div>
 }

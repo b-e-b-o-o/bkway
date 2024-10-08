@@ -1,23 +1,29 @@
 import { useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FlyToInterpolator } from 'deck.gl';
+import { Stop } from '../types/Stop';
 
+import { useViewStateContext } from '../contexts/viewState.context';
 import './SearchBar.css';
-import { FlyToInterpolator, MapViewState } from 'deck.gl';
 
 const BACKEND = import.meta.env.BACKEND ?? 'http://127.0.0.1:3333';
 
 export default function SearchBar({
         placeholder = '',
-        setInitialViewState,
+        stop,
+        setStop,
     }
     : {
         placeholder: string,
-        setInitialViewState: React.Dispatch<React.SetStateAction<MapViewState>>
+        stop: Stop | undefined,
+        setStop: React.Dispatch<React.SetStateAction<Stop | undefined>>,
     }) {
-    const [results, setResults] = useState<any[]>([]);
+    const { setInitialViewState } = useViewStateContext();
+    const [results, setResults] = useState<Stop[]>([]);
     const input = useRef<HTMLInputElement>(null);
 
-    function flyToStop(result: any) {
+    function flyToStop(result: Stop) {
+        setStop(result);
         setInitialViewState({
             longitude: result.stopLon - 0.001,
             latitude: result.stopLat,
@@ -43,14 +49,17 @@ export default function SearchBar({
 
     return <div className='search-container'>
         <div className='search-bar'>
-            <FontAwesomeIcon className='search-icon' icon="magnifying-glass" color='rgb(162, 189, 214)' opacity={0.8} />
-            <input type='text' ref={input} onInput={updateResults} placeholder={placeholder} />
+            <FontAwesomeIcon className='search-icon' icon="magnifying-glass" color='rgb(140, 160, 190)' />
+            <input type='text' ref={input} onInput={updateResults} placeholder={stop?.stopName ?? placeholder} />
         </div>
         <div className='search-results'>
             {
-                results.map((result: any, index: number) =>
-                    <div key={index} className='search-result'
-                        onClick={() => flyToStop(result)}>
+                results.map((result: Stop, index: number) =>
+                    <div
+                        key={index}
+                        tabIndex={-1} // Allow focus (search-container would get hidden on blur before onClick fires, instead we blur manually)
+                        className='search-result'
+                        onClick={({ target }) => { (target as HTMLDivElement).blur(); flyToStop(result); }}>
                         <div className='location-icon'>
                             <FontAwesomeIcon icon='location-dot' color='#aaf' />
                         </div>
