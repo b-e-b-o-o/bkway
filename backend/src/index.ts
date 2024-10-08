@@ -6,6 +6,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import config from './configs/gtfs.config'
 import stopsRouter from "./routes/stops";
+import geojsonRouter from "./routes/geojson";
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ catch (e) {
 app.use(cors());
 app.use('/data', express.static('/usr/data/public/', { index: false }));
 app.use('/stops', stopsRouter);
+app.use('/geojson', geojsonRouter);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('BKWay API');
