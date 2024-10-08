@@ -1,26 +1,16 @@
 import express from "express";
 import type { Express, Request, Response } from "express";
-import { importGtfs, getStops, openDb, getAgencies, getShapesAsGeoJSON } from "gtfs";
+import { importGtfs, openDb, getAgencies } from "gtfs";
 import { SqliteError } from "better-sqlite3";
+import cors from "cors";
 import dotenv from "dotenv";
 import config from './configs/gtfs.config'
-import { stops } from "gtfs/models";
-import { searchStops } from "./routes/stops";
+import stopsRouter from "./routes/stops";
 
 dotenv.config();
 
 const app: Express = express();
 const port: string | number = process.env.PORT ?? 3000;
-
-// access control middleware
-app.use(function (_req: Request, res: Response, next: VoidFunction) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET"); // read-only api
-  res.setHeader("Access-Control-Allow-Headers", "*");
-  next();
-});
-
-app.use('/data', express.static('/usr/data/public/', { index: false }));
 
 try {
   openDb(config);
@@ -36,22 +26,13 @@ catch (e) {
   }
 }
 
-app.get('/stops', (req: Request, res: Response) => {
-  let filter: Record<string, any> = {};
-  // why https://stackoverflow.com/q/17781472
-  for (const { name } of stops.schema) {
-    if (name in req.query)
-      filter[name] = req.query[name];
-  }
-  res.send(getStops(filter));
-});
 
-app.get('/search_stops', async (req: Request, res: Response) => {
-  res.send(await searchStops(req.query['q']?.toString() ?? ''))
-});
+app.use(cors());
+app.use('/data', express.static('/usr/data/public/', { index: false }));
+app.use('/stops', stopsRouter);
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Hello, TypeScript with Express! :)');
+  res.send('BKWay API');
 });
 
 app.listen(port, () => {

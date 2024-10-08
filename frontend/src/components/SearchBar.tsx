@@ -42,7 +42,7 @@ export default function SearchBar({
             setResults([]);
             return;
         }
-        fetch(`${BACKEND}/search_stops?q=${input.current?.value}`)
+        fetch(`${BACKEND}/stops/search?q=${input.current?.value}`)
             .then(res => res.json())
             .then(data => setResults(data));
     }

@@ -1,39 +1,25 @@
-import { drizzle } from 'drizzle-orm/better-sqlite3';
-import { stops } from '../models/db/schema/stops'
-import { and, isNull, like, not } from 'drizzle-orm';
-import { ensureDatabase } from '../utils/database';
+import { Router } from "express";
+import type { Request, Response } from "express";
+import { stops } from "gtfs/models";
+import { getStops } from "gtfs";
 
-const sqlite = await ensureDatabase();
-const db = drizzle(sqlite);
+import { searchStops } from "../utils/query";
 
-export async function searchStops(name: string) {
-    const limit = 10;
+const router = Router()
 
-    // Note that the default locationType is "stop or platform",
-    // and those are the only stops that are actually part of at least one route.
-    // The others are entrances, etc., we don't want to search for those.
+router.get('/', (req: Request, res: Response) => {
+  let filter: Record<string, any> = {};
+  // why https://stackoverflow.com/q/17781472
+  console.log(stops.schema);
+  for (const { name } of stops.schema) {
+    if (name in req.query)
+      filter[name] = req.query[name];
+  }
+  res.send(getStops(filter));
+})
 
-    const startsWith = await db.select()
-        .from(stops)
-        .where(
-            and(
-                like(stops.stopName, `${name}%`),
-                isNull(stops.locationType)
-            )
-        )
-        .orderBy(stops.stopName)
-        .limit(limit);
-    const remaining = limit - startsWith.length;
-    const contains = await db.select()
-        .from(stops)
-        .where(
-            and(
-                like(stops.stopName, `%${name}%`),
-                not(like(stops.stopName, `${name}%`)),
-                isNull(stops.locationType)
-            )
-        )
-        .orderBy(stops.stopName)
-        .limit(remaining);
-    return [...startsWith, ...contains];
-}
+router.get('/search', async (req: Request, res: Response) => {
+  res.send(await searchStops(req.query['q']?.toString() ?? ''))
+});
+
+export default router;

@@ -1,8 +1,9 @@
 import Database, { SqliteError } from "better-sqlite3";
+import { drizzle } from "drizzle-orm/better-sqlite3";
 import { importGtfs } from "gtfs";
 import config from '../configs/gtfs.config';
 
-export async function ensureDatabase() {
+async function ensureDatabase() {
     try {
         return new Database(config.sqlitePath);
     }
@@ -17,3 +18,5 @@ export async function ensureDatabase() {
         }
     }
 }
+
+export const database = drizzle(await ensureDatabase());
