@@ -5,8 +5,8 @@ import { SqliteError } from "better-sqlite3";
 import cors from "cors";
 import dotenv from "dotenv";
 import config from './configs/gtfs.config'
-import stopsRouter from "./routes/stops";
-import geojsonRouter from "./routes/geojson";
+import stopsRouter from "./routes/stops.route";
+import geojsonRouter from "./routes/geojson.route";
 
 dotenv.config();
 
