@@ -7,6 +7,7 @@ import { createTheme } from '@mui/material/styles';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
+import type { } from '@mui/x-date-pickers/themeAugmentation';
 
 import 'dayjs/locale/hu';
 
