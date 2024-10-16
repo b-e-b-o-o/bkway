@@ -1,0 +1,92 @@
+@startuml class_frontend
+
+' java -jar C:\ProgramData\chocolatey\lib\plantuml\tools\plantuml.jar -picoweb
+
+' 0 to turn off icons, default 10
+' skinparam classAttributeIconSize 0
+
+top to bottom direction
+
+package Models {
+    class Coordinate {
+        + lat: number {readOnly}
+        + lon: number {readOnly}
+        + distance(other: Coordinate): number
+    }
+
+    class Vertex {
+        + id: string {readOnly}
+        + location: Coordinate {readOnly}
+        + visited: boolean
+        + heuristic: number
+        + distance: number?
+        + parent: Vertex?
+        + getChildren(): Vertex[]
+    }
+
+    note left of Vertex::id
+        a csúcshoz tartozó
+        megálló stopId-ja
+    end note
+
+    Vertex o-- "*" DirectedWeightedEdge : "inEdges" 
+    Vertex o-- "*" DirectedWeightedEdge : "outEdges"
+
+    class DirectedWeightedEdge {
+        + path: Coordinate[] {readOnly}
+        + weight: number {readOnly}
+        + source: Vertex {readOnly}
+        + target: Vertex {readOnly}
+        + visited: boolean
+    }
+
+    package Pathfinding {
+        class BFS {
+            ...
+        }
+
+        class Dijkstra {
+            ...
+        }
+
+        class Greedy {
+            ...
+        }
+
+        class AStar {
+            ...
+        }
+
+        interface Pathfinding {
+            + finished: boolean
+            + startVertex: Vertex {readOnly}
+            + endVertex: Vertex {readOnly}
+            + Pathfinding(startVertex: Vertex, endVertex: Vertex, startTime: DateTime)
+            + visitNext(): Vertex[]
+            + getDuration(): number?
+            + getPath(): Coordinate[]?
+        }
+
+        Pathfinding <|-- BFS
+        Pathfinding <|-- Greedy
+        Pathfinding <|-- Dijkstra
+        Pathfinding <|-- AStar
+    }
+}
+
+package Services {
+    class GraphService {
+        + startTime: DateTime
+        + setNeighbours(vertex: Vertex)
+    }
+}
+
+package Utils {
+    class Distance {
+        + distance(from: Coordinate, to: Coordinate): number
+    }
+}
+
+Models.Pathfinding.Pathfinding *-- GraphService : graphService {readOnly}
+
+@enduml
