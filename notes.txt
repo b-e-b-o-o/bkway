@@ -16,3 +16,23 @@ next up
     greedy algoritmus
     bug fixek
         - nem működik az ENV= ???
+
+wireframes:
+    https://wireframe.cc/vBMPLF
+    https://wireframe.cc/LXwMNu
+    https://wireframe.cc/nzdxgt
+
+queries:
+    longest path:
+        SELECT
+            sh2.shape_dist_traveled - sh1.shape_dist_traveled length,
+            sh1.shape_id,
+            sh1.shape_pt_sequence
+        FROM
+            shapes sh1,
+            shapes sh2
+        WHERE
+            sh1.shape_pt_sequence = sh2.shape_pt_sequence - 1
+        AND
+            sh1.shape_id = sh2.shape_id
+        ORDER BY length DESC;
