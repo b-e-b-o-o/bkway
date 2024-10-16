@@ -30,6 +30,7 @@ input {
   font-size: larger;
 }
 
-input:focus {
+input:focus,
+.input:focus {
   outline: none;
 }

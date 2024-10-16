@@ -27,20 +27,15 @@
 }
 
 input {
-    position: absolute;
-    left: 0;
-    right: 0;
+    width: 100%;
     border-style: none;
     height: 100%;
     padding-left: 4rem;
 }
 
 .search-results {
-    display: hidden;
     position: absolute;
     top: 0;
-    left: 0;
-    right: 0;
     padding-top: 4rem;
     width: 100%;
     border-style: solid;
@@ -67,13 +62,6 @@ input {
 }
 
 .search-result {
-    cursor: pointer;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    height: 2.5rem;
-    padding: 0.5rem;
-    font-size: larger;
     color: aqua;
 }
 
@@ -87,12 +75,4 @@ input {
     vertical-align: middle;
     height: 100%;
     width: 16px;
-}
-
-.info-icons {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    height: 100%;
-    padding-left: 0.5rem;
 }
