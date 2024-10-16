@@ -158,6 +158,9 @@ Table feed_info{
 Ref: agency.agency_id < routes.agency_id [update: cascade, delete: cascade]
 Ref: routes.route_id < trips.route_id [update: cascade, delete: cascade]
 Ref: trips.trip_id < stop_times.trip_id [update: cascade, delete: cascade]
+Ref: trips.service_id <> calendar_dates.service_id
+Ref: trips.shape_id <> shapes.shape_id
+Ref: stop_times.shape_dist_traveled <> shapes.shape_dist_traveled
 Ref: stops.stop_id < stop_times.stop_id [update: cascade, delete: cascade]
 Ref: stops.stop_id < pathways.from_stop_id [update: cascade, delete: cascade]
 Ref: stops.stop_id < pathways.to_stop_id [update: cascade, delete: cascade]
