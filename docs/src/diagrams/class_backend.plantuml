@@ -1,0 +1,53 @@
+@startuml class_backend
+
+' java -jar C:\ProgramData\chocolatey\lib\plantuml\tools\plantuml.jar -picoweb
+
+' 0 to turn off icons, default 10
+' skinparam classAttributeIconSize 0
+
+allowmixing
+left to right direction
+
+package Utils {
+    class Database {
+        + {static} async ensureDatabase(): Database
+    }
+
+    class AdvancedQuery {
+        + {static} async searchStops(name: string): Stop[]
+        + {static} async getNeighbors(stopId: string, time: DateTime): Travel[] 
+    }
+}
+
+package Types {
+    class Travel {
+        fromStopId: string
+        fromLat: number
+        fromLon: number
+        toStopId: string
+        toLat: number
+        toLon: number
+        path: [number, number][]
+        minutes: number
+        distance: number
+    }
+}
+
+package Routes {
+    class Geojson {
+        + {static} stops()
+        + {static} shapes()
+    }
+    class Stops {
+        + {static} get(id: string)
+        + {static} all()
+        + {static} search(query: string)
+        + {static} neighbors(stopId: string, time: DateTime)
+    }
+}
+
+package Configs {
+    artifact "gtfs config, stb."
+}
+
+@enduml
