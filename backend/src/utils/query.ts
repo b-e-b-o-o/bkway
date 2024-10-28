@@ -2,6 +2,7 @@ import { and, isNull, like, not } from 'drizzle-orm';
 
 import { stops } from '../models/db/schema/stops'
 import { database } from '../utils/database';
+import { advancedQuery } from 'gtfs';
 
 export async function searchStops(name: string) {
     const limit = 10;
@@ -33,4 +34,14 @@ export async function searchStops(name: string) {
         .orderBy(stops.stopName)
         .limit(remaining);
     return [...startsWith, ...contains];
+}
+
+// TODO test this
+export function advanced(name: string) {
+    return advancedQuery('stops', {
+        query: {
+            'stops.stopName': `%${name}%`,
+        },
+        fields: ['stops.stopName']
+    });
 }

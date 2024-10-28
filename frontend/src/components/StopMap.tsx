@@ -5,7 +5,7 @@ import DeckGL from '@deck.gl/react';
 import { useViewStateContext } from '../contexts/viewState.context';
 import { useRoutePlanContext } from '../contexts/routePlan.context';
 
-const BACKEND = import.meta.env.BACKEND ?? 'http://127.0.0.1:3333';
+const BACKEND: string = import.meta.env.BACKEND ?? 'http://127.0.0.1:3333';
 
 const stopsLayer = new GeoJsonLayer({
   id: 'stops-layer',
