@@ -6,27 +6,33 @@ const router = Router()
 
 router.get('/', (req: Request, res: Response) => {
   const query: {
-    stops?: string[],
+    stop_id?: string[],
     start_time?: string,
     end_time?: string
   } = {}
-  if (typeof req.query.stop_id === 'string')
-    query.stops = getStops({
-        stop_id: req.query.stop_id
+  if (typeof req.query.stop_id === 'string') {
+    const stop = getStops({ stop_id: req.query.stop_id }, ['stop_lat', 'stop_lon'], [], { bounding_box_side_m: 150 })[0];
+    query.stop_id = getStops({
+        stop_lat: stop.stop_lat,
+        stop_lon: stop.stop_lon
       },
-      [ 'stop_id' ],
+      ['stop_id'],
       [],
       {
         bounding_box_side_m: 150
       }
     ).map(stop => stop.stop_id);
-  else
+  }
+  else {
     return res.status(400).send('Missing "stop" parameter');
+  }
   if (req.query.from)
     query.start_time = req.query.from.toString();
   if (req.query.to)
     query.end_time = req.query.to.toString();
-  res.send(getStoptimes(query));
+  const result = getStoptimes(query, ['trip_id', 'departure_time', 'departure_timestamp', 'stop_id', 'stop_sequence', 'stop_headsign', 'shape_dist_traveled' ]);
+  res.json({ result });
+  res.end();
 });
 
 export default router;

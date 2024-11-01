@@ -1,7 +1,7 @@
 import distFrom from 'distance-from';
 
 export class Coordinate {
-    latLon: [number, number];
+    readonly latLon: [number, number];
 
     constructor(latitude: number, longitude: number) {
         this.latLon = [latitude, longitude];

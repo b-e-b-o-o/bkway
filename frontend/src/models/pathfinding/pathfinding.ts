@@ -2,22 +2,22 @@ import { DirectedWeightedEdge } from "../directedWeightedEdge";
 import { Vertex } from "../vertex";
 
 export abstract class Pathfinding {
-    protected finished: boolean = false;
     protected path: Vertex[] | null | undefined;
     readonly start: Vertex;
-    readonly end: Vertex;
+    readonly endId: string;
+    end: Vertex | null = null;
     
-    constructor(start: Vertex, end: Vertex) {
+    constructor(start: Vertex, endId: string) { 
         this.start = start;
-        this.end = end;
+        this.endId = endId;
     }
 
     public get isFinished(): boolean {
-        return this.finished;
+        return this.end !== null;
     }
 
     public getPath() { 
-        if (!this.finished)
+        if (!this.isFinished)
             return;
         if (this.path === undefined)
             this.buildPath();
@@ -25,6 +25,8 @@ export abstract class Pathfinding {
     }
 
     private buildPath(): void {
+        if (this.end === null)
+            return;
         const path: Vertex[] = [];
         let current: Vertex = this.end;
         while (current.parentEdge !== null) {

@@ -1,4 +1,4 @@
-import express from "express";
+import express, { json } from "express";
 import type { Express, Request, Response } from "express";
 import { importGtfs, openDb, getAgencies } from "gtfs";
 import { SqliteError } from "better-sqlite3";
@@ -26,15 +26,14 @@ catch (e) {
   else {
     throw e;
   }
-}
+};
 
-
+app.use(json());
 app.use(cors());
 app.use('/data', express.static('/usr/data/public/', { index: false }));
 app.use('/stops', stopsRouter);
 app.use('/geojson', geojsonRouter);
 app.use('/stoptimes', stopTimesRouter);
-
 app.get('/', (req: Request, res: Response) => {
   res.send('BKWay API');
 });
