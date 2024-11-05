@@ -8,6 +8,7 @@ import config from './configs/gtfs.config'
 import stopsRouter from "./routes/stops.route";
 import geojsonRouter from "./routes/geojson.route";
 import stopTimesRouter from "./routes/stoptimes.route";
+import neighborsRouter from "./routes/neighbors.route";
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ app.use('/data', express.static('/usr/data/public/', { index: false }));
 app.use('/stops', stopsRouter);
 app.use('/geojson', geojsonRouter);
 app.use('/stoptimes', stopTimesRouter);
+app.use('/neighbors', neighborsRouter);
 app.get('/', (req: Request, res: Response) => {
   res.send('BKWay API');
 });
