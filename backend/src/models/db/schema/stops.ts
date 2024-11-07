@@ -1,7 +1,7 @@
 import { sqliteTable, text, real, integer, index, AnySQLiteColumn } from "drizzle-orm/sqlite-core";
 import { levels } from './others'
 
-enum LocationType {
+export enum LocationType {
     STOP = 0,
     STATION = 1,
     ENTRANCE_EXIT = 2,

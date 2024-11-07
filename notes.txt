@@ -4,6 +4,8 @@ getStops({stop_lat: 47.501051, stop_lon: 19.118839}, [], [], {bounding_box_side_
     de 150m jó default
     (példa a pillangó utcáról)
 
+drizzle rosszul generál queryt self-joinnál (nem nevezi át az ugyanolyan nevű oszlopokat): select stops.stop_id, stops.stop_code, stops.stop_name, stops.tts_stop_name, stops.stop_desc, stops.stop_lat, stops.stop_lon, stops.zone_id, stops.stop_url, stops.location_type, stops.parent_station, stops.stop_timezone, stops.wheelchair_boarding, stops.level_id, stops.platform_code, trips.route_id, trips.service_id, trips.trip_id, trips.trip_headsign, trips.trip_short_name, trips.direction_id, trips.block_id, trips.shape_id, trips.wheelchair_accessible, trips.bikes_allowed, nextStops.trip_id, nextStops.arrival_time, nextStops.arrival_timestamp, nextStops.departure_time, nextStops.departure_timestamp, nextStops.location_group_id, nextStops.location_id, nextStops.stop_id, nextStops.stop_sequence, nextStops.stop_headsign, nextStops.start_pickup_drop_off_window, nextStops.start_pickup_drop_off_window_timestamp, nextStops.pickup_type, nextStops.drop_off_type, nextStops.continuous_pickup, nextStops.continuous_drop_off, nextStops.shape_dist_traveled, nextStops.timepoint, nextStops.pickup_booking_rule_id, nextStops.drop_off_booking_rule_id, nextStops.trip_id, nextStops.arrival_time, nextStops.arrival_timestamp, nextStops.departure_time, nextStops.departure_timestamp, nextStops.location_group_id, nextStops.location_id, nextStops.stop_id, nextStops.stop_sequence, nextStops.stop_headsign, nextStops.start_pickup_drop_off_window, nextStops.start_pickup_drop_off_window_timestamp, nextStops.pickup_type, nextStops.drop_off_type, nextStops.continuous_pickup, nextStops.continuous_drop_off, nextStops.shape_dist_traveled, nextStops.timepoint, nextStops.pickup_booking_rule_id, nextStops.drop_off_booking_rule_id from (select stop_times.trip_id, stop_times.arrival_time, stop_times.arrival_timestamp, stop_times.departure_time, stop_times.departure_timestamp, stop_times.location_group_id, stop_times.location_id, stop_times.stop_id, stop_times.stop_sequence, stop_times.stop_headsign, stop_times.start_pickup_drop_off_window, stop_times.start_pickup_drop_off_window_timestamp, stop_times.pickup_type, stop_times.drop_off_type, stop_times.continuous_pickup, stop_times.continuous_drop_off, stop_times.shape_dist_traveled, stop_times.timepoint, stop_times.pickup_booking_rule_id, stop_times.drop_off_booking_rule_id, rides.trip_id, rides.arrival_time, rides.arrival_timestamp, rides.departure_time, rides.departure_timestamp, rides.location_group_id, rides.location_id, rides.stop_id, rides.stop_sequence, rides.stop_headsign, rides.start_pickup_drop_off_window, rides.start_pickup_drop_off_window_timestamp, rides.pickup_type, rides.drop_off_type, rides.continuous_pickup, rides.continuous_drop_off, rides.shape_dist_traveled, rides.timepoint, rides.pickup_booking_rule_id, rides.drop_off_booking_rule_id from stop_times inner join (select trip_id, arrival_time, arrival_timestamp, departure_time, departure_timestamp, location_group_id, location_id, stop_id, stop_sequence, stop_headsign, start_pickup_drop_off_window, start_pickup_drop_off_window_timestamp, pickup_type, drop_off_type, continuous_pickup, continuous_drop_off, shape_dist_traveled, timepoint, pickup_booking_rule_id, drop_off_booking_rule_id from stop_times where (stop_times.stop_id = 'F01204' and stop_times.departure_timestamp >= 37800 and stop_times.departure_timestamp <= 41400)) rides on (rides.stop_sequence + 1 = stop_times.stop_sequence and rides.trip_id = stop_times.trip_id) group by stop_times.stop_id having stop_times.departure_timestamp = min(stop_times.departure_timestamp)) nextStops inner join stops on stops.stop_id = nextStops.stop_id inner join trips on trips.trip_id = nextStops.trip_id
+
 next up
     dbt volumeba (még mindig)
     normális networking
@@ -36,3 +38,16 @@ queries:
         AND
             sh1.shape_id = sh2.shape_id
         ORDER BY length DESC;
+
+    furthest stops with matching name ("Köztársaság tér"):
+        SELECT
+            s1.stop_name name,
+            s1.stop_id id1,
+            s2.stop_id id2,
+            SQRT(POW(s1.stop_lat - s2.stop_lat, 2) + POW(s1.stop_lon - s2.stop_lon, 2)) distance
+        FROM
+            stops s1,
+            stops s2
+        WHERE
+            s1.stop_name = s2.stop_name
+        ORDER BY distance DESC;

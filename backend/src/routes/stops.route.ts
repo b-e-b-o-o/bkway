@@ -10,7 +10,6 @@ const router = Router()
 router.get('/', (req: Request, res: Response) => {
   let filter: Record<string, any> = {};
   // why https://stackoverflow.com/q/17781472
-  console.log(stops.schema);
   for (const { name } of stops.schema) {
     if (name in req.query)
       filter[name] = req.query[name];

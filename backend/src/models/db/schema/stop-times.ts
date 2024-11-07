@@ -35,8 +35,7 @@ export const stopTimes = sqliteTable('stop_times', {
     stopHeadsign: text('stop_headsign'),
     startPickUpDropOffWindow: text('start_pickup_drop_off_window'),
     startPickUpDropOffWindowTimestamp: integer('start_pickup_drop_off_window_timestamp', { mode: 'timestamp' }), // not part of GTFS specs, added by node-gtfs
-    endPickUpDropOffWindow: text('end_pickup_drop_off_window'),
-    endPickUpDropOffWindowTimestamp: integer('end_pickup_drop_off_window_timestamp', { mode: 'timestamp' }), // not part of GTFS specs, added by node-gtfs
+    // endPickUpDropOffWindow: text('end_pickup_drop_off_window'), // part of GTFS specs, but not used by node-gtfs
     pickupType: integer('pickup_type').$type<PickupDropOffType>(),
     dropOffType: integer('drop_off_type').$type<PickupDropOffType>(),
     continuousPickup: integer('continuous_pickup').$type<ContinuousPickupDropOff>(),

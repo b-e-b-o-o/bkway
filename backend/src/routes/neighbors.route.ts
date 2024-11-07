@@ -4,12 +4,12 @@ import { getNeighbors, getWalkingNeighbors, searchStops } from "../utils/query";
 
 const router = Router()
 
-router.get('/{stopId}/by-walking', async (req: Request, res: Response) => {
+router.get('/:stopId/by-walking', async (req: Request, res: Response) => {
   const { stopId } = req.params;
   res.send(await getWalkingNeighbors(stopId));
 });
 
-router.get('/{stopId}/by-transit', async (req: Request, res: Response) => {
+router.get('/:stopId/by-transit', async (req: Request, res: Response) => {
   const { stopId } = req.params;
   const { time } = req.query;
   if (typeof time !== 'string')

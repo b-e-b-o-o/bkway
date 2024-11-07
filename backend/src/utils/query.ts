@@ -1,11 +1,13 @@
-import { and, between, eq, gte, inArray, isNull, like, lte, not, SQL, sql } from 'drizzle-orm';
+import { and, between, eq, gte, isNull, like, lte, min, not, or, sql } from 'drizzle-orm';
 
-import { advancedQuery, getStops, getStoptimes } from 'gtfs';
-import { getBoundsOfDistance, getDistance } from 'geolib'
-import { stops } from '../models/db/schema/stops'
+import { getStops } from 'gtfs';
+import { getBoundsOfDistance } from 'geolib'
+import { LocationType, stops } from '../models/db/schema/stops'
 import { database } from '../utils/database';
 import { stopTimes } from '../models/db/schema/stop-times';
 import { trips } from '../models/db/schema/trips';
+
+import type { SubqueryWithSelection } from 'drizzle-orm/sqlite-core';
 
 export async function searchStops(name: string) {
     const limit = 10;
@@ -19,7 +21,10 @@ export async function searchStops(name: string) {
         .where(
             and(
                 like(stops.stopName, `${name}%`),
-                isNull(stops.locationType)
+                or(
+                    isNull(stops.locationType),
+                    eq(stops.locationType, sql<LocationType>`${+LocationType.STOP}`),
+                )
             )
         )
         .orderBy(stops.stopName)
@@ -45,10 +50,7 @@ export async function getWalkingNeighbors(stopId: string) {
         { lat: source.stop_lat!, lon: source.stop_lon! },
         150 // TODO: don't hardcode this
     );
-    return await database.select({
-        stop: stops,
-        trip: sql<null>`SELECT null`.as('trip'),
-    })
+    return await database.select()
         .from(stops)
         .where(
             and(
@@ -67,10 +69,7 @@ export async function getNeighbors(stopId: string, time: string) {
     const fromTime = (+h * 60 + +m) * 60 + +s; // obviously, 0x1e::0b11101 === 24:00:30
     const toTime = fromTime + 3600; // TODO: don't hardcode this either
 
-    const from = database.select({
-            tripId: stopTimes.tripId,
-            nextStopSequence: sql<number>`${stopTimes.stopSequence} + 1`.as('nextStopSequence'),
-        })
+    let rides = database.select()
         .from(stopTimes)
         .where(
             and(
@@ -79,24 +78,38 @@ export async function getNeighbors(stopId: string, time: string) {
                 lte(stopTimes.departureTimestamp, new Date(toTime * 1000))
             )
         )
-        .as('from');
-    const nextStops = database.select({
-            stopId: stopTimes.stopId,
-            tripId: stopTimes.tripId,
-        })
+        .as('rides');
+
+    rides = aliasedColumnsOf(rides);
+
+    const nextStops = database.select()
         .from(stopTimes)
         .innerJoin(
-            from,
+            rides,
             and(
-                eq(from.nextStopSequence, stopTimes.stopSequence),
-                eq(from.tripId, stopTimes.tripId)
+                eq(sql<number>`${rides.stopSequence} + 1`, stopTimes.stopSequence),
+                eq(rides.tripId, stopTimes.tripId)
             )
         )
+        .groupBy(stopTimes.stopId)
+        .having(eq(stopTimes.departureTimestamp, min(stopTimes.departureTimestamp)))
         .as('nextStops');
-    return await database
-        .select({ stop: stops, trip: trips }) 
-        .from(stops)
-        .innerJoin(nextStops, eq(stops.stopId, nextStops.stopId))
-        .innerJoin(trips, eq(trips.tripId, nextStops.tripId))
-        .execute();
+    const ret = database
+        .select({ stop: stops, trip: trips, departureTime: nextStops.rides, arrivalTime: nextStops.stop_times })
+        .from(nextStops)
+        .innerJoin(stops, eq(stops.stopId, nextStops.stop_times.stopId))
+        .innerJoin(trips, eq(trips.tripId, nextStops.stop_times.tripId));
+
+    return await ret.execute();
+};
+
+// Drizzle can't deal with duplicate column names on self-joins. stupid.
+function aliasedColumnsOf<T extends SubqueryWithSelection<any, string>>(table: T, { prefix = '', postfix = '' } = { postfix: '_' }) {
+    type SelectedFields = Parameters<typeof database['select']>[0];
+    let aliases: SelectedFields = {};
+    for (const column in table._.selectedFields) {
+        const newName = prefix + column + postfix;
+        aliases[column] = sql`${table[column]}`.as(newName);
+    }
+    return database.select(aliases).from(table).as(table._.alias) as T;
 }
