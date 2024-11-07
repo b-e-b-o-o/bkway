@@ -23,7 +23,7 @@ export async function searchStops(name: string) {
                 like(stops.stopName, `${name}%`),
                 or(
                     isNull(stops.locationType),
-                    eq(stops.locationType, sql<LocationType>`${+LocationType.STOP}`),
+                    eq(stops.locationType, LocationType.STOP),
                 )
             )
         )
@@ -36,7 +36,10 @@ export async function searchStops(name: string) {
             and(
                 like(stops.stopName, `%${name}%`),
                 not(like(stops.stopName, `${name}%`)),
-                isNull(stops.locationType)
+                or(
+                    isNull(stops.locationType),
+                    eq(stops.locationType, LocationType.STOP),
+                )
             )
         )
         .orderBy(stops.stopName)
