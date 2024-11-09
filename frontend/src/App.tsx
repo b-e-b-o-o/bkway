@@ -6,10 +6,14 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { createTheme } from '@mui/material/styles';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 import type { Dayjs } from 'dayjs';
 import type { } from '@mui/x-date-pickers/themeAugmentation';
 
 import 'dayjs/locale/hu';
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 import { ViewStateContext } from "./contexts/viewState.context.ts";
 import { RoutePlanContext } from "./contexts/routePlan.context.ts";
@@ -17,7 +21,7 @@ import ControlsContainer from './components/ControlsContainer.js';
 import StopMap from './components/StopMap.tsx';
 
 import './App.css'
-import { Stop } from './types/Stop';
+import type { Stop } from './types/gtfs';
 import { ThemeProvider } from "@emotion/react";
 
 function init() {
@@ -33,10 +37,10 @@ const theme = createTheme({
       light: '#000000'
     },
     secondary: {
-      main: '#000000',
-      contrastText: '#000000',
-      dark: '#000000',
-      light: '#000000'
+      main: '#eee',
+      contrastText: '#eee',
+      dark: '#eee',
+      light: '#eee'
     },
     background: {
       default: '#000000',
@@ -65,7 +69,7 @@ export default function App() {
 
   const [startStop, setStartStop] = useState<Stop>();
   const [endStop, setEndStop] = useState<Stop>();
-  const [startTime, setStartTime] = useState<Dayjs>(dayjs());
+  const [startTime, setStartTime] = useState<Dayjs>(dayjs().tz('Europe/Budapest'));
   const routePlan = {
     startStop,
     setStartStop,

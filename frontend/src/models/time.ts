@@ -1,5 +1,7 @@
-import { Dayjs } from "dayjs";
+import dayjs from "dayjs";
+import type { Dayjs } from "dayjs";
 
+/** Anything that can be converted to a time using `Time.of` */
 type TimeLike = Parameters<typeof Time.of>[0];
 
 export class Time {
@@ -25,10 +27,10 @@ export class Time {
     public static of(time: string | number | Time | Dayjs | Date): Time {
         if (time instanceof Time)
             return time;
-        if (time instanceof Dayjs)
-            return new Time(time.hour(), time.minute(), time.second());
         if (time instanceof Date)
             return new Time(time.getHours(), time.getMinutes(), time.getSeconds());
+        if (time instanceof dayjs)
+            return new Time(time.hour(), time.minute(), time.second());
         if (typeof time === 'number')
             return new Time(0, 0, time);
         if (typeof time === 'string')
@@ -49,20 +51,16 @@ export class Time {
         return Time.value(this.hours, this.minutes, this.seconds);
     }
 
-    public toString({ seconds }: { seconds: boolean } = { seconds: true }): string {
+    public toString({ seconds = true } = {}): string {
         return `${this.hours}:${this.minutes}` + (seconds ? `:${this.seconds}` : '');
     }
 
     public before(other: TimeLike): boolean {
         other = Time.of(other);
-        if (this.hours < other.hours)
-            return true;
-        if (this.hours > other.hours)
-            return false;
-        if (this.minutes < other.minutes)
-            return true;
-        if (this.minutes > other.minutes)
-            return false;
+        if (this.hours < other.hours) return true;
+        if (this.hours > other.hours) return false;
+        if (this.minutes < other.minutes) return true;
+        if (this.minutes > other.minutes) return false;
         return this.seconds < other.seconds;
     }
 
@@ -73,7 +71,11 @@ export class Time {
 
     public after(other: TimeLike): boolean {
         other = Time.of(other);
-        return !(this.before(other) || this.equals(other));
+        if (this.hours > other.hours) return true;
+        if (this.hours < other.hours) return false;
+        if (this.minutes > other.minutes) return true;
+        if (this.minutes < other.minutes) return false;
+        return this.seconds > other.seconds;
     }
 
     public plus(time: TimeLike): Time {

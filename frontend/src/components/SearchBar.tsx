@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { FlyToInterpolator } from 'deck.gl';
-import { Stop } from '../types/Stop';
+import { Stop } from '../types/gtfs';
 
 import { useViewStateContext } from '../contexts/viewState.context';
 import './SearchBar.css';
@@ -25,15 +25,15 @@ export default function SearchBar({
     function flyToStop(result: Stop) {
         setStop(result);
         setInitialViewState({
-            longitude: result.stopLon - 0.001,
-            latitude: result.stopLat,
+            longitude: result.stopLon! - 0.001,
+            latitude: result.stopLat!,
             zoom: 17,
             transitionInterpolator: new FlyToInterpolator({ speed: 2 }),
             transitionDuration: 'auto'
         });
         if (!input.current)
             return;
-        input.current.value = result.stopName;
+        input.current.value = result.stopName!;
         updateResults();
     }
 

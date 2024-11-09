@@ -24,8 +24,16 @@ export class Coordinate {
     }
 
     distanceMeters(other: Coordinate): number {
-        return distFrom(this.latLon)
-            .to(other.latLon)
-            .in('meters');
+        try {
+            return distFrom(this.latLon)
+                .to(other.latLon)
+                .in('meters');
+        }
+        catch (e) {
+            // idk?
+            console.log(other);
+            console.log(this);
+            return 0;
+        }
     }
 }

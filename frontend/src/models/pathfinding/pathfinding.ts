@@ -8,6 +8,7 @@ export abstract class Pathfinding {
     end: Vertex | null = null;
     
     constructor(start: Vertex, endId: string) { 
+        console.log('pathfinding from %s to %s', start.id, endId);
         this.start = start;
         this.endId = endId;
     }
@@ -40,5 +41,5 @@ export abstract class Pathfinding {
     }
 
     // Returns updated edges end vertices
-    public abstract next(): (DirectedWeightedEdge | Vertex)[];
+    public abstract next(): Promise<(Vertex | DirectedWeightedEdge)[]>;
 }

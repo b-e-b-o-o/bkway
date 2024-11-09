@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 import type { Dayjs } from 'dayjs';
-import type { Stop } from '../types/Stop';
+import type { Stop } from '../types/gtfs';
 
 
 export const RoutePlanContext = createContext<undefined | {

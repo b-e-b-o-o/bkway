@@ -59,7 +59,8 @@ export async function getWalkingNeighbors(stopId: string) {
             and(
                 between(stops.stopLat, bboxLower.latitude, bboxUpper.latitude),
                 between(stops.stopLon, bboxLower.longitude, bboxUpper.longitude),
-                isNull(stops.locationType)
+                isNull(stops.locationType),
+                not(eq(stops.stopId, source.stop_id))
             )
         )
         .execute();
