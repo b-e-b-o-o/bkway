@@ -8,6 +8,8 @@ import { stopTimes } from '../models/db/schema/stop-times';
 import { trips } from '../models/db/schema/trips';
 
 import type { SubqueryWithSelection } from 'drizzle-orm/sqlite-core';
+import { shapes } from '../models/db/schema/shapes';
+import { routes } from '../models/db/schema/routes';
 
 export async function searchStops(name: string) {
     const limit = 10;
@@ -53,7 +55,7 @@ export async function getWalkingNeighbors(stopId: string) {
         { lat: source.stop_lat!, lon: source.stop_lon! },
         150 // TODO: don't hardcode this
     );
-    return await database.select()
+    return database.select()
         .from(stops)
         .where(
             and(
@@ -62,8 +64,7 @@ export async function getWalkingNeighbors(stopId: string) {
                 isNull(stops.locationType),
                 not(eq(stops.stopId, source.stop_id))
             )
-        )
-        .execute();
+        );
 }
 
 export async function getNeighbors(stopId: string, time: string) {
@@ -98,13 +99,23 @@ export async function getNeighbors(stopId: string, time: string) {
         .groupBy(stopTimes.stopId)
         .having(eq(stopTimes.departureTimestamp, min(stopTimes.departureTimestamp)))
         .as('nextStops');
-    const ret = database
-        .select({ stop: stops, trip: trips, departureTime: nextStops.rides, arrivalTime: nextStops.stop_times })
+    const data = await database
+        .select({ stop: stops, trip: trips, departureTime: nextStops.rides, arrivalTime: nextStops.stop_times, route: routes })
         .from(nextStops)
         .innerJoin(stops, eq(stops.stopId, nextStops.stop_times.stopId))
-        .innerJoin(trips, eq(trips.tripId, nextStops.stop_times.tripId));
+        .innerJoin(trips, eq(trips.tripId, nextStops.stop_times.tripId))
+        .innerJoin(routes, eq(routes.routeId, trips.routeId));
 
-    return await ret.execute();
+    return Promise.all(data.map(async (row) => ({
+        ...row,
+        shape: await database.select({
+            shapePtLat: shapes.shapePtLat,
+            shapePtLon: shapes.shapePtLon,
+        }).from(shapes).where(and(
+            eq(shapes.shapeId, row.trip.shapeId!),
+            between(shapes.shapeDistTravaled, row.departureTime.shapeDistTraveled!, row.arrivalTime.shapeDistTraveled!)
+        ))
+    })));
 };
 
 // Drizzle can't deal with duplicate column names on self-joins. stupid.
@@ -115,5 +126,6 @@ function aliasedColumnsOf<T extends SubqueryWithSelection<any, string>>(table: T
         const newName = prefix + column + postfix;
         aliases[column] = sql`${table[column]}`.as(newName);
     }
+    // Types aren't perfect but the differences shouldn't have consequences
     return database.select(aliases).from(table).as(table._.alias) as T;
 }

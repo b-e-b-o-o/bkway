@@ -1,8 +1,8 @@
-import { Stop, StopTime, Trip } from "src/types/gtfs";
+import type { Route, Shape, Stop, StopTime, Trip } from "../types/gtfs";
 
-import type { Time } from "src/models/time";
+import type { Time } from "../models/time";
 
-const baseUrl = 'http://localhost:3333';
+const baseUrl = 'http://127.0.0.1:3333';
 
 export function getStoptimes(stopId: string, from: string, to: string) {
     const params = new URLSearchParams();
@@ -15,7 +15,14 @@ export function getStoptimes(stopId: string, from: string, to: string) {
 
 export async function getNeighbors(stopId: string, time: Time) {
     const resp = await fetch(`${baseUrl}/stops/${stopId}/neighbors?time=${time}`);
-    return resp.json() as Promise<{ stop: Stop, trip: Trip, departureTime: StopTime, arrivalTime: StopTime }[]>;
+    return resp.json() as Promise<{
+        stop: Stop,
+        trip: Trip,
+        departureTime: StopTime,
+        arrivalTime: StopTime,
+        route: Route,
+        shape: Pick<Shape, 'shapePtLat' | 'shapePtLon'>[]
+    }[]>;
 }
 
 export async function getNearbyStops(stopId: string) {

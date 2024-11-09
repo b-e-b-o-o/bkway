@@ -23,6 +23,7 @@ import StopMap from './components/StopMap.tsx';
 import './App.css'
 import type { Stop } from './types/gtfs';
 import { ThemeProvider } from "@emotion/react";
+import { Path } from "./types/mapdata";
 
 function init() {
   library.add(faMagnifyingGlass, faWheelchair, faLocationDot);
@@ -67,11 +68,7 @@ const theme = createTheme({
 export default function App() {
   init();
 
-  const [paths, setPaths] = useState<{
-    path: [number, number][];
-    name: string;
-    color: [number, number, number];
-  }[]>([]);
+  const [paths, setPaths] = useState<Path[]>([]);
   const [startStop, setStartStop] = useState<Stop>();
   const [endStop, setEndStop] = useState<Stop>();
   const [startTime, setStartTime] = useState<Dayjs>(dayjs().tz('Europe/Budapest'));

@@ -4,6 +4,7 @@ import { GeoJsonLayer, PathLayer } from '@deck.gl/layers';
 import DeckGL from '@deck.gl/react';
 import { useViewStateContext } from '../contexts/viewState.context';
 import { useRoutePlanContext } from '../contexts/routePlan.context';
+import type { Path } from '../types/mapdata';
 
 const BACKEND: string = import.meta.env.BACKEND ?? 'http://127.0.0.1:3333';
 
@@ -54,12 +55,12 @@ export default function StopMap() {
   //   // ...
   // ];
 
-  const routeLayer = new PathLayer<{ path: [number, number][], name: string, color: [number, number, number] }>({
+  const routeLayer = new PathLayer<Path>({
     id: 'route-layer',
     data: paths,
-    getPath: ({ path }) => path,
+    getPath: ({ points }) => points.map(p => [p.lon, p.lat] as [number, number]),
     getColor: ({ color }) => color,
-    getWidth: 4,
+    getWidth: 6,
     pickable: true,
     updateTriggers: {
       getPath: paths,
@@ -71,7 +72,7 @@ export default function StopMap() {
 
   return <DeckGL
     initialViewState={viewState}
-    getTooltip={({ object }) => object && object.name}
+    getTooltip={({ object }) => object && (object.name || object.properties.stop_name)}
     layers={[stopsLayer, /*shapesLayer,*/ routeLayer]}
     controller={true}
   >

@@ -1,4 +1,4 @@
-import { Coordinate } from "../coordinate";
+import type { Path } from "../../types/mapdata";
 import { Vertex } from "../vertex";
 import { Pathfinding } from "./pathfinding";
 
@@ -11,12 +11,17 @@ export class BFSPathfinding extends Pathfinding {
         this.queue.push(start);
     }
 
-    public getUnfinishedPaths(): Coordinate[][] {
-        const paths: Coordinate[][] = [];
+    public getUnfinishedPaths(): Path[] {
+        const paths: Path[] = [];
         for (const v of this.queue) {
-            paths.push(v.getPathToRoot().map(v => v.location));
+            paths.push(...v.getPathToRoot());
         }
+        console.log(paths);
         return paths;
+    }
+
+    public prune() {
+        this.queue = this.queue.filter(v => v.id === this.endId);
     }
 
     // Returns updated edges end vertices

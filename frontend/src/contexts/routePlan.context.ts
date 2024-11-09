@@ -1,19 +1,12 @@
 import { createContext, useContext } from 'react';
 import type { Dayjs } from 'dayjs';
 import type { Stop } from '../types/gtfs';
+import type { Path } from '../types/mapdata';
 
 
 export const RoutePlanContext = createContext<undefined | {
-    paths: {
-        path: [number, number][];
-        name: string;
-        color: [number, number, number];
-    }[];
-    setPaths: React.Dispatch<React.SetStateAction<{
-        path: [number, number][];
-        name: string;
-        color: [number, number, number];
-    }[]>>;
+    paths: Path[];
+    setPaths: React.Dispatch<React.SetStateAction<Path[]>>;
     startStop: Stop | undefined,
     setStartStop: React.Dispatch<React.SetStateAction<Stop | undefined>>,
     endStop: Stop | undefined,

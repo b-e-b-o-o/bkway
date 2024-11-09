@@ -1,10 +1,12 @@
 import { getNearbyStops, getNeighbors } from "../services/api.service";
+import { hexToRgb } from "../utils/util";
 import { Coordinate } from "./coordinate";
 import { DirectedWeightedEdge } from "./directedWeightedEdge";
 import { Time } from "./time";
 
 import type { Graph } from "./graph";
-import { Stop } from "../types/gtfs";
+import type { Stop } from "../types/gtfs";
+import type { Path } from "../types/mapdata";
 
 /** Gets added to every transfer time when walking */
 const BASE_TRANSFER_TIME = Time.of(120); // 2 minutes
@@ -44,14 +46,27 @@ export abstract class Vertex {
         return this.#outEdges;
     }
 
-    public getPathToRoot(): Vertex[] {
-        const path: Vertex[] = [this];
-        let current: Vertex = this;
-        while (current.parentEdge !== null) {
-            current = current.parentEdge.source;
-            path.push(current);
+    public getPathToRoot(): Path[] {
+        const paths: Path[] = [];
+        let currentEdge = this.parentEdge;
+        while (currentEdge) {
+            const path = {
+                name: currentEdge.isWalking ? 'walk.' : (currentEdge.route?.routeShortName ?? '') + ' -> ' + (currentEdge.trip?.tripHeadsign ?? ''),
+                points: [] as Coordinate[],
+                color: currentEdge.isWalking ? [255, 255, 255] as [number, number, number] : hexToRgb(currentEdge.route?.routeColor ?? '#FF0000')!,
+            };
+            const routeId = currentEdge.route?.routeId;
+            while (currentEdge && currentEdge?.route?.routeId === routeId) {
+                // I think inbetween stops will have repeated coordinates but that should be fine
+                const shape = currentEdge.shape;
+                for (let i = shape.length - 1; i >= 0; i--) {
+                    path.points.push(shape[i]);
+                }
+                currentEdge = currentEdge?.source.parentEdge ?? null;
+            }
+            paths.push(path);
         }
-        return path;
+        return paths;
     }
 
     private async addWalkingEdges(): Promise<void> {
@@ -61,7 +76,7 @@ export abstract class Vertex {
             const vertex = this.graph.getOrAddVertex(stop.stopId, stop);
             const travelDistance = BASE_TRANSFER_TIME.plus(this.location.distanceMeters(stopLocation));
             const stopDistance = travelDistance.plus(this.distance);
-            const edge = new DirectedWeightedEdge(this, vertex, travelDistance);
+            const edge = new DirectedWeightedEdge(this, vertex, travelDistance, [this.location, stopLocation]);
             vertex.inEdges.push(edge);
             if (stopDistance.before(vertex.distance)) {
                 vertex.distance = stopDistance;
@@ -74,10 +89,16 @@ export abstract class Vertex {
 
     private async addNeighborEdges(): Promise<void> {
         const neighbors = await getNeighbors(this.id, this.time);
-        for (const { stop, trip, departureTime, arrivalTime } of neighbors) {
+        for (const { stop, trip, departureTime, arrivalTime, shape, route } of neighbors) {
             const distance = Time.of(arrivalTime.arrivalTime!).minus(departureTime.departureTime!);
             const vertex = this.graph.getOrAddVertex(stop.stopId, stop);
-            this.#outEdges!.push(new DirectedWeightedEdge(this, vertex, distance, { trip, departureTime, arrivalTime }));
+            this.#outEdges!.push(new DirectedWeightedEdge(
+                this,
+                vertex,
+                distance,
+                shape.map(s => new Coordinate(s.shapePtLat, s.shapePtLon)),
+                { trip, departureTime, arrivalTime, route }
+            ));
         };
     }
 
