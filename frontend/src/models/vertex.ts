@@ -1,63 +1,48 @@
 import { getNearbyStops, getNeighbors } from "../services/api.service";
-import type { Stop } from "../types/gtfs";
 import { Coordinate } from "./coordinate";
 import { DirectedWeightedEdge } from "./directedWeightedEdge";
 import { Time } from "./time";
 
-export class Vertex {
+import type { Graph } from "./graph";
+import { Stop } from "../types/gtfs";
+
+/** Gets added to every transfer time when walking */
+const BASE_TRANSFER_TIME = Time.of(120); // 2 minutes
+
+export abstract class Vertex {
+    protected abstract graph: Graph;
+
+    readonly stop: Stop;
     readonly id: string;
     readonly location: Coordinate;
-    readonly time: Time;
     readonly heuristic: number = 0;
     readonly inEdges: DirectedWeightedEdge[] = [];
-    #outEdges: DirectedWeightedEdge[] | null = null;
+    #outEdges: DirectedWeightedEdge[] | undefined;
     visited: boolean = false;
     parentEdge: DirectedWeightedEdge | null = null;
     distance: Time = Time.INFINITY;
 
-    constructor(id: string, location: Coordinate, time: Time) {
+    constructor(id: string, stop: Stop) {
         this.id = id;
-        this.time = time;
-        this.location = location;
+        this.stop = stop;
+        this.location = new Coordinate(stop.stopLat!, stop.stopLon!);
     }
 
-    public static fromStop(stop: Stop, time: Time): Vertex {
-        return new Vertex(stop.stopId, new Coordinate(stop.stopLat!, stop.stopLon!), time);
+    private get time(): Time {
+        return this.graph.time.plus(this.distance);
     }
 
     async getOutEdges(): Promise<DirectedWeightedEdge[]> {
-        if (this.#outEdges === null) {
+        console.log('getOutEdges', this.stop.stopName, this.id);
+        if (this.#outEdges === undefined) {
             this.#outEdges = [];
+            await this.addNeighborEdges();
             if (!this.isWalking()) {
-                const nearbyStops = await getNearbyStops(this.id);
-                for (const stop of nearbyStops) {
-                    // TODO: don't hardcode. 1m/s for walking + 2m by default
-                    const distance = Time.of(this.location.distanceMeters(new Coordinate(stop.stopLat!, stop.stopLon!))).plus(2);
-                    const vertex = Vertex.fromStop(stop, this.time.plus(distance));
-                    this.#outEdges!.push(new DirectedWeightedEdge(this, vertex, distance, true, []));
-                }
+                await this.addWalkingEdges();
             }
-            const neighbors = await getNeighbors(this.id, this.time.toString());
-            for (const stop of neighbors) {
-                const distance = Time.of(stop.arrivalTime.arrivalTime!).minus(stop.departureTime.departureTime!);
-                const vertex = Vertex.fromStop(stop.stop, this.time.plus(distance));
-                this.#outEdges!.push(new DirectedWeightedEdge(this, vertex, distance, false, []));
-            };
         }
         return this.#outEdges;
     }
-
-    // async getNeighbors(): Promise<Vertex[]> {
-    //     return await this.getOutEdges.map(e => e.target);
-    // }
-
-    // get children(): Vertex[] {
-    //     return this.neighbors.filter(v => v.parentEdge?.source === this);
-    // }
-
-    // get childrenEdges(): DirectedWeightedEdge[] {
-    //     return this.outEdges.filter(e => e.target.parentEdge === e);
-    // }
 
     public getPathToRoot(): Vertex[] {
         const path: Vertex[] = [this];
@@ -67,6 +52,33 @@ export class Vertex {
             path.push(current);
         }
         return path;
+    }
+
+    private async addWalkingEdges(): Promise<void> {
+        const nearbyStops = await getNearbyStops(this.id);
+        for (const stop of nearbyStops) {
+            const stopLocation = new Coordinate(stop.stopLat!, stop.stopLon!);
+            const vertex = this.graph.getOrAddVertex(stop.stopId, stop);
+            const travelDistance = BASE_TRANSFER_TIME.plus(this.location.distanceMeters(stopLocation));
+            const stopDistance = travelDistance.plus(this.distance);
+            const edge = new DirectedWeightedEdge(this, vertex, travelDistance);
+            vertex.inEdges.push(edge);
+            if (stopDistance.before(vertex.distance)) {
+                vertex.distance = stopDistance;
+                vertex.parentEdge = edge;
+                vertex.visited = false;
+            }
+            this.#outEdges!.push(edge);
+        }
+    }
+
+    private async addNeighborEdges(): Promise<void> {
+        const neighbors = await getNeighbors(this.id, this.time);
+        for (const { stop, trip, departureTime, arrivalTime } of neighbors) {
+            const distance = Time.of(arrivalTime.arrivalTime!).minus(departureTime.departureTime!);
+            const vertex = this.graph.getOrAddVertex(stop.stopId, stop);
+            this.#outEdges!.push(new DirectedWeightedEdge(this, vertex, distance, { trip, departureTime, arrivalTime }));
+        };
     }
 
     private isWalking() {

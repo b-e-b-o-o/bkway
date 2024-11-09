@@ -43,30 +43,36 @@ const shapesLayer = new GeoJsonLayer({
 export default function StopMap() {
   const { initialViewState: viewState } = useViewStateContext();
 
-  const { startStop, endStop } = useRoutePlanContext();
+  const { paths } = useRoutePlanContext();
 
-  const PATH_DATA = [
-    {
-      path: [[startStop?.stopLon, startStop?.stopLat], [endStop?.stopLon, endStop?.stopLat] /*, ... */ ],
-      name: 'Richmond - Millbrae',
-      color: [255, 0, 0]
-    },
-    // ...
-  ];
+  // const PATH_DATA = [
+  //   {
+  //     path: [[startStop?.stopLon, startStop?.stopLat], [endStop?.stopLon, endStop?.stopLat] /*, ... */ ],
+  //     name: 'Richmond - Millbrae',
+  //     color: [255, 0, 0]
+  //   },
+  //   // ...
+  // ];
 
   const routeLayer = new PathLayer<{ path: [number, number][], name: string, color: [number, number, number] }>({
     id: 'route-layer',
-    data: PATH_DATA,
+    data: paths,
     getPath: ({ path }) => path,
     getColor: ({ color }) => color,
     getWidth: 4,
     pickable: true,
+    updateTriggers: {
+      getPath: paths,
+      getColor: paths,
+    }
   });
+
+  // const a = paths && console.log(routeLayer);
 
   return <DeckGL
     initialViewState={viewState}
     getTooltip={({ object }) => object && object.name}
-    layers={[stopsLayer, shapesLayer, routeLayer]}
+    layers={[stopsLayer, /*shapesLayer,*/ routeLayer]}
     controller={true}
   >
     <Map mapStyle={BASEMAP.DARK_MATTER} reuseMaps />

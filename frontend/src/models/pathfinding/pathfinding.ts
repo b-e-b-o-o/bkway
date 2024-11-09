@@ -1,5 +1,4 @@
-import { DirectedWeightedEdge } from "../directedWeightedEdge";
-import { Vertex } from "../vertex";
+import type { Vertex } from "../vertex";
 
 export abstract class Pathfinding {
     protected path: Vertex[] | null | undefined;
@@ -40,6 +39,6 @@ export abstract class Pathfinding {
             this.path = path;
     }
 
-    // Returns updated edges end vertices
-    public abstract next(): Promise<(Vertex | DirectedWeightedEdge)[]>;
+    // Returns updated vertices
+    public abstract next(): Promise<Vertex[]>;
 }

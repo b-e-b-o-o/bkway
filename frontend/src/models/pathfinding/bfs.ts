@@ -1,5 +1,4 @@
 import { Coordinate } from "../coordinate";
-import { DirectedWeightedEdge } from "../directedWeightedEdge";
 import { Vertex } from "../vertex";
 import { Pathfinding } from "./pathfinding";
 
@@ -21,9 +20,11 @@ export class BFSPathfinding extends Pathfinding {
     }
 
     // Returns updated edges end vertices
-    public async next(): Promise<(Vertex)[]> {
-        if (this.isFinished)
+    public async next(): Promise<Vertex[]> {
+        if (this.isFinished) {
+            console.log(this.getPath());
             return [];
+        }
 
         const current = this.queue.shift()!;
         const outEdges = await current.getOutEdges();  //.filter(e => !e.visited);

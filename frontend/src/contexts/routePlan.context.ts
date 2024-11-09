@@ -4,6 +4,16 @@ import type { Stop } from '../types/gtfs';
 
 
 export const RoutePlanContext = createContext<undefined | {
+    paths: {
+        path: [number, number][];
+        name: string;
+        color: [number, number, number];
+    }[];
+    setPaths: React.Dispatch<React.SetStateAction<{
+        path: [number, number][];
+        name: string;
+        color: [number, number, number];
+    }[]>>;
     startStop: Stop | undefined,
     setStartStop: React.Dispatch<React.SetStateAction<Stop | undefined>>,
     endStop: Stop | undefined,

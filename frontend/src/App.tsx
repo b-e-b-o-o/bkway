@@ -67,10 +67,17 @@ const theme = createTheme({
 export default function App() {
   init();
 
+  const [paths, setPaths] = useState<{
+    path: [number, number][];
+    name: string;
+    color: [number, number, number];
+  }[]>([]);
   const [startStop, setStartStop] = useState<Stop>();
   const [endStop, setEndStop] = useState<Stop>();
   const [startTime, setStartTime] = useState<Dayjs>(dayjs().tz('Europe/Budapest'));
   const routePlan = {
+    paths,
+    setPaths,
     startStop,
     setStartStop,
     endStop,

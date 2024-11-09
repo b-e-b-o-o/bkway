@@ -1,5 +1,7 @@
 import { Stop, StopTime, Trip } from "src/types/gtfs";
 
+import type { Time } from "src/models/time";
+
 const baseUrl = 'http://localhost:3333';
 
 export function getStoptimes(stopId: string, from: string, to: string) {
@@ -11,7 +13,7 @@ export function getStoptimes(stopId: string, from: string, to: string) {
         .then(response => response.json());
 }
 
-export async function getNeighbors(stopId: string, time: string) {
+export async function getNeighbors(stopId: string, time: Time) {
     const resp = await fetch(`${baseUrl}/stops/${stopId}/neighbors?time=${time}`);
     return resp.json() as Promise<{ stop: Stop, trip: Trip, departureTime: StopTime, arrivalTime: StopTime }[]>;
 }
