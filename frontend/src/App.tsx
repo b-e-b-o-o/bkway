@@ -31,21 +31,21 @@ function init() {
 
 const theme = createTheme({
   palette: {
+    mode: 'dark',
     primary: {
-      main: '#000000',
-      contrastText: '#000000',
-      dark: '#000000',
+      main: '#a2bdd6', // Most things
+      contrastText: '#000000', // Contained button text
+      dark: '#FFFFFF', // Contained button hover, time picker clicked time background
       light: '#000000'
     },
-    secondary: {
-      main: '#eee',
-      contrastText: '#eee',
-      dark: '#eee',
-      light: '#eee'
-    },
+    // secondary: {
+    //   main: '#eee',
+    //   contrastText: '#eee',
+    //   dark: '#eee',
+    //   light: '#eee'
+    // },
     background: {
-      default: '#000000',
-      paper: '#000000'
+      paper: '#10003e' // Time picker background
     },
     text: {
       primary: '#FFFFFF',
@@ -60,7 +60,7 @@ const theme = createTheme({
       disabledBackground: '#FFFFFF',
       focus: '#FFFFFF',
       focusOpacity: 0.12
-    }
+    },
   }
 });
 

@@ -6,13 +6,12 @@ body {
   --primary-color: rgba(16, 0, 62, 0.8);
   --secondary-color: rgb(215, 88, 24);
   --accent-color: rgb(162, 189, 214);
+  --text-color: white;
 
-  max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
   text-align: center;
 
-  color: var(--secondary-color);
+  color: var(--text-color);
 }
 
 /* fix attribution appearing below map layers */

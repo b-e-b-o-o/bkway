@@ -1,52 +1,36 @@
-import SearchBar from './SearchBar'
+import { useState } from 'react';
 import './ControlsContainer.css'
-import { useRoutePlanContext } from '../contexts/routePlan.context';
-import { TimePicker } from '@mui/x-date-pickers';
-import { Button } from '@mui/material';
-import { BFSPathfinding } from '../models/pathfinding/bfs';
-import { Time } from '../models/time';
-import { useMemo, useRef } from 'react';
-import { Graph } from '../models/graph';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import OptionsTab from './OptionsTab';
+import TabPanel from './TabPanel';
 
+import type * as React from 'react';
+
+
+function a11yProps(index: number) {
+    return {
+        id: `simple-tab-${index}`,
+        'aria-controls': `simple-tabpanel-${index}`,
+    };
+}
 
 export default function ControlsContainer() {
-    const { setPaths, startStop, setStartStop, endStop, setEndStop, startTime, setStartTime } = useRoutePlanContext();
+    const [value, setValue] = useState(0);
 
-    const pathfinding = useMemo(() => {
-        if (!startStop || !endStop)
-            return;
-        const graph = new Graph(Time.of(startTime), startStop);
-        const startVertex = graph.getOrAddVertex(startStop.stopId, startStop);
-        return startStop && endStop && new BFSPathfinding(startVertex, endStop.stopId)
-    }, [startStop, endStop, startTime]);
-
-    const go = useRef(false);
-
-    async function step() {
-        do {
-            if (pathfinding === undefined || pathfinding.isFinished) {
-                console.log('done');
-                go.current = false;
-                setPaths(pathfinding?.end?.getPathToRoot() ?? []);
-                break;
-            }
-            await pathfinding.next();
-            setPaths(pathfinding.getUnfinishedPaths());
-            // await new Promise(resolve => setTimeout(resolve, 100));
-        } while (go.current);
-    }
+    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+        setValue(newValue);
+    };
 
     return <div className='controls-container'>
         <div className='menu-container'>
-            <SearchBar placeholder='Indulás...' stop={startStop} setStop={setStartStop} />
-            <SearchBar placeholder='Érkezés...' stop={endStop} setStop={setEndStop} />
-            <TimePicker ampm={false} defaultValue={startTime} onChange={(e) => e && setStartTime?.(e)} />
-            <Button color='secondary' onClick={step}>
-                Következő lépés
-            </Button>
-            <Button color='secondary' onClick={async () => { go.current = !go.current; await step(); }}>
-                lépkedés {go.current ? 'stop' : 'go'}
-            </Button>
+            <Tabs value={value} onChange={handleChange} aria-label="lab API tabs example" variant="fullWidth">
+                <Tab label="Beállítások" {...a11yProps(0)} />
+                <Tab label="Útvonal" {...a11yProps(1)} />
+            </Tabs>
+            <TabPanel value={value} index={0}>
+                <OptionsTab />
+            </TabPanel>
         </div>
     </div>
 }

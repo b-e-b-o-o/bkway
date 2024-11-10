@@ -15,11 +15,9 @@
 .menu-container {
     display: flex;
     flex-direction: column;
-    row-gap: 1rem;
-    min-width: 420px;
-    padding: 1rem;
+    width: 420px;
     margin: 1rem;
-    border-radius: 1rem;
+    border-radius: 0.5rem;
     background-color: var(--primary-color);
     border-color: var(--accent-color);
     border-width: 2px;
