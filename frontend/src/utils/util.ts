@@ -6,9 +6,8 @@ export function rgbToHex(r: number, g: number, b: number) {
 }
 
 export function hexToRgb(hex: string) {
-    return (hex
-        .toLowerCase()
-        .match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/))
+    return hex
+        .match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i)
         ?.slice(1)
         .map(x => parseInt(x, 16)
     ) as [number, number, number] | undefined;

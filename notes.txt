@@ -11,6 +11,7 @@ next up
     normális networking
     1-2 .env cucc (db ramba?)
     https://www.npmjs.com/package/react-hotkeys-hook
+    gyorsítás (ws / HTTP/2?)
     --- főleg:
     dokumentáció
     struktúra
