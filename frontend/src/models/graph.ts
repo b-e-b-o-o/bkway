@@ -15,7 +15,9 @@ export class Graph {
     constructor(time: Time, startStop: Stop) {
         this.vertices = new Map<string, Vertex>();
         this.time = time;
-        this.getOrAddVertex(startStop.stopId, startStop).distance = Time.of(0);
+        const root = this.getOrAddVertex(startStop.stopId, startStop);
+        root.distance = Time.of(0);
+        root.isRoot = true;
     }
 
     getVertex(id: string) {

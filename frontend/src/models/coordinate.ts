@@ -30,9 +30,7 @@ export class Coordinate {
                 .in('meters');
         }
         catch (e) {
-            // idk?
-            console.log(other);
-            console.log(this);
+            // if distance is 0 .in() throws an error for some reason
             return 0;
         }
     }

@@ -21,7 +21,7 @@ export abstract class Vertex {
     readonly inEdges: DirectedWeightedEdge[] = [];
     #outEdges: DirectedWeightedEdge[] | undefined;
     visited: boolean = false;
-    #parentEdge: DirectedWeightedEdge | null = null;
+    #parentEdge: DirectedWeightedEdge | undefined | null;
     #pathToParent: Path | undefined;
     distance: Time = Time.INFINITY;
 
@@ -31,7 +31,7 @@ export abstract class Vertex {
         this.location = new Coordinate(stop.stopLat!, stop.stopLon!);
     }
 
-    private get time(): Time {
+    protected get time(): Time {
         return this.graph.time.plus(this.distance);
     }
 
@@ -39,11 +39,25 @@ export abstract class Vertex {
         return this.parentEdge?.source;
     }
 
-    public get parentEdge(): DirectedWeightedEdge | null {
-        return this.#parentEdge;
+    public get parentEdge(): DirectedWeightedEdge | undefined {
+        return this.#parentEdge ?? undefined;
+    }
+
+    // Since the root vertex has no parent edge, the two properties should depend on each other
+    public get isRoot(): boolean {
+        return this.#parentEdge === null;
+    }
+
+    public set isRoot(value: boolean) {
+        if (this.parentEdge !== undefined && !value)
+            throw new Error('Cannot set isRoot to true when parent edge is set');
+        if (value)
+            this.#parentEdge = null;
     }
 
     public set parentEdge(edge: DirectedWeightedEdge) {
+        if (this.isRoot)
+            return;
         this.#parentEdge = edge;
         this.#pathToParent = {
             name: edge.isWalking ? 'walk.' : (edge.route?.routeShortName ?? '') + ' -> ' + (edge.trip?.tripHeadsign ?? ''),
@@ -52,7 +66,7 @@ export abstract class Vertex {
         };
     }
 
-    public get getPathToParent(): Path | undefined {
+    public get pathToParent(): Path | undefined {
         return this.#pathToParent;
     }
 
@@ -71,7 +85,7 @@ export abstract class Vertex {
         const paths: Path[] = [];
         let currentVertex: Vertex | undefined = this;
         while (currentVertex) {
-            const path = currentVertex.getPathToParent;
+            const path = currentVertex.pathToParent;
             if (path)
                 paths.push(path);
             currentVertex = currentVertex.parentVertex;
@@ -82,17 +96,10 @@ export abstract class Vertex {
     private async addWalkingEdges(): Promise<void> {
         const nearbyStops = await getNearbyStops(this.id);
         for (const stop of nearbyStops) {
-            const stopLocation = new Coordinate(stop.stopLat!, stop.stopLon!);
             const vertex = this.graph.getOrAddVertex(stop.stopId, stop);
-            const travelDistance = BASE_TRANSFER_TIME.plus(this.location.distanceMeters(stopLocation));
-            const stopDistance = travelDistance.plus(this.distance);
-            const edge = new DirectedWeightedEdge(this, vertex, travelDistance, [this.location, stopLocation]);
+            const travelDistance = BASE_TRANSFER_TIME.plus(this.location.distanceMeters(vertex.location));
+            const edge = new DirectedWeightedEdge(this, vertex, travelDistance, [this.location, vertex.location]);
             vertex.inEdges.push(edge);
-            if (stopDistance.before(vertex.distance)) {
-                vertex.distance = stopDistance;
-                vertex.parentEdge = edge;
-                vertex.visited = false;
-            }
             this.#outEdges!.push(edge);
         }
     }
@@ -100,15 +107,17 @@ export abstract class Vertex {
     private async addNeighborEdges(): Promise<void> {
         const neighbors = await getNeighbors(this.id, this.time);
         for (const { stop, trip, departureTime, arrivalTime, shape, route } of neighbors) {
-            const distance = Time.of(arrivalTime.arrivalTime!).minus(departureTime.departureTime!);
             const vertex = this.graph.getOrAddVertex(stop.stopId, stop);
-            this.#outEdges!.push(new DirectedWeightedEdge(
+            const distance = Time.of(arrivalTime.arrivalTime!).minus(this.time);
+            const edge = new DirectedWeightedEdge(
                 this,
                 vertex,
                 distance,
                 shape.map(s => new Coordinate(s.shapePtLat, s.shapePtLon)),
                 { trip, departureTime, arrivalTime, route }
-            ));
+            );
+            vertex.inEdges.push(edge);
+            this.#outEdges!.push(edge);
         };
     }
 

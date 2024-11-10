@@ -20,6 +20,8 @@ export default function OptionsTab() {
         if (!startStop || !endStop)
             return;
         const graph = new Graph(Time.of(startTime), startStop);
+        setIncompletePaths([]);
+        setCompletePath(undefined);
         setPathfinding(new BFSPathfinding(graph, endStop.stopId));
         return () => setPathfinding(undefined);
     }, [startStop, endStop, startTime]);
@@ -31,11 +33,11 @@ export default function OptionsTab() {
             if (pathfinding === undefined || pathfinding.isFinished) {
                 console.log('done');
                 go.current = false;
-                setCompletePath(pathfinding?.end?.getPathToRoot() ?? []);
+                setCompletePath(pathfinding?.getCompletePath() ?? []);
                 break;
             }
             await pathfinding.next();
-            setIncompletePaths((pathfinding as BFSPathfinding).getUnfinishedPaths());
+            setIncompletePaths(pathfinding.getIncompletePaths());
             // await new Promise(resolve => setTimeout(resolve, 100));
         } while (go.current);
     }

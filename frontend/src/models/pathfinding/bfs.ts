@@ -5,14 +5,13 @@ import { Pathfinding } from "./pathfinding";
 
 export class BFSPathfinding extends Pathfinding {
     public queue: Vertex[] = [];
-    private visited: Map<string, Vertex> = new Map();
 
     constructor(graph: Graph, endId: string) {
         super(graph, endId);
         this.queue.push(this.start);
     }
 
-    public getUnfinishedPaths(): Path[] {
+    public getIncompletePaths(): Path[] {
         const vertices = new Set<Vertex>();
         for (const v of this.queue) {
             let current: Vertex | undefined = v;
@@ -23,7 +22,7 @@ export class BFSPathfinding extends Pathfinding {
         }
         const paths: Path[] = [];
         for (const v of vertices) {
-            const path = v.getPathToParent;
+            const path = v.pathToParent;
             if (path)
                 paths.push(path);
         }
@@ -37,7 +36,7 @@ export class BFSPathfinding extends Pathfinding {
     // Returns updated edges end vertices
     public async next(): Promise<Vertex[]> {
         if (this.isFinished) {
-            console.log(this.getPath());
+            console.log(this.getCompletePath());
             return [];
         }
 
@@ -46,21 +45,15 @@ export class BFSPathfinding extends Pathfinding {
         for (const e of outEdges) {
             e.visited = true;
             const v = e.target;
+            if (v.visited)
+                continue;
+            v.visited = true;
+            v.distance = current.distance.plus(e.weight);
+            v.parentEdge = e;
+            this.queue.push(v);
             if (v.id === this.endId) {
                 this.end = v;
                 return [current];
-            }
-            if (this.visited.has(v.id))
-                continue;
-            if (!v.visited) {
-                v.visited = true;
-                this.queue.push(v);
-                this.visited.set(v.id, v);
-            }
-            const newWeight = current.distance.plus(e.weight);
-            if (+v.distance > +newWeight) {
-                v.distance = newWeight;
-                v.parentEdge = e;
             }
         }
         return [current];
