@@ -3,7 +3,7 @@ import { BASEMAP } from '@deck.gl/carto';
 import { GeoJsonLayer, PathLayer } from '@deck.gl/layers';
 import DeckGL from '@deck.gl/react';
 import { useViewStateContext } from '../contexts/viewState.context';
-import { useRoutePlanContext } from '../contexts/routePlan.context';
+import { usePathfindingContext } from '../contexts/pathfinding.context';
 import type { Path } from '../types/mapdata';
 
 const BACKEND: string = import.meta.env.BACKEND ?? 'http://127.0.0.1:3333';
@@ -44,7 +44,7 @@ const shapesLayer = new GeoJsonLayer({
 export default function StopMap() {
   const { initialViewState: viewState } = useViewStateContext();
 
-  const { paths } = useRoutePlanContext();
+  const { incompletePaths, completePath } = usePathfindingContext();
 
   // const PATH_DATA = [
   //   {
@@ -57,15 +57,15 @@ export default function StopMap() {
 
   const routeLayer = new PathLayer<Path>({
     id: 'route-layer',
-    data: paths,
+    data: completePath ?? incompletePaths,
     getPath: ({ points }) => points.map(p => [p.lon, p.lat] as [number, number]),
     getColor: ({ color }) => color,
     getWidth: 6,
     pickable: true,
-    updateTriggers: {
-      getPath: paths,
-      getColor: paths,
-    }
+    // updateTriggers: {
+    //   getPath: paths,
+    //   getColor: paths,
+    // }
   });
 
   // const a = paths && console.log(routeLayer);

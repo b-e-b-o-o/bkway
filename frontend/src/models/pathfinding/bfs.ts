@@ -1,14 +1,15 @@
 import type { Path } from "../../types/mapdata";
+import type { Graph } from "../graph";
 import { Vertex } from "../vertex";
 import { Pathfinding } from "./pathfinding";
 
 export class BFSPathfinding extends Pathfinding {
-    private queue: Vertex[] = [];
+    public queue: Vertex[] = [];
     private visited: Map<string, Vertex> = new Map();
 
-    constructor(start: Vertex, endId: string) {
-        super(start, endId);
-        this.queue.push(start);
+    constructor(graph: Graph, endId: string) {
+        super(graph, endId);
+        this.queue.push(this.start);
     }
 
     public getUnfinishedPaths(): Path[] {
@@ -26,7 +27,6 @@ export class BFSPathfinding extends Pathfinding {
             if (path)
                 paths.push(path);
         }
-        console.log(paths.length);
         return paths;
     }
 

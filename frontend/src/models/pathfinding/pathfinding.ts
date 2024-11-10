@@ -1,3 +1,4 @@
+import type { Graph } from "../graph";
 import type { Vertex } from "../vertex";
 
 export abstract class Pathfinding {
@@ -6,9 +7,11 @@ export abstract class Pathfinding {
     readonly endId: string;
     end: Vertex | null = null;
     
-    constructor(start: Vertex, endId: string) { 
-        console.log('pathfinding from %s to %s', start.id, endId);
-        this.start = start;
+    constructor(graph: Graph, endId: string) { 
+        if (graph.vertices.size !== 1)
+            throw new Error('Graph must have exactly one vertex, the start vertex');
+        this.start = graph.vertices.values().next().value!;
+        console.log('pathfinding from %s to %s', this.start.id, endId);
         this.endId = endId;
     }
 

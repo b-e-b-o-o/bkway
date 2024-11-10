@@ -1,11 +1,11 @@
-import { useState } from 'react';
 import './Controls.css'
+
+import { useState } from 'react';
+
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import OptionsTab from './tabs/options/OptionsTab';
-import TabPanel from './tabs/TabPanel';
-
-import type * as React from 'react';
+import TabPanel from './tabs/common/TabPanel';
 
 function a11yProps(index: number) {
     return {
@@ -15,19 +15,15 @@ function a11yProps(index: number) {
 }
 
 export default function ControlsContainer() {
-    const [value, setValue] = useState(0);
-
-    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-        setValue(newValue);
-    };
+    const [activeTab, setActiveTab] = useState(0);
 
     return <div className='controls-container'>
         <div className='menu-container'>
-            <Tabs value={value} onChange={handleChange} aria-label="lab API tabs example" variant="fullWidth">
+            <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)} aria-label="Tabs" variant="fullWidth">
                 <Tab label="Beállítások" {...a11yProps(0)} />
                 <Tab label="Útvonal" {...a11yProps(1)} />
             </Tabs>
-            <TabPanel value={value} index={0}>
+            <TabPanel activeTab={activeTab} index={0}>
                 <OptionsTab />
             </TabPanel>
         </div>

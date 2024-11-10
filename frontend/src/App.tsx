@@ -1,3 +1,5 @@
+import './App.css'
+
 import { useState } from "react";
 import { MapViewState } from "deck.gl";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -5,25 +7,24 @@ import { faLocationDot, faMagnifyingGlass, faWheelchair } from "@fortawesome/fre
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { createTheme } from '@mui/material/styles';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { ThemeProvider } from "@emotion/react";
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-import type { Dayjs } from 'dayjs';
+
 import type { } from '@mui/x-date-pickers/themeAugmentation';
+
+import Controls from './components/sidebar/Controls.tsx';
+import StopMap from './components/StopMap.tsx';
+import { ViewStateContext } from "./contexts/viewState.context";
+import { PathfindingContext } from "./contexts/pathfinding.context.ts";
+
+import type { Path } from "./types/mapdata";
+import type { Pathfinding } from './models/pathfinding/pathfinding';
 
 import 'dayjs/locale/hu';
 dayjs.extend(utc);
 dayjs.extend(timezone);
-
-import { ViewStateContext } from "./contexts/viewState.context";
-import { RoutePlanContext } from "./contexts/routePlan.context";
-import Controls from './components/sidebar/Controls.tsx';
-import StopMap from './components/StopMap.tsx';
-
-import './App.css'
-import type { Stop } from './types/gtfs';
-import { ThemeProvider } from "@emotion/react";
-import { Path } from "./types/mapdata";
 
 function init() {
   library.add(faMagnifyingGlass, faWheelchair, faLocationDot);
@@ -64,23 +65,20 @@ const theme = createTheme({
   }
 });
 
-
 export default function App() {
   init();
 
-  const [paths, setPaths] = useState<Path[]>([]);
-  const [startStop, setStartStop] = useState<Stop>();
-  const [endStop, setEndStop] = useState<Stop>();
-  const [startTime, setStartTime] = useState<Dayjs>(dayjs().tz('Europe/Budapest'));
-  const routePlan = {
-    paths,
-    setPaths,
-    startStop,
-    setStartStop,
-    endStop,
-    setEndStop,
-    startTime,
-    setStartTime
+  const [pathfinding, setPathfinding] = useState<Pathfinding>();
+  const [incompletePaths, setIncompletePaths] = useState<Path[]>([]);
+  const [completePath, setCompletePath] = useState<Path[]>();
+
+  const pathfindingState = {
+    pathfinding,
+    setPathfinding,
+    incompletePaths,
+    setIncompletePaths,
+    completePath,
+    setCompletePath
   };
 
   const [initialViewState, setInitialViewState] = useState<MapViewState>({
@@ -98,12 +96,12 @@ export default function App() {
   return <>
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <RoutePlanContext.Provider value={routePlan}>
+        <PathfindingContext.Provider value={pathfindingState}>
           <ViewStateContext.Provider value={viewState}>
             <Controls />
             <StopMap />
           </ViewStateContext.Provider>
-        </RoutePlanContext.Provider>
+        </PathfindingContext.Provider>
       </LocalizationProvider>
     </ThemeProvider>
   </>
