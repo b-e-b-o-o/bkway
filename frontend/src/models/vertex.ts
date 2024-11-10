@@ -21,7 +21,8 @@ export abstract class Vertex {
     readonly inEdges: DirectedWeightedEdge[] = [];
     #outEdges: DirectedWeightedEdge[] | undefined;
     visited: boolean = false;
-    parentEdge: DirectedWeightedEdge | null = null;
+    #parentEdge: DirectedWeightedEdge | null = null;
+    #pathToParent: Path | undefined;
     distance: Time = Time.INFINITY;
 
     constructor(id: string, stop: Stop) {
@@ -34,8 +35,28 @@ export abstract class Vertex {
         return this.graph.time.plus(this.distance);
     }
 
+    public get parentVertex(): Vertex | undefined {
+        return this.parentEdge?.source;
+    }
+
+    public get parentEdge(): DirectedWeightedEdge | null {
+        return this.#parentEdge;
+    }
+
+    public set parentEdge(edge: DirectedWeightedEdge) {
+        this.#parentEdge = edge;
+        this.#pathToParent = {
+            name: edge.isWalking ? 'walk.' : (edge.route?.routeShortName ?? '') + ' -> ' + (edge.trip?.tripHeadsign ?? ''),
+            points: edge.shape,
+            color: edge.isWalking ? [255, 255, 255] as [number, number, number] : hexToRgb(edge.route?.routeColor ?? '#FF0000')!,
+        };
+    }
+
+    public get getPathToParent(): Path | undefined {
+        return this.#pathToParent;
+    }
+
     async getOutEdges(): Promise<DirectedWeightedEdge[]> {
-        console.log('getOutEdges', this.stop.stopName, this.id);
         if (this.#outEdges === undefined) {
             this.#outEdges = [];
             await this.addNeighborEdges();
@@ -48,23 +69,12 @@ export abstract class Vertex {
 
     public getPathToRoot(): Path[] {
         const paths: Path[] = [];
-        let currentEdge = this.parentEdge;
-        while (currentEdge) {
-            const path = {
-                name: currentEdge.isWalking ? 'walk.' : (currentEdge.route?.routeShortName ?? '') + ' -> ' + (currentEdge.trip?.tripHeadsign ?? ''),
-                points: [] as Coordinate[],
-                color: currentEdge.isWalking ? [255, 255, 255] as [number, number, number] : hexToRgb(currentEdge.route?.routeColor ?? '#FF0000')!,
-            };
-            const routeId = currentEdge.route?.routeId;
-            while (currentEdge && currentEdge?.route?.routeId === routeId) {
-                // I think inbetween stops will have repeated coordinates but that should be fine
-                const shape = currentEdge.shape;
-                for (let i = shape.length - 1; i >= 0; i--) {
-                    path.points.push(shape[i]);
-                }
-                currentEdge = currentEdge?.source.parentEdge ?? null;
-            }
-            paths.push(path);
+        let currentVertex: Vertex | undefined = this;
+        while (currentVertex) {
+            const path = currentVertex.getPathToParent;
+            if (path)
+                paths.push(path);
+            currentVertex = currentVertex.parentVertex;
         }
         return paths;
     }

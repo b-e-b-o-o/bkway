@@ -12,11 +12,21 @@ export class BFSPathfinding extends Pathfinding {
     }
 
     public getUnfinishedPaths(): Path[] {
-        const paths: Path[] = [];
+        const vertices = new Set<Vertex>();
         for (const v of this.queue) {
-            paths.push(...v.getPathToRoot());
+            let current: Vertex | undefined = v;
+            while (current && !vertices.has(current)) {
+                vertices.add(current);
+                current = current.parentVertex;
+            }
         }
-        console.log(paths);
+        const paths: Path[] = [];
+        for (const v of vertices) {
+            const path = v.getPathToParent;
+            if (path)
+                paths.push(path);
+        }
+        console.log(paths.length);
         return paths;
     }
 
