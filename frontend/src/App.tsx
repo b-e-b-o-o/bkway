@@ -15,9 +15,9 @@ import 'dayjs/locale/hu';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-import { ViewStateContext } from "./contexts/viewState.context.ts";
-import { RoutePlanContext } from "./contexts/routePlan.context.ts";
-import ControlsContainer from './components/ControlsContainer.js';
+import { ViewStateContext } from "./contexts/viewState.context";
+import { RoutePlanContext } from "./contexts/routePlan.context";
+import Controls from './components/sidebar/Controls.tsx';
 import StopMap from './components/StopMap.tsx';
 
 import './App.css'
@@ -100,7 +100,7 @@ export default function App() {
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <RoutePlanContext.Provider value={routePlan}>
           <ViewStateContext.Provider value={viewState}>
-            <ControlsContainer />
+            <Controls />
             <StopMap />
           </ViewStateContext.Provider>
         </RoutePlanContext.Provider>

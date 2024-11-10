@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import './ControlsContainer.css'
+import './Controls.css'
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import OptionsTab from './OptionsTab';
-import TabPanel from './TabPanel';
+import OptionsTab from './tabs/options/OptionsTab';
+import TabPanel from './tabs/TabPanel';
 
 import type * as React from 'react';
-
 
 function a11yProps(index: number) {
     return {

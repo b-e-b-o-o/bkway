@@ -2,10 +2,10 @@ import SearchBar from './SearchBar';
 import { TimePicker } from '@mui/x-date-pickers';
 import { Box, Button } from '@mui/material';
 import { useMemo, useRef } from 'react';
-import { Graph } from '../models/graph';
-import { BFSPathfinding } from '../models/pathfinding/bfs';
-import { Time } from '../models/time';
-import { useRoutePlanContext } from '../contexts/routePlan.context';
+import { Graph } from '../../../../models/graph';
+import { BFSPathfinding } from '../../../../models/pathfinding/bfs';
+import { Time } from '../../../../models/time';
+import { useRoutePlanContext } from '../../../../contexts/routePlan.context';
 
 
 export default function OptionsTab() {

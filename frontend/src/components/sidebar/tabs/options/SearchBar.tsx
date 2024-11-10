@@ -1,9 +1,9 @@
 import { useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { FlyToInterpolator } from 'deck.gl';
-import { Stop } from '../types/gtfs';
+import { Stop } from '../../../../types/gtfs';
 
-import { useViewStateContext } from '../contexts/viewState.context';
+import { useViewStateContext } from '../../../../contexts/viewState.context';
 import './SearchBar.css';
 
 const BACKEND = import.meta.env.BACKEND ?? 'http://127.0.0.1:3333';
