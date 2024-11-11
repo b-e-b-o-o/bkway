@@ -9,13 +9,16 @@ import { usePathfindingContext } from '../../../../contexts/pathfinding.context'
 import dayjs from 'dayjs';
 import type { Stop } from '../../../../types/gtfs';
 
+function now() {
+    return dayjs().tz('Europe/Budapest').second(0).millisecond(0);
+}
 
 export default function OptionsTab() {
     const { pathfinding, setPathfinding, setIncompletePaths, setCompletePath } = usePathfindingContext();
 
     const [startStop, setStartStop] = useState<Stop>();
     const [endStop, setEndStop] = useState<Stop>();
-    const [startTime, setStartTime] = useState(dayjs().tz('Europe/Budapest'));
+    const [startTime, setStartTime] = useState(now());
     useEffect(() => {
         if (!startStop || !endStop)
             return;
@@ -26,6 +29,7 @@ export default function OptionsTab() {
         return () => setPathfinding(undefined);
     }, [startStop, endStop, startTime]);
 
+    // Has to be a ref otherwise the state gets lost on rerender(?)
     const go = useRef(false);
 
     async function step() {
@@ -45,9 +49,12 @@ export default function OptionsTab() {
     return <>
         <SearchBar placeholder='Indulás...' stop={startStop} setStop={setStartStop} />
         <SearchBar placeholder='Érkezés...' stop={endStop} setStop={setEndStop} />
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>Indulási idő:</Box>
-            <TimePicker ampm={false} defaultValue={startTime} onChange={(e) => e && setStartTime?.(e)} />
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'stretch', gap: '10px' }}>
+            <Box sx={{ display: 'flex', minWidth: 'fit-content', alignSelf: 'center' }}>Indulási idő:</Box>
+            <Box sx={{ display: 'flex', gap: '10px' }}>
+                <Button variant='outlined' type='reset' onClick={() => setStartTime(now())}> Most </Button>
+                <TimePicker ampm={false} value={startTime} onChange={(e) => e && setStartTime(e)} sx={{ maxWidth: '150px' }} />
+            </Box>
         </Box>
         <Button onClick={step} variant="contained">
             Következő lépés
