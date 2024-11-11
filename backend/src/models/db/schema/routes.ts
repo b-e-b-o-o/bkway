@@ -11,7 +11,8 @@ enum RouteType {
     AERIAL_LIFT = 6,
     FUNICULAR = 7,
     TROLLEYBUS = 11,
-    MONORAIL = 12
+    MONORAIL = 12,
+    BUDAPEST_HÉV = 109
 }
 
 enum ContinuousPickupDropOff {
