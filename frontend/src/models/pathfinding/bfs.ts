@@ -1,13 +1,14 @@
+import type { Time } from "../time";
+import type { Stop } from "src/types/gtfs";
 import type { Path } from "../../types/mapdata";
-import type { Graph } from "../graph";
 import { Vertex } from "../vertex";
 import { Pathfinding } from "./pathfinding";
 
 export class BFSPathfinding extends Pathfinding {
     public queue: Vertex[] = [];
 
-    constructor(graph: Graph, endId: string) {
-        super(graph, endId);
+    constructor(start: Stop, end: Stop, time: Time) {
+        super(start, end, time);
         this.queue.push(this.start);
     }
 
@@ -30,7 +31,7 @@ export class BFSPathfinding extends Pathfinding {
     }
 
     public prune() {
-        this.queue = this.queue.filter(v => v.id === this.endId);
+        this.queue = this.queue.filter(v => v.id === this.end.id);
     }
 
     // Returns updated edges end vertices
@@ -51,7 +52,7 @@ export class BFSPathfinding extends Pathfinding {
             v.distance = current.distance.plus(e.weight);
             v.parentEdge = e;
             this.queue.push(v);
-            if (v.id === this.endId) {
+            if (v.id === this.end.id) {
                 this.end = v;
                 return [current];
             }

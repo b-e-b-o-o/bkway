@@ -1,32 +1,32 @@
 import SearchBar from './SearchBar';
 import { TimePicker } from '@mui/x-date-pickers';
 import { Box, Button } from '@mui/material';
-import { useEffect, useRef, useState } from 'react';
-import { Graph } from '../../../../models/graph';
+import { useRef, useState } from 'react';
 import { BFSPathfinding } from '../../../../models/pathfinding/bfs';
 import { Time } from '../../../../models/time';
 import { usePathfindingContext } from '../../../../contexts/pathfinding.context';
 import dayjs from 'dayjs';
 import type { Stop } from '../../../../types/gtfs';
+import { useUpdateEffect } from '../../../../utils/util';
 
 function now() {
     return dayjs().tz('Europe/Budapest').second(0).millisecond(0);
 }
 
+
 export default function OptionsTab() {
     const { pathfinding, setPathfinding, setIncompletePaths, setCompletePath } = usePathfindingContext();
 
-    const [startStop, setStartStop] = useState<Stop>();
-    const [endStop, setEndStop] = useState<Stop>();
+    const [startStop, setStartStop] = useState<Stop | undefined>(pathfinding?.start.stop);
+    const [endStop, setEndStop] = useState<Stop | undefined>(pathfinding?.end.stop);
     const [startTime, setStartTime] = useState(now());
-    useEffect(() => {
+
+    useUpdateEffect(() => {
         if (!startStop || !endStop)
             return;
-        const graph = new Graph(Time.of(startTime), startStop);
         setIncompletePaths([]);
         setCompletePath(undefined);
-        setPathfinding(new BFSPathfinding(graph, endStop.stopId));
-        return () => setPathfinding(undefined);
+        setPathfinding(new BFSPathfinding(startStop, endStop, Time.of(startTime)));
     }, [startStop, endStop, startTime]);
 
     // Has to be a ref otherwise the state gets lost on rerender(?)

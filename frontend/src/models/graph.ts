@@ -3,32 +3,47 @@ import { Time } from "./time";
 import { Vertex } from "./vertex";
 
 export class Graph {
+    protected isRootSet = false;
+    
     private readonly Vertex = (() => {
         const thisGraph = this;
         return class extends Vertex {
             public graph = thisGraph;
+
+            // Has to be here because isRootSet is protected
+            public constructor(stop: Stop) {
+                super(stop);
+                // The first vertex is automatically set as the root
+                if (!thisGraph.isRootSet)
+                    this.setRoot();
+            }
+
+            protected override setRoot() {
+                if (thisGraph.isRootSet)
+                    throw new Error('Root already set');
+                super.setRoot();
+                thisGraph.isRootSet = true;
+            }
         };
     })();
 
-    vertices: Map<string, Vertex>;
-    time: Time;
-    constructor(time: Time, startStop: Stop) {
+    readonly vertices: Map<string, Vertex>;
+    readonly time: Time;
+
+    constructor(time: Time) {
         this.vertices = new Map<string, Vertex>();
         this.time = time;
-        const root = this.getOrAddVertex(startStop.stopId, startStop);
-        root.distance = Time.of(0);
-        root.isRoot = true;
     }
 
     getVertex(id: string) {
         return this.vertices.get(id);
     }
 
-    getOrAddVertex(id: string, stop: Stop) {
-        let vertex = this.vertices.get(id);
+    getOrAddVertex(stop: Stop) {
+        let vertex = this.vertices.get(stop.stopId);
         if (vertex === undefined) {
-            vertex = new this.Vertex(id, stop);
-            this.vertices.set(id, vertex);
+            vertex = new this.Vertex(stop);
+            this.vertices.set(stop.stopId, vertex);
         }
         return vertex;
     }

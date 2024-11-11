@@ -62,6 +62,16 @@ const theme = createTheme({
       focus: '#FFFFFF',
       focusOpacity: 0.12
     },
+  },
+  components: {
+    MuiMultiSectionDigitalClockSection: {
+      styleOverrides: {
+        root: {
+          scrollbarWidth: 'thin',
+          '::-webkit-scrollbar': 'none'
+        }
+      }
+    }
   }
 });
 

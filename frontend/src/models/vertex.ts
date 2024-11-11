@@ -25,8 +25,8 @@ export abstract class Vertex {
     #pathToParent: Path | undefined;
     distance: Time = Time.INFINITY;
 
-    constructor(id: string, stop: Stop) {
-        this.id = id;
+    constructor(stop: Stop) {
+        this.id = stop.stopId;
         this.stop = stop;
         this.location = new Coordinate(stop.stopLat!, stop.stopLon!);
     }
@@ -48,11 +48,11 @@ export abstract class Vertex {
         return this.#parentEdge === null;
     }
 
-    public set isRoot(value: boolean) {
-        if (this.parentEdge !== undefined && !value)
-            throw new Error('Cannot set isRoot to true when parent edge is set');
-        if (value)
-            this.#parentEdge = null;
+    protected setRoot() {
+        this.distance = Time.of(0);
+        if (this.parentEdge !== undefined)
+            throw new Error('Cannot set as root when parent edge is set');
+        this.#parentEdge = null;
     }
 
     public set parentEdge(edge: DirectedWeightedEdge) {
@@ -96,7 +96,7 @@ export abstract class Vertex {
     private async addWalkingEdges(): Promise<void> {
         const nearbyStops = await getNearbyStops(this.id);
         for (const stop of nearbyStops) {
-            const vertex = this.graph.getOrAddVertex(stop.stopId, stop);
+            const vertex = this.graph.getOrAddVertex(stop);
             const travelDistance = BASE_TRANSFER_TIME.plus(this.location.distanceMeters(vertex.location));
             const edge = new DirectedWeightedEdge(this, vertex, travelDistance, [this.location, vertex.location]);
             vertex.inEdges.push(edge);
@@ -107,7 +107,7 @@ export abstract class Vertex {
     private async addNeighborEdges(): Promise<void> {
         const neighbors = await getNeighbors(this.id, this.time);
         for (const { stop, trip, departureTime, arrivalTime, shape, route } of neighbors) {
-            const vertex = this.graph.getOrAddVertex(stop.stopId, stop);
+            const vertex = this.graph.getOrAddVertex(stop);
             const distance = Time.of(arrivalTime.arrivalTime!).minus(this.time);
             const edge = new DirectedWeightedEdge(
                 this,

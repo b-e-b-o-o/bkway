@@ -46,15 +46,6 @@ export default function StopMap() {
 
   const { incompletePaths, completePath } = usePathfindingContext();
 
-  // const PATH_DATA = [
-  //   {
-  //     path: [[startStop?.stopLon, startStop?.stopLat], [endStop?.stopLon, endStop?.stopLat] /*, ... */ ],
-  //     name: 'Richmond - Millbrae',
-  //     color: [255, 0, 0]
-  //   },
-  //   // ...
-  // ];
-
   const routeLayer = new PathLayer<Path>({
     id: 'route-layer',
     data: completePath ?? incompletePaths,
@@ -62,13 +53,7 @@ export default function StopMap() {
     getColor: ({ color }) => color,
     getWidth: 6,
     pickable: true,
-    // updateTriggers: {
-    //   getPath: paths,
-    //   getColor: paths,
-    // }
   });
-
-  // const a = paths && console.log(routeLayer);
 
   return <DeckGL
     initialViewState={viewState}
