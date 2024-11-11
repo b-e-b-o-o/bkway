@@ -3,7 +3,7 @@ import './App.css'
 import { useState } from "react";
 import { MapViewState } from "deck.gl";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faLocationDot, faMagnifyingGlass, faWheelchair } from "@fortawesome/free-solid-svg-icons";
+import { faBusSimple, faCableCar, faElevator, faFerry, faHorse, faJetFighter, faLocationDot, faMagnifyingGlass, faTrain, faTrainSubway, faTrainTram, faWheelchair } from "@fortawesome/free-solid-svg-icons";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { createTheme } from '@mui/material/styles';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -27,7 +27,20 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 function init() {
-  library.add(faMagnifyingGlass, faWheelchair, faLocationDot);
+  library.add(
+    faMagnifyingGlass, // search bar
+    faWheelchair, // search results mostly
+    faLocationDot, // search results
+    faTrainTram, // TRAM & BUDAPEST_HÉV route icons
+    faTrainSubway, // METRO & CABLE_TRAM route icons
+    faTrain, // RAIL & MONORAIL route icons
+    faBusSimple, // BUS route icon
+    faFerry, // FERRY route icon
+    faCableCar, // AERIAL_LIFT route icon
+    faElevator, // FUNICULAR route icon
+    faHorse, // TROLLEYBUS route icon
+    faJetFighter, // default route icon
+  );
 }
 
 const theme = createTheme({
