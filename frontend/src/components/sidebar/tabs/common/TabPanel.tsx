@@ -15,8 +15,8 @@ export default function TabPanel(props: TabPanelProps) {
         <div
             role="tabpanel"
             hidden={activeTab !== index}
-            id={`simple-tabpanel-${index}`}
-            aria-labelledby={`simple-tab-${index}`}
+            id={`controls-tabpanel-${index}`}
+            aria-labelledby={`controls-tab-${index}`}
             {...other}
         >
             {activeTab === index && <Box className='tab-panel'>{children}</Box>}

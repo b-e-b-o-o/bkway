@@ -17,8 +17,8 @@ const noFocusOutline: SxProps<Theme> = { ":focus": { outline: "none !important" 
 
 function a11yProps(index: number): TabProps {
     return {
-        id: `simple-tab-${index}`,
-        'aria-controls': `simple-tabpanel-${index}`,
+        id: `controls-tab-${index}`,
+        'aria-controls': `controls-tabpanel-${index}`,
     };
 }
 
