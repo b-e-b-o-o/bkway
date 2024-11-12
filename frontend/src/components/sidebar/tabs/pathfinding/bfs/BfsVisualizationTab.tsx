@@ -7,11 +7,29 @@ interface BfsVisualizationTabProps {
 
 export default function BfsVisualizationTab(props: BfsVisualizationTabProps) {
     const { bfs: pathfinding } = props;
-    return <div>
-        {
-            pathfinding.queue.map((v, i) =>
-                <TripCard edge={v.inEdges[0]} key={i} />
-            )
-        }
-    </div>
+    return <>{
+        pathfinding.isFinished ?
+            <>
+                <div>
+                    kész!
+                    <hr />
+                </div>
+                {
+                    pathfinding.getCompletePathVertices()?.map((v, i) =>
+                        <TripCard vertex={v} key={i} />
+                    )
+                }
+            </> :
+            <>
+                <div>
+                    Sor
+                    <hr />
+                </div>
+                {
+                    pathfinding.queue.map((v, i) =>
+                        <TripCard vertex={v} key={i} />
+                    )
+                }
+            </>
+    }</>
 }

@@ -4,10 +4,15 @@ import { RouteType } from "../../../types/gtfsCustom.d";
 import type { Route } from "../../../types/gtfs";
 
 import type { FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
+import { Avatar } from "@mui/material";
 
 interface RouteIconProps extends Omit<FontAwesomeIconProps, "icon"> {
-    route: Pick<Route, "routeType" | "routeColor">
+    route?: Pick<Route, "routeType" | "routeColor" | "routeTextColor">
 }
+
+const walkingIcon = faPersonWalking;
+const walkingIconColor = '000000';
+const walkingBgColor = 'dfdfdf';
 
 const icons = {
     [RouteType.TRAM]: faTrainTram,
@@ -21,9 +26,11 @@ const icons = {
     [RouteType.TROLLEYBUS]: faHorse,
     [RouteType.MONORAIL]: faTrain,
     [RouteType.BUDAPEST_HÉV]: faTrainTram,
-    undefined: faPersonWalking
+    undefined: walkingIcon // you can index with undefined if you really want to.
 }
 
 export default function RouteIcon(props: RouteIconProps) {
-    return <FontAwesomeIcon {...props} icon={icons[props.route.routeType]} color={`#${props.route.routeColor}`} />
+    return <Avatar sx={{ bgcolor: `#${props.route?.routeColor ?? walkingBgColor}`, width: '40px', height: '40px' }}>
+        <FontAwesomeIcon {...props} icon={icons[props.route?.routeType!]} color={`#${props.route?.routeTextColor ?? walkingIconColor}`} />
+    </Avatar>
 }

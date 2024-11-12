@@ -4,12 +4,9 @@ import OptionsTab from './tabs/options/OptionsTab';
 import TabPanel from './tabs/common/TabPanel';
 
 import { useMemo, useState } from 'react';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
 
-import type { TabTypeMap } from '@mui/material/Tab';
 import type { DefaultComponentProps } from '@mui/material/OverridableComponent';
-import type { ExtendButtonBaseTypeMap, SxProps, Theme } from '@mui/material';
+import { Tab, Tabs, type TabTypeMap, type ExtendButtonBaseTypeMap, type SxProps, type Theme } from '@mui/material';
 import { usePathfindingContext } from '../../contexts/pathfinding.context';
 import BfsVisualizationTab from './tabs/pathfinding/bfs/BfsVisualizationTab';
 import { BFSPathfinding } from '../../models/pathfinding/bfs';

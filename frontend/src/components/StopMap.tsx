@@ -58,7 +58,7 @@ export default function StopMap() {
   return <DeckGL
     initialViewState={viewState}
     getTooltip={({ object }) => object && (object.name || object.properties.stop_name)}
-    layers={[stopsLayer, /*shapesLayer,*/ routeLayer]}
+    layers={[/*shapesLayer,*/ routeLayer, stopsLayer]}
     controller={true}
   >
     <Map mapStyle={BASEMAP.DARK_MATTER} reuseMaps />

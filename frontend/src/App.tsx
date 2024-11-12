@@ -3,7 +3,7 @@ import './App.css'
 import { useState } from "react";
 import { MapViewState } from "deck.gl";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faBusSimple, faCableCar, faElevator, faFerry, faHorse, faJetFighter, faLocationDot, faMagnifyingGlass, faTrain, faTrainSubway, faTrainTram, faWheelchair } from "@fortawesome/free-solid-svg-icons";
+import { faBusSimple, faCableCar, faElevator, faFerry, faHorse, faLocationDot, faMagnifyingGlass, faPersonWalking, faTrain, faTrainSubway, faTrainTram, faWheelchair } from "@fortawesome/free-solid-svg-icons";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { createTheme } from '@mui/material/styles';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -39,7 +39,7 @@ function init() {
     faCableCar, // AERIAL_LIFT route icon
     faElevator, // FUNICULAR route icon
     faHorse, // TROLLEYBUS route icon
-    faJetFighter, // default route icon
+    faPersonWalking // walking route icon
   );
 }
 

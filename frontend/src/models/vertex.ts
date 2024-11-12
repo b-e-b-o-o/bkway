@@ -50,6 +50,7 @@ export abstract class Vertex {
 
     protected setRoot() {
         this.distance = Time.of(0);
+        this.visited = true;
         if (this.parentEdge !== undefined)
             throw new Error('Cannot set as root when parent edge is set');
         this.#parentEdge = null;

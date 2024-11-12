@@ -10,7 +10,7 @@ export class Graph {
         return class extends Vertex {
             public graph = thisGraph;
 
-            // Has to be here because isRootSet is protected
+            // Has to happen here because isRootSet is protected
             public constructor(stop: Stop) {
                 super(stop);
                 // The first vertex is automatically set as the root
