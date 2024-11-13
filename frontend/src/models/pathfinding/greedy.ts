@@ -4,31 +4,12 @@ import type { Path } from "../../types/mapdata";
 import { Vertex } from "../vertex";
 import { Pathfinding } from "./pathfinding";
 
-export class BFSPathfinding extends Pathfinding {
+export class GreedyPathfinding extends Pathfinding {
     public queue: Vertex[] = [];
 
     constructor(start: Stop, end: Stop, time: Time) {
         super(start, end, time);
         this.queue.push(this.start);
-        this.discoverRoot();
-    }
-
-    private discoverRoot() {
-        (async () => {
-            for await (const e of this.start.getWalkingEdges()) {
-                e.visited = true;
-                const v = e.target;
-                v.visited = true;
-                v.distance = e.weight;
-                v.parentEdge = e;
-                this.queue.push(v);
-                if (v.id === this.end.id) {
-                    this.end = v;
-                }
-                console.log(v.id);
-            }
-        })();
-        console.log('lol');
     }
 
     public getIncompletePaths(): Path[] {

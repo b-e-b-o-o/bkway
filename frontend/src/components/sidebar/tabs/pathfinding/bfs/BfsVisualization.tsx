@@ -1,11 +1,11 @@
 import type { BFSPathfinding } from "src/models/pathfinding/bfs";
 import TripCard from "../common/TripCard";
 
-interface BfsVisualizationTabProps {
+interface BfsVisualizationProps {
     bfs: BFSPathfinding
 }
 
-export default function BfsVisualizationTab(props: BfsVisualizationTabProps) {
+export default function BfsVisualization(props: BfsVisualizationProps) {
     const { bfs: pathfinding } = props;
     return <>{
         pathfinding.isFinished ?

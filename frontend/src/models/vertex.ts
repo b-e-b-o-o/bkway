@@ -19,7 +19,8 @@ export abstract class Vertex {
     readonly location: Coordinate;
     readonly heuristic: number = 0;
     readonly inEdges: DirectedWeightedEdge[] = [];
-    #outEdges: DirectedWeightedEdge[] | undefined;
+    #walkingEdges: DirectedWeightedEdge[] | undefined;
+    #transitEdges: DirectedWeightedEdge[] | undefined;
     visited: boolean = false;
     #parentEdge: DirectedWeightedEdge | undefined | null;
     #pathToParent: Path | undefined;
@@ -71,15 +72,9 @@ export abstract class Vertex {
         return this.#pathToParent;
     }
 
-    async getOutEdges(): Promise<DirectedWeightedEdge[]> {
-        if (this.#outEdges === undefined) {
-            this.#outEdges = [];
-            await this.addNeighborEdges();
-            if (!this.isWalking()) {
-                await this.addWalkingEdges();
-            }
-        }
-        return this.#outEdges;
+    async* getOutEdges(): AsyncGenerator<DirectedWeightedEdge> {
+        yield* this.getWalkingEdges();
+        yield* this.getTransitEdges();
     }
 
     public getPathToRoot(): Path[] {
@@ -94,32 +89,42 @@ export abstract class Vertex {
         return paths;
     }
 
-    private async addWalkingEdges(): Promise<void> {
-        const nearbyStops = await getNearbyStops(this.id);
-        for (const stop of nearbyStops) {
-            const vertex = this.graph.getOrAddVertex(stop);
-            const travelDistance = BASE_TRANSFER_TIME.plus(this.location.distanceMeters(vertex.location));
-            const edge = new DirectedWeightedEdge(this, vertex, travelDistance, [this.location, vertex.location]);
-            vertex.inEdges.push(edge);
-            this.#outEdges!.push(edge);
+    async* getWalkingEdges(): AsyncGenerator<DirectedWeightedEdge> {
+        if (this.isWalking())
+            return;
+        if (!this.#walkingEdges) {
+            this.#walkingEdges = [];
+            const nearbyStops = await getNearbyStops(this.id);
+            for (const stop of nearbyStops) {
+                const vertex = this.graph.getOrAddVertex(stop);
+                const travelDistance = BASE_TRANSFER_TIME.plus(this.location.distanceMeters(vertex.location));
+                const edge = new DirectedWeightedEdge(this, vertex, travelDistance, [this.location, vertex.location]);
+                vertex.inEdges.push(edge);
+                this.#walkingEdges.push(edge);
+            }
         }
+        yield* this.#walkingEdges;
     }
 
-    private async addNeighborEdges(): Promise<void> {
-        const neighbors = await getNeighbors(this.id, this.time);
-        for (const { stop, trip, departureTime, arrivalTime, shape, route } of neighbors) {
-            const vertex = this.graph.getOrAddVertex(stop);
-            const distance = Time.of(arrivalTime.arrivalTime!).minus(this.time);
-            const edge = new DirectedWeightedEdge(
-                this,
-                vertex,
-                distance,
-                shape.map(s => new Coordinate(s.shapePtLat, s.shapePtLon)),
-                { trip, departureTime, arrivalTime, route }
-            );
-            vertex.inEdges.push(edge);
-            this.#outEdges!.push(edge);
-        };
+    async* getTransitEdges(): AsyncGenerator<DirectedWeightedEdge> {
+        if (!this.#transitEdges) {
+            this.#transitEdges = [];
+            const neighbors = await getNeighbors(this.id, this.time);
+            for (const { stop, trip, departureTime, arrivalTime, shape, route } of neighbors) {
+                const vertex = this.graph.getOrAddVertex(stop);
+                const distance = Time.of(arrivalTime.arrivalTime!).minus(this.time);
+                const edge = new DirectedWeightedEdge(
+                    this,
+                    vertex,
+                    distance,
+                    shape.map(s => new Coordinate(s.shapePtLat, s.shapePtLon)),
+                    { trip, departureTime, arrivalTime, route }
+                );
+                vertex.inEdges.push(edge);
+                this.#transitEdges.push(edge);
+            }
+        }
+        yield* this.#transitEdges;
     }
 
     private isWalking() {

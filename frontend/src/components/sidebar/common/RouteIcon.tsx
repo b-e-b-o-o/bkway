@@ -1,4 +1,4 @@
-import { faBusSimple, faCableCar, faElevator, faFerry, faHorse, faPersonWalking, faTrain, faTrainSubway, faTrainTram } from "@fortawesome/free-solid-svg-icons";
+import { faBusSimple, faCableCar, faElevator, faFerry, faBus, faPersonWalking, faTrain, faTrainSubway, faTrainTram } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RouteType } from "../../../types/gtfsCustom.d";
 import type { Route } from "../../../types/gtfs";
@@ -23,14 +23,14 @@ const icons = {
     [RouteType.CABLE_TRAM]: faTrainSubway,
     [RouteType.AERIAL_LIFT]: faCableCar,
     [RouteType.FUNICULAR]: faElevator,
-    [RouteType.TROLLEYBUS]: faHorse,
+    [RouteType.TROLLEYBUS]: faBus,
     [RouteType.MONORAIL]: faTrain,
     [RouteType.BUDAPEST_HÉV]: faTrainTram,
     undefined: walkingIcon // you can index with undefined if you really want to.
 }
 
 export default function RouteIcon(props: RouteIconProps) {
-    return <Avatar sx={{ bgcolor: `#${props.route?.routeColor ?? walkingBgColor}`, width: '40px', height: '40px' }}>
+    return <Avatar sx={{ bgcolor: `#${props.route?.routeColor ?? walkingBgColor}`, width: '40px', height: '40px' }} variant="rounded">
         <FontAwesomeIcon {...props} icon={icons[props.route?.routeType!]} color={`#${props.route?.routeTextColor ?? walkingIconColor}`} />
     </Avatar>
 }
