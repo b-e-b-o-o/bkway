@@ -6,7 +6,7 @@ import TabPanel from './tabs/common/TabPanel';
 import { useState } from 'react';
 
 import type { DefaultComponentProps } from '@mui/material/OverridableComponent';
-import { Tab, Tabs, type TabTypeMap, type ExtendButtonBaseTypeMap, type SxProps, type Theme } from '@mui/material';
+import { Tab, Tabs, type TabTypeMap, type ExtendButtonBaseTypeMap, type SxProps, type Theme, Box } from '@mui/material';
 import { usePathfindingContext } from '../../contexts/pathfinding.context';
 import PathfindingTab from './tabs/pathfinding/PathfindingTab';
 
@@ -32,7 +32,7 @@ export default function ControlsContainer() {
     const { pathfinding } = usePathfindingContext();
     const [activeTab, setActiveTab] = useState(0);
 
-    return <div className='controls-container'>
+    return <Box className='controls-container' sx={{ display: 'flex', flexDirection: 'row', position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
         <div className='menu-container'>
             <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)} aria-label="Tabs" variant="fullWidth">
                 <Tab label="Beállítások" {...tabProps(0)} />
@@ -45,5 +45,5 @@ export default function ControlsContainer() {
                 <PathfindingTab />
             </TabPanel>
         </div>
-    </div>
+    </Box>
 }

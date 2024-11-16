@@ -9,6 +9,7 @@ services:
     environment:
       # can be container name
       - BACKEND=https://bkpi.bee-612.space
+      - CHOKIDAR_USEPOLLING = true
     volumes:
       - ./frontend:/usr/app
       - /usr/app/node_modules

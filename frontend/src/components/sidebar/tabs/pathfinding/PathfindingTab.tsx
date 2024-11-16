@@ -16,8 +16,10 @@ export default function PathfindingTab() {
     if (!pathfinding)
         return <></>;
 
-    return <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', justifyContent: 'stretch' }}>
+    return <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', justifyContent: 'stretch', height: '100%' }}>
         <PathfindingController />
-        <PathfindingVisualization />
+        <Box sx={{ overflowY: 'auto' }}>
+            <PathfindingVisualization />
+        </Box>
     </Box>
 }

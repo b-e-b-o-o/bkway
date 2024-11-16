@@ -25,8 +25,17 @@ export default function OptionsTab() {
             return;
         setCompletePath(undefined);
         setPathfinding(new BFSPathfinding(startStop, endStop, Time.of(startTime)));
-        setIncompletePaths(pathfinding!.getIncompletePaths());
     }, [startStop, endStop, startTime]);
+
+    // This might as well be moved to App.tsx, but I'd like to keep the logic in the same file
+    useUpdateEffect(() => {
+        if (pathfinding === undefined)
+            return;
+        (async () => {
+            await (pathfinding as BFSPathfinding).nextWalking();
+            setIncompletePaths(pathfinding.getIncompletePaths());
+        })();
+    }, [pathfinding]);
 
     return <>
         <SearchBar placeholder='Indulás...' stop={startStop} setStop={setStartStop} />

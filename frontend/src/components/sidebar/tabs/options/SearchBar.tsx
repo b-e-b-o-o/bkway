@@ -5,6 +5,7 @@ import { Stop } from '../../../../types/gtfs';
 
 import { useViewStateContext } from '../../../../contexts/viewState.context';
 import './SearchBar.css';
+import { faLocationDot, faWheelchair } from '@fortawesome/free-solid-svg-icons';
 
 const BACKEND = import.meta.env.BACKEND ?? 'http://127.0.0.1:3333';
 
@@ -67,13 +68,13 @@ export default function SearchBar({
                             className='search-result flex flex-row items-center min-h-12 p-2 text-xl cursor-pointer gap-2'
                             onClick={({ target }) => { (target as HTMLDivElement).blur(); flyToStop(result); }}>
                             <div className='location-icon'>
-                                <FontAwesomeIcon icon='location-dot' color='#aaf' />
+                                <FontAwesomeIcon icon={faLocationDot} color='#aaf' />
                             </div>
                             {result.stopName}
                             <div className='flex flex-row h-full pl-2'>
                                 {
                                     (result.wheelchairBoarding == 1) &&
-                                    <FontAwesomeIcon icon="wheelchair" color='rgb(162, 189, 214)' opacity={0.8} />
+                                    <FontAwesomeIcon icon={faWheelchair} color='rgb(162, 189, 214)' opacity={0.8} />
                                 }
                             </div>
                         </div>

@@ -16,10 +16,10 @@ export default function TabPanel(props: TabPanelProps) {
             id={`controls-tabpanel-${index}`}
             aria-labelledby={`controls-tab-${index}`}
             {...other}
-            sx={{ overflowY: 'auto', height: '100%', padding: '1rem' }}>
+            sx={{ overflowY: 'hidden', height: '100%', padding: '1rem' }}>
             {
                 activeTab === index &&
-                <Box sx={{ display: 'flex', flexDirection: 'column', rowGap: '1rem' }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', rowGap: '1rem', height: '100%' }}>
                     {children}
                 </Box>
             }

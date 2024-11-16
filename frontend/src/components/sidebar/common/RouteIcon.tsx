@@ -1,18 +1,15 @@
-import { faBusSimple, faCableCar, faElevator, faFerry, faBus, faPersonWalking, faTrain, faTrainSubway, faTrainTram } from "@fortawesome/free-solid-svg-icons";
+import { faBusSimple, faCableCar, faElevator, faFerry, faBus, faPersonWalking, faTrain, faTrainSubway, faTrainTram, faLocationDot, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Avatar } from "@mui/material";
 import { RouteType } from "../../../types/gtfsCustom.d";
-import type { Route } from "../../../types/gtfs";
 
 import type { FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
-import { Avatar } from "@mui/material";
+import type { Vertex } from "src/models/vertex";
+import React from "react";
 
 interface RouteIconProps extends Omit<FontAwesomeIconProps, "icon"> {
-    route?: Pick<Route, "routeType" | "routeColor" | "routeTextColor">
+    stop: Vertex;
 }
-
-const walkingIcon = faPersonWalking;
-const walkingIconColor = '000000';
-const walkingBgColor = 'dfdfdf';
 
 const icons = {
     [RouteType.TRAM]: faTrainTram,
@@ -26,11 +23,38 @@ const icons = {
     [RouteType.TROLLEYBUS]: faBus,
     [RouteType.MONORAIL]: faTrain,
     [RouteType.BUDAPEST_HÉV]: faTrainTram,
-    undefined: walkingIcon // you can index with undefined if you really want to.
+    'WALKING': faPersonWalking,
+    'SOURCE': faLocationDot,
 }
 
-export default function RouteIcon(props: RouteIconProps) {
-    return <Avatar sx={{ bgcolor: `#${props.route?.routeColor ?? walkingBgColor}`, width: '40px', height: '40px' }} variant="rounded">
-        <FontAwesomeIcon {...props} icon={icons[props.route?.routeType!]} color={`#${props.route?.routeTextColor ?? walkingIconColor}`} />
+export default function RouteIcon({ stop, ...props }: RouteIconProps) {
+    const edge = stop.parentEdge;
+    let color: string;
+    let bgcolor: string;
+    let icon: IconDefinition;
+    const border = {} as React.CSSProperties;
+    if (edge) {
+        if (edge.route) {
+            color = `#${edge.route.routeTextColor}`;
+            bgcolor = `#${edge.route.routeColor!}`;
+            icon = icons[edge.route.routeType];
+        }
+        else {
+            // Walking
+            color = '#000000';
+            bgcolor = '#dfdfdf';
+            icon = icons['WALKING'];
+        }
+    }
+    else {
+        // Source
+        color = '#dfdfdf';
+        bgcolor = '#101010';
+        icon = icons['SOURCE'];
+        border.borderColor = '#dfdfdf';
+        border.borderWidth = '1px';
+    }
+    return <Avatar sx={{ ...border, bgcolor, width: '40px', height: '40px' }} variant="rounded">
+        <FontAwesomeIcon {...props} icon={icon} color={color} />
     </Avatar>
 }

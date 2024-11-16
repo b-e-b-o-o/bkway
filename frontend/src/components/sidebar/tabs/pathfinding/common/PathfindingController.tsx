@@ -1,13 +1,16 @@
-import { useRef } from 'react';
-import { Box, Button } from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
+import { Box, Button, Fab } from '@mui/material';
 import { usePathfindingContext } from '../../../../../contexts/pathfinding.context';
-import { BFSPathfinding } from '../../../../../models/pathfinding/bfs';
+import InputSlider from '../../../common/InputSlider';
+import { faForwardFast, faForwardStep, faPause, faRotateRight, faStopwatch } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default function PathfindingController() {
-    const { pathfinding, setPathfinding, setIncompletePaths, setCompletePath } = usePathfindingContext();
-
-    // Has to be a ref otherwise the state gets lost on rerender(?)
+    const { pathfinding, setIncompletePaths, setCompletePath } = usePathfindingContext();
+    const delay = useRef(0.75);
     const go = useRef(false);
+    function stop() { go.current = false }
+    useEffect(() => { stop(); return stop; }, [pathfinding]);
 
     async function step() {
         do {
@@ -17,24 +20,38 @@ export default function PathfindingController() {
                 setCompletePath(pathfinding?.getCompletePath() ?? []);
                 break;
             }
+            const wait = new Promise((resolve: Function) => setTimeout(resolve, delay.current * 1000));
             await pathfinding.next();
             setIncompletePaths(pathfinding.getIncompletePaths());
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await wait;
         } while (go.current);
     }
 
-    return <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        {pathfinding?.isFinished ?
+    if (!pathfinding) {
+        return <></>;
+    }
+
+    return <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center' }}>
+        {pathfinding.isFinished ?
             <>
-                {/* <Button onClick={() => setPathfinding(new BFSPathfinding(pathfinding!.start.stop!, pathfinding!.end.stop!, pathfinding!.start.time!))} variant="contained"> */}
+                <Fab onClick={async () => { }}>
+                    <FontAwesomeIcon icon={faRotateRight} />
+                </Fab>
+                {/* <Button onClick={() => setPathfinding(new BFSPathfinding(pathfinding.start.stop!, pathfinding.end.stop!, pathfinding.start.time!))} variant="contained"> */}
             </> :
             <>
-                <Button onClick={async () => await step()} variant="contained" disabled={pathfinding?.isFinished || go.current}>
-                    Következő lépés
-                </Button>
-                <Button onClick={async () => { go.current = !go.current; await step(); }} variant="contained" disabled={pathfinding?.isFinished}>
-                    lépkedés {go.current ? 'stop' : 'go'}
-                </Button>
+                <Box sx={{ display: 'flex', flexDirection: 'row', gap: '10px', alignItems: 'center' }}>
+                    <Fab size='small' onClick={async () => { }}>
+                        <FontAwesomeIcon icon={faRotateRight} />
+                    </Fab>
+                    <Fab color='primary' onClick={async () => await step()} disabled={go.current}>
+                        <FontAwesomeIcon size='lg' icon={faForwardStep} />
+                    </Fab>
+                    <Fab size='small' onClick={async () => { go.current = !go.current; await step(); }}>
+                        <FontAwesomeIcon icon={go.current ? faPause : faForwardFast} />
+                    </Fab>
+                </Box>
+                <InputSlider refValue={delay} icon={faStopwatch} min={0} max={2} step={0.05} unit='mp' />
             </>
         }
     </Box>
