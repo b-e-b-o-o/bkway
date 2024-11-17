@@ -78,6 +78,14 @@ export class Time {
         return this.seconds > other.seconds;
     }
 
+    public compare(other: TimeLike): number {
+        return +Time.of(other) - +this;
+    }
+
+    public static compare(a: TimeLike, b: TimeLike): number {
+        return +Time.of(b) - +Time.of(a);
+    }
+
     public plus(time: TimeLike): Time {
         time = Time.of(time);
         return new Time(this.hours + time.hours, this.minutes + time.minutes, this.seconds + time.seconds);

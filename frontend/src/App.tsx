@@ -71,12 +71,12 @@ const theme = createTheme({
       secondary: '#FFFFFF',
       disabled: '#999999' // Eg. disabled pathfinding tab
     },
-    action: {
+    action: { // FABs (Floating Action Buttons)
       active: '#FFFFFF',
-      hover: '#FFFFFF',
+      hover: '#aaaaaa',
       selected: '#FFFFFF',
-      disabled: '#FFFFFF',
-      disabledBackground: '#FFFFFF',
+      disabled: '#333333',
+      disabledBackground: '#aaaaaa',
       focus: '#FFFFFF',
       focusOpacity: 0.12
     },

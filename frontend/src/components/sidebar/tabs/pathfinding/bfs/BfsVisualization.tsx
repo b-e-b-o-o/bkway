@@ -19,10 +19,10 @@ export default function BfsVisualization(props: BfsVisualizationProps) {
             </> :
             <>
                 <div>
-                    Sor ({pathfinding.queue.length} megálló)
+                    Sor ({pathfinding.data.size} megálló)
                     <hr />
                 </div>
-                {pathfinding.queue.map((v, i) => <TripCard vertex={v} key={i} />)}
+                {/* {(pathfinding.data.elements()).map((v, i) => <TripCard vertex={v} key={i} />)} */}
             </>
     }</Box>
 }

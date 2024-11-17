@@ -12,12 +12,12 @@ import type { Path } from "../types/mapdata";
 const BASE_TRANSFER_TIME = Time.of(120); // 2 minutes
 
 export abstract class Vertex {
+    private static nextId = 0;
     protected abstract graph: Graph;
 
     readonly stop: Stop;
-    readonly id: string;
+    readonly id: number;
     readonly location: Coordinate;
-    readonly heuristic: number = 0;
     readonly inEdges: DirectedWeightedEdge[] = [];
     #walkingEdges: DirectedWeightedEdge[] | undefined;
     #transitEdges: DirectedWeightedEdge[] | undefined;
@@ -25,9 +25,10 @@ export abstract class Vertex {
     #parentEdge: DirectedWeightedEdge | undefined | null;
     #pathToParent: Path | undefined;
     distance: Time = Time.INFINITY;
+    heuristic: number = 0;
 
     constructor(stop: Stop) {
-        this.id = stop.stopId;
+        this.id = Vertex.nextId++;
         this.stop = stop;
         this.location = new Coordinate(stop.stopLat!, stop.stopLon!);
     }
@@ -72,11 +73,6 @@ export abstract class Vertex {
         return this.#pathToParent;
     }
 
-    async* getOutEdges(): AsyncGenerator<DirectedWeightedEdge> {
-        yield* this.getWalkingEdges();
-        yield* this.getTransitEdges();
-    }
-
     public getPathToRoot(): Path[] {
         const paths: Path[] = [];
         let currentVertex: Vertex | undefined = this;
@@ -89,12 +85,12 @@ export abstract class Vertex {
         return paths;
     }
 
-    async* getWalkingEdges(): AsyncGenerator<DirectedWeightedEdge> {
+    async getWalkingEdges(): Promise<DirectedWeightedEdge[]> {
         if (this.isWalking())
-            return;
+            return [];
         if (!this.#walkingEdges) {
             this.#walkingEdges = [];
-            const nearbyStops = await getNearbyStops(this.id);
+            const nearbyStops = await getNearbyStops(this.stop.stopId);
             for (const stop of nearbyStops) {
                 const vertex = this.graph.getOrAddVertex(stop);
                 const travelDistance = BASE_TRANSFER_TIME.plus(this.location.distanceMeters(vertex.location));
@@ -103,13 +99,13 @@ export abstract class Vertex {
                 this.#walkingEdges.push(edge);
             }
         }
-        yield* this.#walkingEdges;
+        return this.#walkingEdges;
     }
 
-    async* getTransitEdges(): AsyncGenerator<DirectedWeightedEdge> {
+    async getTransitEdges(): Promise<DirectedWeightedEdge[]> {
         if (!this.#transitEdges) {
             this.#transitEdges = [];
-            const neighbors = await getNeighbors(this.id, this.time);
+            const neighbors = await getNeighbors(this.stop.stopId, this.time);
             for (const { stop, trip, departureTime, arrivalTime, shape, route } of neighbors) {
                 const vertex = this.graph.getOrAddVertex(stop);
                 const distance = Time.of(arrivalTime.arrivalTime!).minus(this.time);
@@ -124,7 +120,7 @@ export abstract class Vertex {
                 this.#transitEdges.push(edge);
             }
         }
-        yield* this.#transitEdges;
+        return this.#transitEdges;
     }
 
     private isWalking() {

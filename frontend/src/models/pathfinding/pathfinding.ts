@@ -1,9 +1,8 @@
 import type { Path } from "../../types/mapdata";
 import type { Time } from "../time";
-import type { Vertex } from "../vertex";
+import { Vertex } from "../vertex";
 import { Graph } from "../graph";
 import { Stop } from "../../types/gtfs";
-import { DirectedWeightedEdge } from "../directedWeightedEdge";
 
 export abstract class Pathfinding {
     #path: Path[] | null | undefined;
@@ -56,22 +55,6 @@ export abstract class Pathfinding {
         vertices.reverse();
         return vertices;
     }
-
-    // protected async discoverWalkingEdges(source: Vertex): DirectedWeightedEdge[] {
-    //     for await (const e of source.getWalkingEdges()) {
-    //         e.visited = true;
-    //         const v = e.target;
-    //         if (v.visited)
-    //             continue;
-    //         v.visited = true;
-    //         v.distance = source.distance.plus(e.weight);
-    //         v.parentEdge = e;
-    //         this.graph.addEdge(v, e);
-    //         if (v.id === this.end.id) {
-    //             this.end = v;
-    //         }
-    //     }
-    // }
 
     // Returns updated vertices
     public abstract next(): Promise<Vertex[]>;
