@@ -12,6 +12,18 @@ export default function PathfindingController() {
     function stop() { go.current = false }
     useEffect(() => { stop(); return stop; }, [pathfinding]);
 
+    if (!pathfinding) {
+        return <></>;
+    }
+
+    const reset = async () => {
+        go.current = false;
+        pathfinding.reset();
+        await pathfinding.nextWalking();
+        setIncompletePaths(pathfinding.getIncompletePaths());
+        setCompletePath(undefined);
+    }
+
     async function step() {
         do {
             if (pathfinding === undefined || pathfinding.isFinished) {
@@ -27,28 +39,23 @@ export default function PathfindingController() {
         } while (go.current);
     }
 
-    if (!pathfinding) {
-        return <></>;
-    }
-
     return <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center' }}>
         {pathfinding.isFinished ?
             <>
-                <Fab onClick={async () => { }}>
+                <Fab onClick={reset}>
                     <FontAwesomeIcon icon={faRotateRight} />
                 </Fab>
-                {/* <Button onClick={() => setPathfinding(new BFSPathfinding(pathfinding.start.stop!, pathfinding.end.stop!, pathfinding.start.time!))} variant="contained"> */}
             </> :
             <>
                 <Box sx={{ display: 'flex', flexDirection: 'row', gap: '10px', alignItems: 'center' }}>
-                    <Fab size='small' onClick={async () => { }}>
+                    <Fab size='small' onClick={reset} disabled={go.current}>
                         <FontAwesomeIcon icon={faRotateRight} />
                     </Fab>
-                    <Fab color='primary' onClick={async () => await step()} disabled={go.current}>
-                        <FontAwesomeIcon size='lg' icon={faForwardStep} />
-                    </Fab>
-                    <Fab size='small' onClick={async () => { go.current = !go.current; await step(); }}>
+                    <Fab color='primary' onClick={async () => { go.current = !go.current; await step(); }}>
                         <FontAwesomeIcon icon={go.current ? faPause : faForwardFast} />
+                    </Fab>
+                    <Fab size='small' onClick={step} disabled={go.current}>
+                        <FontAwesomeIcon size='lg' icon={faForwardStep} />
                     </Fab>
                 </Box>
                 <InputSlider refValue={delay} icon={faStopwatch} min={0} max={2} step={0.05} unit='mp' />

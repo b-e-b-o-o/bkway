@@ -1,20 +1,44 @@
+import type { IDataStructure } from "./datastructures";
 import type { Path } from "../../types/mapdata";
-import type { Time } from "../time";
+import { Time } from "../time";
 import { Vertex } from "../vertex";
 import { Graph } from "../graph";
 import { Stop } from "../../types/gtfs";
+import { DirectedWeightedEdge } from "../directedWeightedEdge";
 
 export abstract class Pathfinding {
+    public readonly abstract data: IDataStructure;
     #path: Path[] | null | undefined;
-    readonly graph: Graph;
-    readonly start: Vertex;
+    #graph: Graph;
+    #start: Vertex;
     #end: Vertex;
     
     constructor(start: Stop, end: Stop, time: Time) {
-        this.graph = new Graph(time);
-        this.start = this.graph.getOrAddVertex(start);
+        Vertex.nextId = 0;
+        this.#graph = new Graph(time);
+        this.#start = this.graph.getOrAddVertex(start);
         this.#end = this.graph.getOrAddVertex(end);
-        console.log('pathfinding from %s to %s', this.start.id, this.end.id);
+    }
+
+    protected init() {
+        this.data.push(this.start);
+        console.log('pathfinding from %s to %s', this.start.stop.stopId, this.end.stop.stopId);
+    }
+
+    public reset() {
+        this.data.clear();
+        this.#graph = new Graph(this.graph.time);
+        this.#start = this.graph.getOrAddVertex(this.start.stop);
+        this.#end = this.graph.getOrAddVertex(this.end.stop);
+        this.init();
+    }
+
+    public get graph(): Graph {
+        return this.#graph;
+    }
+
+    public get start(): Vertex {
+        return this.#start;
     }
 
     public get end() {
@@ -31,8 +55,6 @@ export abstract class Pathfinding {
         // This also checks for edge case where end === start
         return this.end.parentVertex !== undefined;
     }
-
-    public abstract getIncompletePaths(): Path[];
 
     public getCompletePath() { 
         if (!this.isFinished)
@@ -56,6 +78,61 @@ export abstract class Pathfinding {
         return vertices;
     }
 
-    // Returns updated vertices
-    public abstract next(): Promise<Vertex[]>;
+    public getIncompletePaths(): Path[] {
+        const vertices = new Set<Vertex>();
+        for (const v of this.data.elements()) {
+            let current: Vertex | undefined = v;
+            while (current && !vertices.has(current)) {
+                vertices.add(current);
+                current = current.parentVertex;
+            }
+        }
+        const paths: Path[] = [];
+        for (const v of vertices) {
+            const path = v.pathToParent;
+            if (path)
+                paths.push(path);
+        }
+        return paths;
+    }
+
+    public async nextWalking() {
+        const v = this.data.peek();
+        if (!v) return;
+        for (const e2 of await v.getWalkingEdges()) {
+            e2.weight = Time.of(0);
+            this.visit(e2);
+        }
+    }
+
+    public async next() {
+        if (this.isFinished) {
+            console.log(this.getCompletePath());
+            return;
+        }
+
+        const current = this.data.pop()!;
+        const outEdges = await current.getTransitEdges();
+        for (const e of outEdges) {
+            this.visit(e);
+            for (const e2 of await e.target.getWalkingEdges()) {
+                this.visit(e2);
+            }
+        }
+    }
+
+    private async visit(e: DirectedWeightedEdge) {
+        e.visited = true;
+        const v = e.target;
+        if (v.visited)
+            return;
+        v.visited = true;
+        v.distance = e.source.distance.plus(e.weight);
+        v.heuristic = v.location.distanceMeters(this.end.location);
+        v.parentEdge = e;
+        this.data.push(v);
+        if (v.id === this.end.id) {
+            this.end = v;
+        }
+    }
 }

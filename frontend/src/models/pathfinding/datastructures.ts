@@ -7,6 +7,7 @@ export interface IDataStructure {
     peek(): Vertex | undefined;
     pop(): Vertex | undefined;
     elements(): Iterable<Vertex>;
+    clear(): void;
 }
 
 export class QueueDataStructure implements IDataStructure {
@@ -30,6 +31,10 @@ export class QueueDataStructure implements IDataStructure {
 
     elements(): Iterable<Vertex> {
         return this.queue;
+    }
+
+    clear() {
+        this.queue.length = 0;
     }
 }
 
@@ -58,5 +63,9 @@ export class HeapDataStructure implements IDataStructure {
 
     elements(): Iterable<Vertex> {
         return BinaryHeap.from(this.heap).drain();
+    }
+
+    clear() {
+        this.heap.clear();
     }
 }

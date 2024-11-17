@@ -1,13 +1,12 @@
+import type { Stop } from "../../types/gtfs";
+import type { Vertex } from "../vertex";
+import { HeapPathfinding } from "./heapPathfinding";
 import { Time } from "../time";
-import type { Stop } from "src/types/gtfs";
-import { PathfindingAlgo } from './pathfindingAlgo';
-import { HeapDataStructure } from './datastructures';
 
-export class AStarPathfinding extends PathfindingAlgo {
-    public data = new HeapDataStructure(
-        // This is a max heap by default, we need a min heap
-        (a, b) => -Time.compare(a.distance, b.distance) + (a.heuristic - b.heuristic)
-    );
+export class AStarPathfinding extends HeapPathfinding {
+    protected compare(a: Vertex, b: Vertex): number {
+        return  (a.heuristic - b.heuristic) - Time.compare(a.distance, b.distance)
+    };
 
     public constructor(start: Stop, end: Stop, time: Time) {
         super(start, end, time);

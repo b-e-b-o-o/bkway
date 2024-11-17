@@ -12,7 +12,7 @@ import type { Path } from "../types/mapdata";
 const BASE_TRANSFER_TIME = Time.of(120); // 2 minutes
 
 export abstract class Vertex {
-    private static nextId = 0;
+    public static nextId = 0;
     protected abstract graph: Graph;
 
     readonly stop: Stop;

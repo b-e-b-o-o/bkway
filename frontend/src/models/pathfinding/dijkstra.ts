@@ -1,13 +1,12 @@
-import { Time } from "../time";
 import type { Stop } from "src/types/gtfs";
-import { PathfindingAlgo } from './pathfindingAlgo';
-import { HeapDataStructure } from './datastructures';
+import type { Vertex } from "../vertex";
+import { HeapPathfinding } from "./heapPathfinding";
+import { Time } from "../time";
 
-export class DijkstraPathfinding extends PathfindingAlgo {
-    public data = new HeapDataStructure(
-        // This is a max heap by default, we need a min heap
-        (a, b) => -Time.compare(a.distance, b.distance)
-    );
+export class DijkstraPathfinding extends HeapPathfinding {
+    protected compare(a: Vertex, b: Vertex): number {
+        return -Time.compare(a.distance, b.distance)
+    };
 
     public constructor(start: Stop, end: Stop, time: Time) {
         super(start, end, time);
