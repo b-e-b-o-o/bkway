@@ -85,6 +85,16 @@ export abstract class Vertex {
         return paths;
     }
 
+    public getVerticesToRoot(): Vertex[] {
+        const vertices: Vertex[] = [];
+        let currentVertex: Vertex | undefined = this;
+        while (currentVertex) {
+            vertices.push(currentVertex);
+            currentVertex = currentVertex.parentVertex;
+        }
+        return vertices;
+    }
+
     async getWalkingEdges(): Promise<DirectedWeightedEdge[]> {
         if (this.isWalking())
             return [];
@@ -108,7 +118,9 @@ export abstract class Vertex {
             const neighbors = await getNeighbors(this.stop.stopId, this.time);
             for (const { stop, trip, departureTime, arrivalTime, shape, route } of neighbors) {
                 const vertex = this.graph.getOrAddVertex(stop);
-                const distance = Time.of(arrivalTime.arrivalTime!).minus(this.time);
+                const isRoot = this.isRoot || (this.parentEdge?.isWalking && this.parentVertex?.isRoot);
+                const fromTime = isRoot ? Time.of(departureTime.departureTime!) : this.time;
+                const distance = Time.of(arrivalTime.arrivalTime!).minus(fromTime);
                 const edge = new DirectedWeightedEdge(
                     this,
                     vertex,
@@ -125,5 +137,11 @@ export abstract class Vertex {
 
     private isWalking() {
         return this.inEdges.some(e => e.isWalking);
+    }
+
+    public transitParentVertex() {
+        if (this.parentEdge?.isWalking)
+            return this.parentVertex?.parentVertex;
+        return this.parentVertex;
     }
 }

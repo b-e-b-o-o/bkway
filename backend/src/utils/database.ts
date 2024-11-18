@@ -2,16 +2,36 @@ import Database, { SqliteError } from "better-sqlite3";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import { importGtfs } from "gtfs";
 import config from '../configs/gtfs.config';
+import { stopTimes } from "../models/db/schema/stop-times";
+import { type ColumnBaseConfig, isNull, or, sql } from "drizzle-orm";
+import { SQLiteColumn } from "drizzle-orm/sqlite-core";
+
+// don't ask
+function toTimestamp(column: SQLiteColumn<ColumnBaseConfig<'string', 'SQLiteText'>>) {
+    return sql<Date>`
+        (60 * (60 * substr(${column}, 1, instr(${column}, ':') - 1) +
+        substr(substr(${column}, instr(${column}, ':') + 1), 1, instr(substr(${column}, instr(${column}, ':') + 1), ':') - 1))) +
+        substr(substr(${column}, instr(${column}, ':') + 1), instr(substr(${column}, instr(${column}, ':') + 1), ':') + 1)
+    `;
+}
 
 async function ensureDatabase() {
     try {
         return new Database(config.sqlitePath);
     }
     catch (e) {
-        if ((e instanceof SqliteError) && e.code === 'SQLITE_CANTOPEN') { 
+        if ((e instanceof SqliteError) && e.code === 'SQLITE_CANTOPEN') {
             console.log('Database not found, importing GTFS');
             await importGtfs(config);
-            return new Database(config.sqlitePath);
+            console.log('Loaded, data, setting arrivalTimestamp and departureTimestamp');
+            const db = new Database(config.sqlitePath);
+            await drizzle(db).update(stopTimes).set({
+                    arrivalTimestamp: toTimestamp(stopTimes.arrivalTime),
+                    departureTimestamp: toTimestamp(stopTimes.departureTime),
+                })
+                .execute();
+            console.log('Database setup complete');
+            return db;
         }
         else {
             throw e;

@@ -1,14 +1,18 @@
+import React from "react";
+
 import { faBusSimple, faCableCar, faElevator, faFerry, faBus, faPersonWalking, faTrain, faTrainSubway, faTrainTram, faLocationDot, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Avatar } from "@mui/material";
 import { RouteType } from "../../../types/gtfsCustom.d";
+import { iconSize, avatarSize } from "../../../utils/sizes";
 
 import type { FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 import type { Vertex } from "src/models/vertex";
-import React from "react";
+import type { Size } from "src/types/misc";
 
-interface RouteIconProps extends Omit<FontAwesomeIconProps, "icon"> {
+interface RouteIconProps extends Omit<FontAwesomeIconProps, "icon" | "size"> {
     stop: Vertex;
+    size?: Size;
 }
 
 const icons = {
@@ -27,7 +31,7 @@ const icons = {
     'SOURCE': faLocationDot,
 }
 
-export default function RouteIcon({ stop, ...props }: RouteIconProps) {
+export default function RouteIcon({ stop, size = 'medium', ...props }: RouteIconProps) {
     const edge = stop.parentEdge;
     let color: string;
     let bgcolor: string;
@@ -54,7 +58,8 @@ export default function RouteIcon({ stop, ...props }: RouteIconProps) {
         border.borderColor = '#dfdfdf';
         border.borderWidth = '1px';
     }
-    return <Avatar sx={{ ...border, bgcolor, width: '40px', height: '40px' }} variant="rounded">
-        <FontAwesomeIcon {...props} icon={icon} color={color} />
+
+    return <Avatar sx={{ ...border, bgcolor, width: avatarSize(size), height: avatarSize(size) }} variant="rounded">
+        <FontAwesomeIcon {...props} icon={icon} color={color} size={iconSize(size)} />
     </Avatar>
 }

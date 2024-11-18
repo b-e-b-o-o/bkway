@@ -8,7 +8,7 @@ import { DirectedWeightedEdge } from "../directedWeightedEdge";
 
 export abstract class Pathfinding {
     public readonly abstract data: IDataStructure;
-    #path: Path[] | null | undefined;
+    #path: Path[] | undefined;
     #graph: Graph;
     #start: Vertex;
     #end: Vertex;
@@ -124,13 +124,18 @@ export abstract class Pathfinding {
     private async visit(e: DirectedWeightedEdge) {
         e.visited = true;
         const v = e.target;
-        if (v.visited)
+        const isSameSource = e.source === v.transitParentVertex();
+        if (v.visited && (!isSameSource || v.parentEdge === e))
             return;
-        v.visited = true;
-        v.distance = e.source.distance.plus(e.weight);
         v.heuristic = v.location.distanceMeters(this.end.location);
-        v.parentEdge = e;
-        this.data.push(v);
+        const newDistance = e.source.distance.plus(e.weight);
+        if (v.parentEdge === undefined || (isSameSource && v.distance.after(newDistance))) {
+            v.distance = newDistance;
+            v.parentEdge = e;
+        }
+        if (!v.visited)
+            this.data.push(v);
+        v.visited = true;
         if (v.id === this.end.id) {
             this.end = v;
         }

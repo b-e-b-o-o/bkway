@@ -9,6 +9,8 @@ export class Time {
     readonly minutes: number;
     readonly seconds: number;
 
+    protected static readonly fmtSeconds = Intl.NumberFormat(undefined, { maximumFractionDigits: 0 });
+
     static readonly INFINITY = Object.create(Time.prototype, {
         hours: { value: Number.POSITIVE_INFINITY },
         minutes: { value: Number.POSITIVE_INFINITY },
@@ -52,7 +54,10 @@ export class Time {
     }
 
     public toString({ seconds = true } = {}): string {
-        return `${this.hours}:${this.minutes}` + (seconds ? `:${this.seconds}` : '');
+        const h = this.hours.toString().padStart(2, '0');
+        const m = this.minutes.toString().padStart(2, '0');
+        const s = Time.fmtSeconds.format(this.seconds).padStart(2, '0');
+        return `${h}:${m}` + (seconds ? `:${s}` : '');
     }
 
     public before(other: TimeLike): boolean {

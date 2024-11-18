@@ -3,7 +3,7 @@ import './App.css'
 import { useState } from "react";
 import { MapViewState } from "deck.gl";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faBusSimple, faCableCar, faElevator, faFerry, faBus, faLocationDot, faMagnifyingGlass, faPersonWalking, faTrain, faTrainSubway, faTrainTram, faWheelchair, faStopwatch, faForwardStep, faForwardFast, faPause, faRotateRight } from "@fortawesome/free-solid-svg-icons";
+import { faBusSimple, faCableCar, faElevator, faFerry, faBus, faLocationDot, faMagnifyingGlass, faPersonWalking, faTrain, faTrainSubway, faTrainTram, faWheelchair, faStopwatch, faForwardStep, faForwardFast, faPause, faRotateRight, faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { createTheme } from '@mui/material/styles';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -28,6 +28,7 @@ dayjs.extend(timezone);
 
 function init() {
   library.add(
+    faChevronDown, // expandable accordion icon
     faRotateRight, // restart icon
     faForwardStep, // step button icon
     faForwardFast, // go button icon
@@ -86,7 +87,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           scrollbarWidth: 'thin',
-          '::-webkitScrollbar': 'none'
+          '::-webkit-scrollbar': 'none'
         }
       }
     },
