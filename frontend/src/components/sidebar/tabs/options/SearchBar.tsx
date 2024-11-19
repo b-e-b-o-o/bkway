@@ -1,11 +1,11 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { FlyToInterpolator } from 'deck.gl';
 import { Stop } from '../../../../types/gtfs';
 
 import { useViewStateContext } from '../../../../contexts/viewState.context';
 import './SearchBar.css';
-import { faLocationDot, faWheelchair } from '@fortawesome/free-solid-svg-icons';
+import { faLocationDot, faMagnifyingGlass, faWheelchair } from '@fortawesome/free-solid-svg-icons';
 
 const BACKEND = import.meta.env.BACKEND ?? 'http://127.0.0.1:3333';
 
@@ -48,15 +48,24 @@ export default function SearchBar({
             .then((data: Stop[]) => setResults(data));
     }
 
+    useEffect(() => {
+        if (!input.current)
+            return;
+        input.current.value = stop?.stopName ?? '';
+        updateResults();
+    }, [stop])
+
     return <div className='search-container'>
         <label className='search-bar flex items-center gap-2'>
-            <FontAwesomeIcon className='search-icon' icon="magnifying-glass" color='rgb(140, 160, 190)' />
-            <input type="text" className="grow w-full h-full" placeholder={stop?.stopName ?? placeholder} ref={input} onInput={updateResults} />
+            <FontAwesomeIcon className='search-icon' icon={faMagnifyingGlass} color='rgb(140, 160, 190)' />
+            <input
+                type="text"
+                className="grow w-full h-full"
+                placeholder={stop?.stopName ?? placeholder}
+                ref={input}
+                onInput={updateResults}
+            />
         </label>
-        {/* <div className='search-bar'>
-            <FontAwesomeIcon className='search-icon' icon="magnifying-glass" color='rgb(140, 160, 190)' />
-            <input type='text' ref={input} onInput={updateResults} placeholder={stop?.stopName ?? placeholder} />
-        </div> */}
         {
             results.length > 0 &&
             <div className='search-results'>

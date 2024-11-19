@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Input, Slider, Typography, Grid2 as Grid } from '@mui/material';
+import { Box, Input, Slider, Typography, Grid2 as Grid, InputAdornment } from '@mui/material';
 import type { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -56,9 +56,10 @@ export default function InputSlider({ refValue, min, max, step = 1, icon, title,
                 </Grid>
                 <Grid>
                     <Input
-                        sx={{ display: 'flex' }}
+                        sx={{ display: 'flex', paddingX: '5px' }}
                         value={value}
                         size="small"
+                        endAdornment={unit && <InputAdornment position="end">{unit}</InputAdornment>}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         inputProps={{
@@ -70,7 +71,6 @@ export default function InputSlider({ refValue, min, max, step = 1, icon, title,
                         }}
                     />
                 </Grid>
-                {unit && <Grid><Typography>{unit}</Typography></Grid>}
             </Grid>
         </Box>
     );
