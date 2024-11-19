@@ -8,6 +8,10 @@ export class DijkstraPathfinding extends HeapPathfinding {
         return -Time.compare(a.distance, b.distance)
     };
 
+    public getWeight(v: Vertex): number {
+        return +v.distance;
+    }
+
     public constructor(start: Stop, end: Stop, time: Time) {
         super(start, end, time);
         this.init();

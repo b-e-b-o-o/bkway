@@ -53,18 +53,18 @@ export default function PathfindingController() {
                 </Fab>
             </> :
             <>
-                <Box sx={{ display: 'flex', flexDirection: 'row', gap: '10px', alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', flexDirection: 'row', gap: '10px', alignItems: 'center' }} title='Újrakezdés'>
                     <Fab size='small' onClick={reset} disabled={go.current}>
                         <FontAwesomeIcon icon={faRotateRight} />
                     </Fab>
-                    <Fab color='primary' onClick={async () => { go.current = !go.current; await step(); }}>
+                    <Fab color='primary' onClick={async () => { go.current = !go.current; await step(); }} title={go.current ? 'Leállítás' : 'Indítás'} >
                         <FontAwesomeIcon icon={go.current ? faPause : faForwardFast} />
                     </Fab>
-                    <Fab size='small' onClick={step} disabled={go.current || stepping}>
+                    <Fab size='small' onClick={step} disabled={go.current || stepping} title='Következő lépés'>
                         <FontAwesomeIcon size='lg' icon={faForwardStep} />
                     </Fab>
                 </Box>
-                <InputSlider refValue={delay} icon={faStopwatch} min={0} max={2} step={0.05} unit='mp' />
+                <InputSlider refValue={delay} icon={faStopwatch} min={0} max={2} step={0.05} unit='mp' title='Várakozás lépések között' />
             </>
         }
     </Box>

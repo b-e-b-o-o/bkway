@@ -8,6 +8,10 @@ export class GreedyPathfinding extends HeapPathfinding {
         return a.heuristic - b.heuristic;
     }
 
+    public getWeight(v: Vertex): number {
+        return v.heuristic;
+    }
+
     constructor(start: Stop, end: Stop, time: Time) {
         super(start, end, time);
         this.init();

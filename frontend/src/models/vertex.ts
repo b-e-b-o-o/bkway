@@ -19,6 +19,7 @@ export abstract class Vertex {
     readonly id: number;
     readonly location: Coordinate;
     readonly inEdges: DirectedWeightedEdge[] = [];
+    #stepsFromRoot: number = Number.POSITIVE_INFINITY;
     #walkingEdges: DirectedWeightedEdge[] | undefined;
     #transitEdges: DirectedWeightedEdge[] | undefined;
     visited: boolean = false;
@@ -45,12 +46,17 @@ export abstract class Vertex {
         return this.#parentEdge ?? undefined;
     }
 
+    public get stepsFromRoot(): number {
+        return this.#stepsFromRoot;
+    }
+
     // Since the root vertex has no parent edge, the two properties should depend on each other
     public get isRoot(): boolean {
         return this.#parentEdge === null;
     }
 
     protected setRoot() {
+        this.#stepsFromRoot = 0;
         this.distance = Time.of(0);
         this.visited = true;
         if (this.parentEdge !== undefined)
@@ -61,6 +67,7 @@ export abstract class Vertex {
     public set parentEdge(edge: DirectedWeightedEdge) {
         if (this.isRoot)
             return;
+        this.#stepsFromRoot = edge.source.stepsFromRoot + (edge.isWalking ? 0 : 1);
         this.#parentEdge = edge;
         this.#pathToParent = {
             name: edge.isWalking ? 'walk.' : (edge.route?.routeShortName ?? '') + ' -> ' + (edge.trip?.tripHeadsign ?? ''),

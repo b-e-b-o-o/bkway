@@ -10,11 +10,12 @@ interface InputSliderProps {
     max: number;
     step?: number;
     icon?: IconProp;
+    title?: string;
     caption?: string;
     unit?: string;
 }
 
-export default function InputSlider({ refValue, min, max, step = 1, icon, caption, unit }: InputSliderProps) {
+export default function InputSlider({ refValue, min, max, step = 1, icon, title, caption, unit }: InputSliderProps) {
     const [value, setValue] = React.useState(refValue.current);
     refValue.current = value;
 
@@ -50,6 +51,7 @@ export default function InputSlider({ refValue, min, max, step = 1, icon, captio
                         step={step}
                         onChange={handleSliderChange}
                         aria-labelledby="input-slider"
+                        title={title}
                     />
                 </Grid>
                 <Grid>

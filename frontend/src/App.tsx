@@ -50,6 +50,13 @@ function init() {
 }
 
 const theme = createTheme({
+  typography: {
+    body2: {
+      fontSize: '0.8rem',
+      color: 'gray',
+      textAlign: 'left'
+    }
+  },
   palette: {
     mode: 'dark',
     primary: {

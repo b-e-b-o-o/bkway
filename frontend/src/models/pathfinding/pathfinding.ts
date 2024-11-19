@@ -56,6 +56,8 @@ export abstract class Pathfinding {
         return this.end.parentVertex !== undefined;
     }
 
+    public abstract getWeight(v: Vertex): number;
+
     public getCompletePath() { 
         if (!this.isFinished)
             return;

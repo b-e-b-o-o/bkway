@@ -53,11 +53,11 @@ export class Time {
         return Time.value(this.hours, this.minutes, this.seconds);
     }
 
-    public toString({ seconds = true } = {}): string {
+    public toString({ hours = true, seconds = true } = {}): string {
         const h = this.hours.toString().padStart(2, '0');
         const m = this.minutes.toString().padStart(2, '0');
         const s = Time.fmtSeconds.format(this.seconds).padStart(2, '0');
-        return `${h}:${m}` + (seconds ? `:${s}` : '');
+        return ((hours || h) ? `${h}:` : '') + m + (seconds ? `:${s}` : '');
     }
 
     public before(other: TimeLike): boolean {

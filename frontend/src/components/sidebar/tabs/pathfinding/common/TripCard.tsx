@@ -2,21 +2,22 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import { Vertex } from '../../../../../models/vertex';
-import { Box, Typography } from '@mui/material';
+import { Box, Tooltip, Typography } from '@mui/material';
 import RouteIcon from '../../../common/RouteIcon';
 import RouteBadge from '../../../common/RouteBadge';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons/faChevronDown';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect, useState } from 'react';
-import { DirectedWeightedEdge } from 'src/models/directedWeightedEdge';
+import { DirectedWeightedEdge } from '../../../../../models/directedWeightedEdge';
 import VerticalDottedLine from './VerticalDottedLine';
+import { usePathfindingContext } from '../../../../../contexts/pathfinding.context';
 
 export default function TripCard({ vertex }: { vertex: Vertex }) {
-    // const [details, setDetails] = useState(<></>);
     const edge = vertex.parentEdge;
 
+    const { pathfinding } = usePathfindingContext();
     const [expanded, setExpanded] = useState(false);
-    const [details, setDetails] = useState<JSX.Element[]>();
+    const [details, setDetails] = useState<JSX.Element>();
 
     function loadDetails() {
         if (vertex.isRoot) return <></>;
@@ -31,9 +32,29 @@ export default function TripCard({ vertex }: { vertex: Vertex }) {
             else if (edge)
                 groups.push([edge]);
         }
-        console.log(groups);
-        return <Box>{
-            groups.map((group, i) => <Box key={i}>
+        return <Box>
+            <Typography gutterBottom variant='body2'>
+                <Tooltip
+                    title="A gyalogos átszállásokra 2 perc + 1 másodperc/méter van számolva"
+                    sx={{ textDecoration: 'underline dotted' }}>
+                    <span style={{ "textDecoration": "underline dotted" }}>Távolság az indulóponttól:</span>
+                </Tooltip> {vertex.distance.toString({ hours: false })} ({Math.round(+vertex.distance)} mp)
+                <br />
+                <Tooltip
+                    title="A megálló és a célállomás távolsága légvonalban (m)"
+                    sx={{ textDecoration: 'underline dotted' }}>
+                    <span style={{ "textDecoration": "underline dotted" }}>Heurisztika:</span>
+                </Tooltip> {Math.round(vertex.heuristic)}
+                <br />
+                <Tooltip
+                    title="Az utazott megállókba nem számítanak bele azok, ahol csak gyalogolni kell!"
+                    sx={{ textDecoration: 'underline dotted' }}>
+                    <span style={{ "textDecoration": "underline dotted" }}>Utazott megállók:</span>
+                </Tooltip> {vertex.stepsFromRoot}
+                <br />
+                Összesített súly: {pathfinding && Math.round(pathfinding.getWeight(vertex))}
+            </Typography>
+            {groups.map((group, i) => <Box key={i}>
                 {group[0] && <Box sx={{ display: 'flex', gap: '10px', paddingX: '0.5rem' }}>
                     <RouteIcon stop={group[0].target} size='xsmall' /> <RouteBadge route={group[0].route} size='xsmall' />
                 </Box>}
@@ -56,13 +77,13 @@ export default function TripCard({ vertex }: { vertex: Vertex }) {
     useEffect(() => {
         if (!expanded || details !== undefined)
             return;
-        setDetails([loadDetails()]);
+        setDetails(loadDetails());
     }, [expanded]);
 
     useEffect(() => {
         if (!expanded)
             return;
-        setDetails([loadDetails()]);
+        setDetails(loadDetails());
         return () => setDetails(undefined);
     }, [vertex]);
 
@@ -72,23 +93,21 @@ export default function TripCard({ vertex }: { vertex: Vertex }) {
             aria-controls={`panel${vertex.id}-content`}
             id={`panel${vertex.id}-header`}
         >
-            <Box sx={{ display: 'flex', borderRadius: '10px', gap: '10px', padding: '0.5rem', width: '100%' }}>
+            <Box sx={{ display: 'flex', borderRadius: '10px', gap: '10px', paddingX: '0.5rem', width: '100%' }}>
                 <RouteIcon stop={vertex} />
                 {edge && <RouteBadge route={edge.route} />}
                 <Typography sx={{ textAlign: 'left' }}>
                     {vertex.stop.stopName}
                 </Typography>
-                <Box sx={{ fontSize: '0.8rem', color: 'gray', marginLeft: 'auto', height: '100%', textAlign: 'right' }}>
+                <Typography variant='body2' sx={{ marginLeft: 'auto', height: '100%', textAlign: 'right' }}>
                     {vertex.stop.stopId}
                     <br />
-                    {vertex.distance.toString()}
-                </Box>
+                    {pathfinding && Math.round(pathfinding.getWeight(vertex))}
+                </Typography>
             </Box>
         </AccordionSummary>
         <AccordionDetails>
             {details}
-            <Typography align='left'>
-            </Typography>
         </AccordionDetails>
     </Accordion>
 }

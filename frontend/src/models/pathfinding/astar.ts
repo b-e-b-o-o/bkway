@@ -5,8 +5,12 @@ import { Time } from "../time";
 
 export class AStarPathfinding extends HeapPathfinding {
     protected compare(a: Vertex, b: Vertex): number {
-        return  (a.heuristic - b.heuristic) - Time.compare(a.distance, b.distance)
+        return (a.heuristic - b.heuristic) - Time.compare(a.distance, b.distance)
     };
+
+    public getWeight(v: Vertex): number {
+        return +v.distance+ v.heuristic;
+    }
 
     public constructor(start: Stop, end: Stop, time: Time) {
         super(start, end, time);
