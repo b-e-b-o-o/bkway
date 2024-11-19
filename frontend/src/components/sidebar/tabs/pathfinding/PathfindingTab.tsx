@@ -22,7 +22,7 @@ export default function PathfindingTab() {
                             Út ({pathfinding.getCompletePathVertices()?.length ?? '?'} megálló)
                             <hr />
                         </div>
-                        {pathfinding.getCompletePathVertices()?.map((v, i) => <TripCard vertex={v} key={i} />)}
+                        {pathfinding.getCompletePathVertices()?.map((v, i) => <TripCard vertex={v} key={i} showRouteFromRoot={false} />)}
                     </> :
                     <>
                         <div>

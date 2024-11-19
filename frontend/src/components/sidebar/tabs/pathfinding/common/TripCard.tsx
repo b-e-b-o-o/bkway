@@ -12,15 +12,19 @@ import { DirectedWeightedEdge } from '../../../../../models/directedWeightedEdge
 import VerticalDottedLine from './VerticalDottedLine';
 import { usePathfindingContext } from '../../../../../contexts/pathfinding.context';
 
-export default function TripCard({ vertex }: { vertex: Vertex }) {
+interface TripCardProps {
+    vertex: Vertex;
+    showRouteFromRoot?: boolean;
+}
+
+export default function TripCard({ vertex, showRouteFromRoot = true }: TripCardProps) {
     const edge = vertex.parentEdge;
 
     const { pathfinding } = usePathfindingContext();
     const [expanded, setExpanded] = useState(false);
     const [details, setDetails] = useState<JSX.Element>();
 
-    function loadDetails() {
-        if (vertex.isRoot) return <></>;
+    function loadRouteFromRoot() {
         const groups: DirectedWeightedEdge[][] = [];
         const toRoot = vertex.getVerticesToRoot();
         for (const v of toRoot) {
@@ -32,6 +36,29 @@ export default function TripCard({ vertex }: { vertex: Vertex }) {
             else if (edge)
                 groups.push([edge]);
         }
+        return <>
+            {groups.map((group, i) => <Box key={i}>
+                {group[0] && <Box sx={{ display: 'flex', gap: '10px', paddingX: '0.5rem' }}>
+                    <RouteIcon stop={group[0].target} size='xsmall' /> <RouteBadge route={group[0].route} size='xsmall' />
+                </Box>}
+                <Box sx={{ display: 'flex', flexDirection: 'row', gap: '10px', padding: '0.5rem' }}>
+                    <VerticalDottedLine color={`#${group[0]?.route?.routeColor}`} />
+                    <Box>
+                        {group.map((edge, j) =>
+                            <Box key={j} sx={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                <Typography>{edge?.source.stop.stopName}</Typography>
+                                <Typography sx={{ fontSize: '0.8rem', color: 'gray' }}>{edge?.source.stop.stopId}</Typography>
+                            </Box>)
+                        }
+                    </Box>
+                </Box>
+            </Box>)}
+            <Box sx={{ paddingX: '0.5rem' }}><RouteIcon stop={toRoot.at(-1)!} size='xsmall' /></Box>
+        </>
+    }
+
+    function loadDetails() {
+        if (vertex.isRoot) return <></>;
         return <Box>
             <Typography gutterBottom variant='body2'>
                 <Tooltip
@@ -54,23 +81,7 @@ export default function TripCard({ vertex }: { vertex: Vertex }) {
                 <br />
                 Összesített súly: {pathfinding && Math.round(pathfinding.getWeight(vertex))}
             </Typography>
-            {groups.map((group, i) => <Box key={i}>
-                {group[0] && <Box sx={{ display: 'flex', gap: '10px', paddingX: '0.5rem' }}>
-                    <RouteIcon stop={group[0].target} size='xsmall' /> <RouteBadge route={group[0].route} size='xsmall' />
-                </Box>}
-                <Box sx={{ display: 'flex', flexDirection: 'row', gap: '10px', padding: '0.5rem' }}>
-                    <VerticalDottedLine color={`#${group[0]?.route?.routeColor}`} />
-                    <Box>
-                        {group.map((edge, j) =>
-                            <Box key={j} sx={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                <Typography>{edge?.source.stop.stopName}</Typography>
-                                <Typography sx={{ fontSize: '0.8rem', color: 'gray' }}>{edge?.source.stop.stopId}</Typography>
-                            </Box>)
-                        }
-                    </Box>
-                </Box>
-            </Box>)}
-            <Box sx={{ paddingX: '0.5rem' }}><RouteIcon stop={toRoot.at(-1)!} size='xsmall' /></Box>
+            {showRouteFromRoot && loadRouteFromRoot()}
         </Box>;
     }
 

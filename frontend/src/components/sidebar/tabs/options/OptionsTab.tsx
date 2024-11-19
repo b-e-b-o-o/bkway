@@ -1,6 +1,6 @@
 import SearchBar from './SearchBar';
 import { TimePicker } from '@mui/x-date-pickers';
-import { Box, Button, Divider, FormControl, FormHelperText, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select, TextField, Typography } from '@mui/material';
+import { Box, Button, Divider, FormControl, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { BFSPathfinding } from '../../../../models/pathfinding/bfs';
 import { DijkstraPathfinding } from '../../../../models/pathfinding/dijkstra';
