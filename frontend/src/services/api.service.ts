@@ -3,7 +3,7 @@ import type { Route, Shape, Stop, StopTime, Trip } from "../types/gtfs";
 import type { Time } from "../models/time";
 
 export namespace ApiConfig {
-    export const baseUrl = 'http://127.0.0.1:3333';
+    export const baseUrl = import.meta.env.BACKEND ?? 'http://127.0.0.1:3333';
 };
 
 export async function searchStops(query: string, { signal }: { signal?: AbortSignal } = {}) {

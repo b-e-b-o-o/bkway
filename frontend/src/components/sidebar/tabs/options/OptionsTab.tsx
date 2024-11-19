@@ -1,6 +1,15 @@
 import SearchBar from './SearchBar';
-import { TimePicker } from '@mui/x-date-pickers';
-import { Box, Button, Divider, FilledInput, FormControl, InputAdornment, InputLabel, MenuItem, Select, Tooltip } from '@mui/material';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import Tooltip from '@mui/material/Tooltip';
+import FilledInput from '@mui/material/FilledInput';
+import InputAdornment from '@mui/material/InputAdornment';
 import { useState } from 'react';
 import { BFSPathfinding } from '../../../../models/pathfinding/algorithms/bfs';
 import { DijkstraPathfinding } from '../../../../models/pathfinding/algorithms/dijkstra';
@@ -13,7 +22,7 @@ import type { Stop } from '../../../../types/gtfs';
 import { useUpdateEffect } from '../../../../utils/util';
 import { PathfindingConfig } from '../../../../models/pathfinding/pathfindingConfig';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRightArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRightArrowLeft } from '@fortawesome/free-solid-svg-icons/faArrowRightArrowLeft';
 import { faCircleInfo } from '@fortawesome/free-solid-svg-icons/faCircleInfo';
 
 function now() {

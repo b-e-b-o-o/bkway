@@ -2,7 +2,7 @@ import React from "react";
 
 import { faBusSimple, faCableCar, faElevator, faFerry, faBus, faPersonWalking, faTrain, faTrainSubway, faTrainTram, faLocationDot, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Avatar } from "@mui/material";
+import Avatar from "@mui/material/Avatar";
 import { RouteType } from "../../../types/gtfsCustom.d";
 import { iconSize, avatarSize } from "../../../utils/sizes";
 

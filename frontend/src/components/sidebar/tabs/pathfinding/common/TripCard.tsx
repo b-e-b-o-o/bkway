@@ -1,8 +1,10 @@
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
 import { Vertex } from '../../../../../models/vertex';
-import { Box, Tooltip, Typography } from '@mui/material';
 import RouteIcon from '../../../common/RouteIcon';
 import RouteBadge from '../../../common/RouteBadge';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons/faChevronDown';

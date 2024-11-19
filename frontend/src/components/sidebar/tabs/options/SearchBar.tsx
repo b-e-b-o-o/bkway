@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { FlyToInterpolator } from 'deck.gl';
 import { Route, Stop } from '../../../../types/gtfs';
@@ -6,8 +8,9 @@ import { searchStops } from '../../../../services/api.service';
 
 import { useViewStateContext } from '../../../../contexts/viewState.context';
 import './SearchBar.css';
-import { faLocationDot, faMagnifyingGlass, faWheelchair } from '@fortawesome/free-solid-svg-icons';
-import { Box, Divider } from '@mui/material';
+import { faLocationDot } from '@fortawesome/free-solid-svg-icons/faLocationDot';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons/faMagnifyingGlass';
+import { faWheelchair } from '@fortawesome/free-solid-svg-icons/faWheelchair';
 import RouteBadge from '../../common/RouteBadge';
 
 const controller = new AbortController();

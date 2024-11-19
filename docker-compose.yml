@@ -2,28 +2,27 @@
 
 services:
   bkway-front:
+    image: bkway-front
+    pull_policy: never
     build:
       context: ./frontend
+      target: production
     ports:
-      - 5173:5173
+      - 4173:4173
     environment:
-      # can be container name
-      - BACKEND=https://bkpi.bee-612.space
-      - CHOKIDAR_USEPOLLING = true
-    volumes:
-      - ./frontend:/usr/app
-      - /usr/app/node_modules
-      - /usr/app/dist
+      - BACKEND=http://192.168.0.66:3333
     restart: unless-stopped
 
   bkway-back:
+    image: bkway-back
+    pull_policy: never
     build:
       context: ./backend
+      target: production
     ports:
       - 3333:3333
+    environment:
+      - PORT=3333
     volumes:
       - ./data:/usr/data
-      - ./backend:/usr/app
-      - /usr/app/node_modules
-      - /usr/app/dist
     restart: unless-stopped

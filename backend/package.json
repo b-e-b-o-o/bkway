@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx --watch src/index.ts",
+    "build": "tsc && tsc-alias",
     "generate:types": "tsc -d --emitDeclarationOnly --declarationDir dist/types --module es2022 --moduleResolution node --skipLibCheck src/models/db/types/schema.ts"
   },
   "author": "",
@@ -27,6 +28,7 @@
     "drizzle-kit": "^0.24.2",
     "drizzle-typebox": "^0.1.1",
     "gtfs-types": "^4.0.0",
+    "tsc-alias": "^1.8.10",
     "tsx": "^4.19.0",
     "typescript": "^5.6.2"
   }

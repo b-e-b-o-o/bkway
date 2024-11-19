@@ -1,8 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { Box, Fab } from '@mui/material';
+import Box from '@mui/material/Box';
+import Fab from '@mui/material/Fab';
 import { usePathfindingContext } from '../../../../../contexts/pathfinding.context';
 import InputSlider from '../../../common/InputSlider';
-import { faForwardFast, faForwardStep, faPause, faRotateRight, faStopwatch } from '@fortawesome/free-solid-svg-icons';
+import { faForwardFast } from '@fortawesome/free-solid-svg-icons/faForwardFast';
+import { faForwardStep } from '@fortawesome/free-solid-svg-icons/faForwardStep';
+import { faPause } from '@fortawesome/free-solid-svg-icons/faPause';
+import { faRotateRight } from '@fortawesome/free-solid-svg-icons/faRotateRight';
+import { faStopwatch } from '@fortawesome/free-solid-svg-icons/faStopwatch';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default function PathfindingController() {

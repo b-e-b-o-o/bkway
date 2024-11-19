@@ -5,8 +5,9 @@ import DeckGL from '@deck.gl/react';
 import { useViewStateContext } from '../contexts/viewState.context';
 import { usePathfindingContext } from '../contexts/pathfinding.context';
 import type { Path } from '../types/mapdata';
+import { ApiConfig } from '../services/api.service';
 
-const BACKEND: string = import.meta.env.BACKEND ?? 'http://127.0.0.1:3333';
+const BACKEND = ApiConfig.baseUrl;
 
 const stopsLayer = new GeoJsonLayer({
   id: 'stops-layer',
@@ -28,18 +29,18 @@ const stopsLayer = new GeoJsonLayer({
   filled: true
 });
 
-const shapesLayer = new GeoJsonLayer({
-  id: 'shapes-layer',
-  data: BACKEND + '/data/shapes.geo.json',
-  pointType: 'circle',
-  getLineColor: (f: any) => {
-    const hex = f.properties.route_color;
-    return hex ? hex.match(/[0-9a-f]{2}/gi).map((x: string) => parseInt(x, 16)) : [0, 0, 0];
-  },
-  getLineWidth: 4,
-  getPointRadius: 6,
-  filled: true
-});
+// const shapesLayer = new GeoJsonLayer({
+//   id: 'shapes-layer',
+//   data: BACKEND + '/data/shapes.geo.json',
+//   pointType: 'circle',
+//   getLineColor: (f: any) => {
+//     const hex = f.properties.route_color;
+//     return hex ? hex.match(/[0-9a-f]{2}/gi).map((x: string) => parseInt(x, 16)) : [0, 0, 0];
+//   },
+//   getLineWidth: 4,
+//   getPointRadius: 6,
+//   filled: true
+// });
 
 export default function StopMap() {
   const { initialViewState: viewState } = useViewStateContext();

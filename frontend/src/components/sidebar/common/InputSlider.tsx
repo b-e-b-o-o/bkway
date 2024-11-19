@@ -1,5 +1,10 @@
 import * as React from 'react';
-import { Box, Input, Slider, Typography, Grid2 as Grid, InputAdornment, FilledInput } from '@mui/material';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid2';
+import Slider from '@mui/material/Slider';
+import FilledInput from '@mui/material/FilledInput';
+import InputAdornment from '@mui/material/InputAdornment';
 import type { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 

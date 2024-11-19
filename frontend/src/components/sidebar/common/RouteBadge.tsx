@@ -1,4 +1,4 @@
-import { Avatar } from "@mui/material";
+import Avatar from "@mui/material/Avatar";
 import { avatarSize, fontSizeRem } from "../../../utils/sizes";
 import type { Size } from "../../../types/misc";
 import type { Route } from "../../../types/gtfs";

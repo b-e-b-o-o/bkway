@@ -1,12 +1,15 @@
-import './Controls.css'
+import './Controls.css';
 
-import OptionsTab from './tabs/options/OptionsTab';
 import TabPanel from './tabs/common/TabPanel';
+import OptionsTab from './tabs/options/OptionsTab';
 
 import { useState } from 'react';
 
+import type { ExtendButtonBaseTypeMap, SxProps, TabTypeMap, Theme } from '@mui/material';
+import Box from '@mui/material/Box';
 import type { DefaultComponentProps } from '@mui/material/OverridableComponent';
-import { Tab, Tabs, type TabTypeMap, type ExtendButtonBaseTypeMap, type SxProps, type Theme, Box } from '@mui/material';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs/Tabs';
 import { usePathfindingContext } from '../../contexts/pathfinding.context';
 import PathfindingTab from './tabs/pathfinding/PathfindingTab';
 

@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import Box from "@mui/material/Box";
 import { HeapPathfinding } from "../../../../models/pathfinding/heapPathfinding";
 import { usePathfindingContext } from '../../../../contexts/pathfinding.context';
 import PathfindingController from "./common/PathfindingController";

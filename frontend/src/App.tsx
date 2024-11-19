@@ -1,33 +1,55 @@
-import './App.css'
+import './App.css';
 
-import { useState } from "react";
-import { MapViewState } from "deck.gl";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faBusSimple, faCableCar, faElevator, faFerry, faBus, faLocationDot, faMagnifyingGlass, faPersonWalking, faTrain, faTrainSubway, faTrainTram, faWheelchair, faStopwatch, faForwardStep, faForwardFast, faPause, faRotateRight, faChevronDown, faArrowRightArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { createTheme } from '@mui/material/styles';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { ThemeProvider } from "@emotion/react";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { createTheme } from '@mui/material/styles';
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
+import { MapViewState } from "deck.gl";
+import { useState } from "react";
 
 import type { } from '@mui/x-date-pickers/themeAugmentation';
 
 import Controls from './components/sidebar/Controls.tsx';
 import StopMap from './components/StopMap.tsx';
-import { ViewStateContext } from "./contexts/viewState.context";
 import { PathfindingContext } from "./contexts/pathfinding.context.ts";
+import { ViewStateContext } from "./contexts/viewState.context";
 
-import type { Path } from "./types/mapdata";
 import type { Pathfinding } from './models/pathfinding/pathfinding';
+import type { Path } from "./types/mapdata";
+
+import { faArrowRightArrowLeft } from '@fortawesome/free-solid-svg-icons/faArrowRightArrowLeft';
+import { faBus } from '@fortawesome/free-solid-svg-icons/faBus';
+import { faBusSimple } from '@fortawesome/free-solid-svg-icons/faBusSimple';
+import { faCableCar } from '@fortawesome/free-solid-svg-icons/faCableCar';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons/faChevronDown';
+import { faCircleInfo } from '@fortawesome/free-solid-svg-icons/faCircleInfo';
+import { faElevator } from '@fortawesome/free-solid-svg-icons/faElevator';
+import { faFerry } from '@fortawesome/free-solid-svg-icons/faFerry';
+import { faForwardFast } from '@fortawesome/free-solid-svg-icons/faForwardFast';
+import { faForwardStep } from '@fortawesome/free-solid-svg-icons/faForwardStep';
+import { faLocationDot } from '@fortawesome/free-solid-svg-icons/faLocationDot';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons/faMagnifyingGlass';
+import { faPause } from '@fortawesome/free-solid-svg-icons/faPause';
+import { faPersonWalking } from '@fortawesome/free-solid-svg-icons/faPersonWalking';
+import { faRotateRight } from '@fortawesome/free-solid-svg-icons/faRotateRight';
+import { faStopwatch } from '@fortawesome/free-solid-svg-icons/faStopwatch';
+import { faTrain } from '@fortawesome/free-solid-svg-icons/faTrain';
+import { faTrainSubway } from '@fortawesome/free-solid-svg-icons/faTrainSubway';
+import { faTrainTram } from '@fortawesome/free-solid-svg-icons/faTrainTram';
+import { faWheelchair } from '@fortawesome/free-solid-svg-icons/faWheelchair';
 
 import 'dayjs/locale/hu';
+
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 function init() {
   library.add(
+    faCircleInfo, // tooltip icon
     faArrowRightArrowLeft, // swap button icon
     faChevronDown, // expandable accordion icon
     faRotateRight, // restart icon
