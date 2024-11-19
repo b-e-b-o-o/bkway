@@ -10,20 +10,20 @@ export default function PathfindingController() {
     const [stepping, setStepping] = useState(false);
     const delay = useRef(0.75);
     const go = useRef(false);
-    function stop() { go.current = false }
-    useEffect(() => { stop(); return stop; }, [pathfinding]);
+    function stopStepping() { go.current = false }
+    useEffect(() => { stopStepping(); return stopStepping; }, [pathfinding]);
 
     if (!pathfinding) {
         return <></>;
     }
 
     const reset = async () => {
-        go.current = false;
+        stopStepping();
         setStepping(false);
         pathfinding.reset();
         await pathfinding.nextWalking();
         setIncompletePaths(pathfinding.getIncompletePaths());
-        setCompletePath(undefined);
+        setCompletePath(pathfinding.getCompletePath());
     }
 
     async function step() {
@@ -33,7 +33,7 @@ export default function PathfindingController() {
             setStepping(true);
             if (pathfinding === undefined || pathfinding.isFinished) {
                 console.log('done');
-                go.current = false;
+                stopStepping();
                 setCompletePath(pathfinding?.getCompletePath());
                 break;
             }

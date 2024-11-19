@@ -35,7 +35,7 @@ export abstract class Vertex {
         this.location = new Coordinate(stop.stopLat!, stop.stopLon!);
     }
 
-    protected get time(): Time {
+    public get time(): Time {
         return this.graph.time.plus(this.distance);
     }
 
@@ -74,8 +74,17 @@ export abstract class Vertex {
             return;
         this.#stepsFromRoot = edge.source.stepsFromRoot + (edge.isWalking ? 0 : 1);
         this.#parentEdge = edge;
+        const headsign = edge.trip?.tripHeadsign;
+        const routeName = edge.route?.routeShortName;
+        let routeFullName = routeName;
+        if (routeName && headsign) {
+            routeFullName += ` (${headsign})`;
+        }
+        else if (headsign) {
+            routeFullName = headsign;
+        }
         this.#pathToParent = {
-            name: edge.isWalking ? 'walk.' : (edge.route?.routeShortName ?? '') + ' -> ' + (edge.trip?.tripHeadsign ?? ''),
+            name: (edge.isWalking ? 'Gyaloglás' : routeName) + ` - ${edge.weight.toString({ hours: false })}`,
             points: edge.shape,
             color: edge.isWalking ? [255, 255, 255] as [number, number, number] : hexToRgb(edge.route?.routeColor ?? '#FF0000')!,
         };

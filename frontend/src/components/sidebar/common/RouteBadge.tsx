@@ -1,10 +1,10 @@
 import { Avatar } from "@mui/material";
-import { avatarSize, fontSize } from "../../../utils/sizes";
+import { avatarSize, fontSizeRem } from "../../../utils/sizes";
 import type { Size } from "../../../types/misc";
 import type { Route } from "../../../types/gtfs";
 
 interface RouteBadgeProps {
-    route?: Pick<Route, "routeColor" | "routeTextColor" | "routeShortName">
+    route: undefined | Pick<Route, "routeColor" | "routeTextColor" | "routeShortName">
     size?: Size
 }
 
@@ -16,7 +16,8 @@ export default function RouteBadge({ route, size = 'medium' }: RouteBadgeProps) 
         return <></>;
     const bgColor = route.routeColor ?? walkingBgColor;
     const textColor = route.routeTextColor ?? walkingIconColor;
-    return <Avatar sx={{ bgcolor: `#${bgColor}`, color: `#${textColor}`, fontWeight: 'bold', fontSize: fontSize(size), width: avatarSize(size), height: avatarSize(size) }} variant="rounded">
+    const fontSize = fontSizeRem(size) * (route.routeShortName!.length > 3 ? 0.8 : 1);
+    return <Avatar sx={{ bgcolor: `#${bgColor}`, color: `#${textColor}`, fontWeight: 'bold', fontSize: `${fontSize}rem`, width: avatarSize(size), height: avatarSize(size) }} variant="rounded">
         {route.routeShortName}
     </Avatar>
 }

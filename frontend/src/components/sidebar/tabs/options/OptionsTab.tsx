@@ -42,7 +42,6 @@ export default function OptionsTab() {
     useUpdateEffect(() => {
         if (!startStop || !endStop)
             return;
-        setCompletePath(undefined);
         setPathfinding(new pathfindings[variant](startStop, endStop, Time.of(startTime)));
     }, [startStop, endStop, startTime, variant, walkingDistance, heuristicWeight]);
 
@@ -51,12 +50,13 @@ export default function OptionsTab() {
         if (pathfinding === undefined)
             return;
         (async () => {
-            await (pathfinding as any).nextWalking();
+            await pathfinding.nextWalking();
             setIncompletePaths(pathfinding.getIncompletePaths());
+            setCompletePath(pathfinding.getCompletePath());
         })();
     }, [pathfinding]);
 
-    return <>
+    return <Box sx={{ overflowY: 'auto', display: 'flex', flexDirection: 'column', rowGap: '1rem', height: '100%' }}>
         <Divider sx={{ color: '#eee' }} > Útvonal beállításai </Divider>
         <SearchBar placeholder='Indulás...' stop={startStop} setStop={setStartStop} />
         <Box sx={{ position: 'relative', height: 0, width: '100%' }}>
@@ -147,5 +147,5 @@ export default function OptionsTab() {
                 />
             </Box>
         }
-    </>
+    </Box>
 }

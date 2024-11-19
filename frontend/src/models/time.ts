@@ -57,7 +57,7 @@ export class Time {
         const h = this.hours.toString().padStart(2, '0');
         const m = this.minutes.toString().padStart(2, '0');
         const s = Time.fmtSeconds.format(this.seconds).padStart(2, '0');
-        return ((hours || h) ? `${h}:` : '') + m + (seconds ? `:${s}` : '');
+        return ((hours || this.hours) ? `${h}:` : '') + m + (seconds ? `:${s}` : '');
     }
 
     public before(other: TimeLike): boolean {

@@ -25,7 +25,7 @@ export abstract class Pathfinding {
 
     protected init() {
         this.data.push(this.start);
-        console.log('pathfinding from %s to %s', this.start.stop.stopId, this.end.stop.stopId);
+        console.log(`${this.constructor.name} pathfinding from ${this.start.stop.stopId} to ${this.end.stop.stopId}`);
     }
 
     public reset() {
@@ -56,7 +56,7 @@ export abstract class Pathfinding {
 
     public get isFinished(): boolean {
         // This also checks for edge case where end === start
-        return this.end.parentVertex !== undefined;
+        return this.end.parentVertex !== undefined || this.end === this.start;
     }
 
     public abstract getWeight(v: Vertex): number;
@@ -102,6 +102,8 @@ export abstract class Pathfinding {
     }
 
     public async nextWalking() {
+        if (this.isFinished)
+            return;
         const v = this.data.peek();
         if (!v) return;
         for (const e2 of await v.getWalkingEdges()) {

@@ -52,6 +52,9 @@ function init() {
 
 const theme = createTheme({
   typography: {
+    body1: {
+      textAlign: 'left'
+    },
     body2: {
       fontSize: '0.8rem',
       color: 'gray',

@@ -12,6 +12,7 @@ import { DirectedWeightedEdge } from '../../../../../models/directedWeightedEdge
 import VerticalDottedLine from './VerticalDottedLine';
 import { usePathfindingContext } from '../../../../../contexts/pathfinding.context';
 import { PathfindingConfig } from '../../../../../models/pathfinding/pathfindingConfig';
+import { Time } from '../../../../../models/time';
 
 interface TripCardProps {
     vertex: Vertex;
@@ -44,15 +45,17 @@ export default function TripCard({ vertex, showRouteFromRoot = true }: TripCardP
                 </Box>}
                 <Box sx={{ display: 'flex', flexDirection: 'row', gap: '10px', padding: '0.5rem' }}>
                     <VerticalDottedLine color={`#${group[0]?.route?.routeColor}`} />
-                    <Box>
+                    <Box sx={{ width: '100%' }}>
                         <Box sx={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                             <Typography>{group[0]?.target.stop.stopName}</Typography>
-                            <Typography sx={{ fontSize: '0.8rem', color: 'gray' }}>{group[0]?.target.stop.stopId}</Typography>
+                            <Typography variant='body2'>{group[0]?.target.stop.stopId}</Typography>
+                            <Typography variant='body2' sx={{ marginLeft: 'auto' }}>{Time.of(group[0].target.time).toString({ seconds: false })}</Typography>
                         </Box>
                         {group.map((edge, j) =>
                             <Box key={j} sx={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                                 <Typography>{edge?.source.stop.stopName}</Typography>
-                                <Typography sx={{ fontSize: '0.8rem', color: 'gray' }}>{edge?.source.stop.stopId}</Typography>
+                                <Typography variant='body2'>{edge?.source.stop.stopId}</Typography>
+                                <Typography variant='body2' sx={{ marginLeft: 'auto' }}>{Time.of(edge.source.time).toString({ seconds: false })}</Typography>
                             </Box>)
                         }
                     </Box>
@@ -67,9 +70,9 @@ export default function TripCard({ vertex, showRouteFromRoot = true }: TripCardP
         return <Box>
             <Typography gutterBottom variant='body2'>
                 <Tooltip
-                    title="A gyalogos átszállásokra 2 perc + 1 másodperc/méter van számolva"
+                    title={<>Tartalmazza a várakozási időt. A gyalogos átszállások számítása:<br />2 perc + 1 másodperc/méter</>}
                     sx={{ textDecoration: 'underline dotted' }}>
-                    <span style={{ "textDecoration": "underline dotted" }}>Távolság az indulóponttól:</span>
+                    <span style={{ "textDecoration": "underline dotted" }}>Utazási idő:</span>
                 </Tooltip> {vertex.distance.toString({ hours: false })} ({Math.round(+vertex.distance)} mp)
                 <br />
                 <Tooltip
@@ -94,16 +97,17 @@ export default function TripCard({ vertex, showRouteFromRoot = true }: TripCardP
     }
 
     useEffect(() => {
-        if (!expanded || details !== undefined)
-            return;
-        setDetails(loadDetails());
-    }, [expanded]);
-
-    useEffect(() => {
+        setDetails(undefined);
         setExpanded(false);
     }, [vertex]);
 
-    return <Accordion expanded={expanded} onChange={(_, expanded) => setExpanded(expanded)}>
+    function expand() {
+        if (details === undefined)
+            setDetails(loadDetails());
+        setExpanded(true);
+    }
+
+    return <Accordion expanded={expanded} onChange={(_, expanded) => { if (expanded) expand(); else setExpanded(false); }}>
         <AccordionSummary
             expandIcon={<FontAwesomeIcon icon={faChevronDown} />}
             aria-controls={`panel${vertex.id}-content`}
@@ -112,7 +116,7 @@ export default function TripCard({ vertex, showRouteFromRoot = true }: TripCardP
             <Box sx={{ display: 'flex', borderRadius: '10px', gap: '0.3rem', paddingX: '0.5rem', width: '100%' }}>
                 <RouteIcon stop={vertex} />
                 {edge && <RouteBadge route={edge.route} />}
-                <Typography sx={{ marginLeft: '0.25rem' }}>
+                <Typography sx={{ marginLeft: '0.25rem', textAlign: 'left' }}>
                     {vertex.stop.stopName}
                 </Typography>
                 <Typography variant='body2' sx={{ marginLeft: 'auto', height: '100%', textAlign: 'right' }}>

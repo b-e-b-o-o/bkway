@@ -21,12 +21,12 @@ export function avatarSize(size: Size): string {
     }
 }
 
-export function fontSize(size: Size): string {
+export function fontSizeRem(size: Size): number {
     switch (size) {
-        case 'xsmall': return '0.8rem';
-        case 'small': return '0.9rem';
-        case 'medium': return '1rem';
-        case 'large': return '1.2rem';
-        case 'xlarge': return '1.4rem';
+        case 'xsmall': return 0.8;
+        case 'small': return 0.9;
+        case 'medium': return 1;
+        case 'large': return 1.2;
+        case 'xlarge': return 1.4;
     }
 }

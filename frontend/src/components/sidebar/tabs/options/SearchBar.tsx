@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { FlyToInterpolator } from 'deck.gl';
-import { Stop } from '../../../../types/gtfs';
+import { Route, Stop } from '../../../../types/gtfs';
+import { searchStops } from '../../../../services/api.service';
 
 import { useViewStateContext } from '../../../../contexts/viewState.context';
 import './SearchBar.css';
 import { faLocationDot, faMagnifyingGlass, faWheelchair } from '@fortawesome/free-solid-svg-icons';
+import { Box, Divider } from '@mui/material';
+import RouteBadge from '../../common/RouteBadge';
 
-const BACKEND = import.meta.env.BACKEND ?? 'http://127.0.0.1:3333';
+const controller = new AbortController();
 
 export default function SearchBar({
     placeholder = '',
@@ -20,21 +23,21 @@ export default function SearchBar({
         setStop: React.Dispatch<React.SetStateAction<Stop | undefined>>,
     }) {
     const { setInitialViewState } = useViewStateContext();
-    const [results, setResults] = useState<Stop[]>([]);
+    const [results, setResults] = useState<{ stop: Stop, routes: Route[] }[]>([]);
     const input = useRef<HTMLInputElement>(null);
 
-    function flyToStop(result: Stop) {
-        setStop(result);
+    function flyToStop(stop: Stop) {
+        setStop(stop);
         setInitialViewState({
-            longitude: result.stopLon! - 0.001,
-            latitude: result.stopLat!,
+            longitude: stop.stopLon! - 0.001,
+            latitude: stop.stopLat!,
             zoom: 17,
             transitionInterpolator: new FlyToInterpolator({ speed: 2 }),
             transitionDuration: 'auto'
         });
         if (!input.current)
             return;
-        input.current.value = result.stopName!;
+        input.current.value = stop.stopName!;
         updateResults();
     }
 
@@ -43,9 +46,14 @@ export default function SearchBar({
             setResults([]);
             return;
         }
-        fetch(`${BACKEND}/stops/search?q=${input.current?.value}`)
-            .then(res => res.json())
-            .then((data: Stop[]) => setResults(data));
+        searchStops(input.current?.value, { signal: controller.signal })
+            .then(r => setResults(r))
+            .catch(e => {
+                if (e instanceof DOMException && e.name === 'AbortError')
+                    return;
+                console.error(e)
+            });
+        return () => controller.abort();
     }
 
     useEffect(() => {
@@ -70,24 +78,28 @@ export default function SearchBar({
             results.length > 0 &&
             <div className='search-results'>
                 {
-                    results.map((result: Stop, index: number) =>
+                    results.filter(({ routes }) => routes.length > 0).map((result, index) => <div key={index}>
                         <div
-                            key={index}
                             tabIndex={-1} // Allow focus (search-container would get hidden on blur before onClick fires, instead we blur manually)
                             className='search-result flex flex-row items-center min-h-12 p-2 text-xl cursor-pointer gap-2'
-                            onClick={({ target }) => { (target as HTMLDivElement).blur(); flyToStop(result); }}>
+                            onClick={() => { document.querySelector<HTMLElement>(':focus')?.blur?.(); flyToStop(result.stop); }}>
                             <div className='location-icon'>
                                 <FontAwesomeIcon icon={faLocationDot} color='#aaf' />
                             </div>
-                            {result.stopName}
-                            <div className='flex flex-row h-full pl-2'>
-                                {
-                                    (result.wheelchairBoarding == 1) &&
-                                    <FontAwesomeIcon icon={faWheelchair} color='rgb(162, 189, 214)' opacity={0.8} />
-                                }
-                            </div>
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column', textAlign: 'left', overflowX: 'hidden' }}>
+                                {result.stop.stopName}
+                                <Box sx={{ display: 'flex', gap: '0.25rem', marginY: '3px' }}>
+                                    {result.routes.map((route, i) => <RouteBadge key={i} route={route} size='xsmall' />)}
+                                </Box>
+                            </Box>
+                            {result.stop.wheelchairBoarding == 1 &&
+                                <Box sx={{ display: 'flex', flexDirection: 'row', height: '100%', marginLeft: 'auto' }}>
+                                    <FontAwesomeIcon icon={faWheelchair} color='rgb(162, 189, 214)' />
+                                </Box>
+                            }
                         </div>
-                    )
+                        <Divider />
+                    </div>)
                 }
             </div>
         }

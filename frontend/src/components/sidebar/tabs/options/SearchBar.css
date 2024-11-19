@@ -42,7 +42,7 @@ input {
     border-width: 2px;
     border-radius: 0.5rem;
     border-color: var(--accent-color);
-    background-color: var(--primary-color);
+    background-color: rgba(16, 0, 62, 1);
 }
 
 .search-container:focus-within {
@@ -74,5 +74,5 @@ input {
 .location-icon>svg {
     vertical-align: middle;
     height: 100%;
-    width: 16px;
+    width: 20px;
 }

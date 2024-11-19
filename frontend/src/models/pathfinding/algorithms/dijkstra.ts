@@ -6,10 +6,6 @@ import { Time } from "../../time";
 export class DijkstraPathfinding extends HeapPathfinding {
     public static readonly name = 'dijkstra';
 
-    protected compare(a: Vertex, b: Vertex): number {
-        return -Time.compare(a.distance, b.distance)
-    };
-
     public getWeight(v: Vertex): number {
         return +v.distance;
     }

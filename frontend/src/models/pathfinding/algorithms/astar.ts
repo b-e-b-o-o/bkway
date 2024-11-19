@@ -7,12 +7,8 @@ export class AStarPathfinding extends HeapPathfinding {
     public static readonly name = 'astar';
     public readonly useHeuristicWeights = true;
 
-    protected compare(a: Vertex, b: Vertex): number {
-        return (a.weightedHeuristic - b.weightedHeuristic) - Time.compare(a.distance, b.distance)
-    };
-
     public getWeight(v: Vertex): number {
-        return +v.weightedHeuristic + v.heuristic;
+        return +v.weightedHeuristic + +v.distance;
     }
 
     public constructor(start: Stop, end: Stop, time: Time) {
