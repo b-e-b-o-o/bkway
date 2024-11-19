@@ -7,6 +7,9 @@ import { Stop } from "../../types/gtfs";
 import { DirectedWeightedEdge } from "../directedWeightedEdge";
 
 export abstract class Pathfinding {
+    public static readonly name: string;
+    public readonly useHeuristicWeights: boolean = false;
+
     public readonly abstract data: IDataStructure;
     #path: Path[] | undefined;
     #graph: Graph;

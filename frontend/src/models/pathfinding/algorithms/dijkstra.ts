@@ -1,9 +1,11 @@
 import type { Stop } from "src/types/gtfs";
-import type { Vertex } from "../vertex";
-import { HeapPathfinding } from "./heapPathfinding";
-import { Time } from "../time";
+import type { Vertex } from "../../vertex";
+import { HeapPathfinding } from "../heapPathfinding";
+import { Time } from "../../time";
 
 export class DijkstraPathfinding extends HeapPathfinding {
+    public static readonly name = 'dijkstra';
+
     protected compare(a: Vertex, b: Vertex): number {
         return -Time.compare(a.distance, b.distance)
     };

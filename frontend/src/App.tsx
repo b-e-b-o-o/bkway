@@ -80,9 +80,9 @@ const theme = createTheme({
       secondary: '#FFFFFF',
       disabled: '#999999' // Eg. disabled pathfinding tab
     },
-    action: { // FABs (Floating Action Buttons)
+    action: { // FABs (Floating Action Buttons), Select dropdowns
       active: '#FFFFFF',
-      hover: '#aaaaaa',
+      hover: '#0f0728',
       selected: '#FFFFFF',
       disabled: '#333333',
       disabledBackground: '#aaaaaa',
@@ -103,6 +103,13 @@ const theme = createTheme({
       styleOverrides: {
         input: {
           borderRadius: 0
+        }
+      }
+    },
+    MuiFilledInput: {
+      styleOverrides: {
+        input: {
+          paddingTop: '10px'
         }
       }
     },

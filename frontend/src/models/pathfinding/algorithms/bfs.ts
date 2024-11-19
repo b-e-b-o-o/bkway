@@ -1,10 +1,12 @@
-import type { Vertex } from "../vertex";
-import type { Time } from "../time";
-import type { Stop } from "../../types/gtfs";
-import { Pathfinding } from './pathfinding';
-import { QueueDataStructure } from "./datastructures";
+import type { Vertex } from "../../vertex";
+import type { Time } from "../../time";
+import type { Stop } from "../../../types/gtfs";
+import { Pathfinding } from '../pathfinding';
+import { QueueDataStructure } from "../datastructures";
 
 export class BFSPathfinding extends Pathfinding {
+    public static readonly name = 'bfs';
+
     public data = new QueueDataStructure();
 
     public getWeight(v: Vertex): number {

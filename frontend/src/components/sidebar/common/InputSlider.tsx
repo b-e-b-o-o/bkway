@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Input, Slider, Typography, Grid2 as Grid, InputAdornment } from '@mui/material';
+import { Box, Input, Slider, Typography, Grid2 as Grid, InputAdornment, FilledInput } from '@mui/material';
 import type { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -55,7 +55,7 @@ export default function InputSlider({ refValue, min, max, step = 1, icon, title,
                     />
                 </Grid>
                 <Grid>
-                    <Input
+                    <FilledInput
                         sx={{ display: 'flex', paddingX: '5px' }}
                         value={value}
                         size="small"

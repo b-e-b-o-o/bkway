@@ -7,6 +7,7 @@ import { Time } from "./time";
 import type { Graph } from "./graph";
 import type { Stop } from "../types/gtfs";
 import type { Path } from "../types/mapdata";
+import { PathfindingConfig } from "./pathfinding/pathfindingConfig";
 
 /** Gets added to every transfer time when walking */
 const BASE_TRANSFER_TIME = Time.of(120); // 2 minutes
@@ -53,6 +54,10 @@ export abstract class Vertex {
     // Since the root vertex has no parent edge, the two properties should depend on each other
     public get isRoot(): boolean {
         return this.#parentEdge === null;
+    }
+
+    public get weightedHeuristic(): number {
+        return PathfindingConfig.heuristicWeight * this.heuristic;
     }
 
     protected setRoot() {
@@ -107,7 +112,7 @@ export abstract class Vertex {
             return [];
         if (!this.#walkingEdges) {
             this.#walkingEdges = [];
-            const nearbyStops = await getNearbyStops(this.stop.stopId);
+            const nearbyStops = await getNearbyStops(this.stop.stopId, PathfindingConfig.walkingDistance);
             for (const stop of nearbyStops) {
                 const vertex = this.graph.getOrAddVertex(stop);
                 const travelDistance = BASE_TRANSFER_TIME.plus(this.location.distanceMeters(vertex.location));

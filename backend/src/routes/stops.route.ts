@@ -19,7 +19,9 @@ router.get('/', (req: Request, res: Response) => {
 
 router.get('/:stopId/nearby', async (req: Request, res: Response) => {
   const { stopId } = req.params;
-  res.send(await getWalkingNeighbors(stopId));
+  const { distance } = req.query;
+  const distanceM = Number.parseInt(distance?.toString() ?? 'NaN', 10) ?? 150;
+  res.send(await getWalkingNeighbors(stopId, distanceM));
 });
 
 router.get('/:stopId/neighbors', async (req: Request, res: Response) => {

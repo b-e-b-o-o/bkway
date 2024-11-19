@@ -49,11 +49,11 @@ export async function searchStops(name: string) {
     return [...startsWith, ...contains];
 }
 
-export async function getWalkingNeighbors(stopId: string) {
+export async function getWalkingNeighbors(stopId: string, bbox = 150) {
     const source = getStops({ stop_id: stopId })[0];
     const [bboxLower, bboxUpper] = getBoundsOfDistance(
         { lat: source.stop_lat!, lon: source.stop_lon! },
-        150 // TODO: don't hardcode this
+        bbox
     );
     return database.select()
         .from(stops)
@@ -68,8 +68,6 @@ export async function getWalkingNeighbors(stopId: string) {
 }
 
 export async function getNeighbors(stopId: string, time: string) {
-    // Timestamps don't have to be formatted hh:MM:ss, they get converted back to a number anyway:
-    // https://github.com/BlinkTagInc/node-gtfs/blob/90a24f80b8897fc6f0420da351198a8a5f0c98a3/src/lib/utils.ts#L59
     const [h, m, s = '0'] = time.split(':');
     const fromTime = (+h * 60 + +m) * 60 + +s; // obviously, 0x1e::0b11101 === 24:00:30
     const toTime = fromTime + 3600; // TODO: don't hardcode this either
