@@ -128,7 +128,7 @@ export default function OptionsTab() {
                 }}
             />
         </Box>
-        {pathfinding?.useHeuristicWeights &&
+        {variant === 'astar' &&
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'stretch', gap: '10px' }}>
                 <Box sx={{ display: 'flex', minWidth: 'fit-content', alignSelf: 'center', alignItems: 'center', gap: '0.5rem' }} id="heuristic-weight-helper-text">
                     Heurisztika súlya:

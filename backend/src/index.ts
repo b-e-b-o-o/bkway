@@ -1,34 +1,27 @@
 import express, { json } from "express";
 import type { Express, Request, Response } from "express";
-import { importGtfs, openDb, getAgencies } from "gtfs";
-import { SqliteError } from "better-sqlite3";
 import cors from "cors";
 import dotenv from "dotenv";
-import config from './configs/gtfs.config'
 import stopsRouter from "./routes/stops.route";
 import geojsonRouter from "./routes/geojson.route";
+import { } from "./utils/database";
 
 dotenv.config();
 
 const app: Express = express();
 const port: string | number = process.env.PORT ?? 3000;
 
-try {
-  openDb(config);
-  getAgencies();
-  console.log("Loaded database from config");
+if (process.env.NODE_ENV?.toLowerCase() === 'development') {
+  app.use(cors());
 }
-catch (e) {
-  if (e instanceof SqliteError) {
-    await importGtfs(config);
-  }
-  else {
-    throw e;
-  }
-};
+else {
+  app.use(cors({
+    origin: 'https://bee-612.space',
+    methods: 'GET'
+  }));
+}
 
 app.use(json());
-app.use(cors());
 app.use('/data', express.static('/usr/data/public/', { index: false }));
 app.use('/stops', stopsRouter);
 app.use('/geojson', geojsonRouter);

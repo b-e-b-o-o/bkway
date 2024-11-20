@@ -1,17 +1,18 @@
 ---
 
 services:
-  bkway-front:
-    image: bkway-front
-    pull_policy: never
-    build:
-      context: ./frontend
-      target: production
-    ports:
-      - 4173:4173
-    environment:
-      - BACKEND=http://192.168.0.66:3333
-    restart: unless-stopped
+# Just serve dist files instead of doing this `vite preview` mess
+  # bkway-front:
+  #   image: bkway-front
+  #   pull_policy: never
+  #   build:
+  #     context: ./frontend
+  #     target: production
+  #   ports:
+  #     - 4173:4173
+  #   environment:
+  #     - BACKEND=http://192.168.0.66:3333
+  #   restart: unless-stopped
 
   bkway-back:
     image: bkway-back

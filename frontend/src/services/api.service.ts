@@ -3,7 +3,13 @@ import type { Route, Shape, Stop, StopTime, Trip } from "../types/gtfs";
 import type { Time } from "../models/time";
 
 export namespace ApiConfig {
-    export const baseUrl = import.meta.env.BACKEND ?? 'http://127.0.0.1:3333';
+    const defaultBaseUrl = 'http://127.0.0.1:3333';
+    export const baseUrl = (() => {
+        if (import.meta.env.BKWAY_BACKEND)
+            return import.meta.env.BKWAY_BACKEND;
+        console.warn(`Environment variable BKWAY_BACKEND is not set, defaulting to ${defaultBaseUrl}`);
+        return defaultBaseUrl;
+    })();
 };
 
 export async function searchStops(query: string, { signal }: { signal?: AbortSignal } = {}) {

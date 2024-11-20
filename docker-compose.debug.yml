@@ -10,7 +10,6 @@ services:
     ports:
       - 5173:5173
     environment:
-      - BACKEND=https://127.0.0.1:3333
       - CHOKIDAR_USEPOLLING=true
     volumes:
       - ./frontend:/usr/app
@@ -30,4 +29,7 @@ services:
       - PORT=3333
     volumes:
       - ./data:/usr/data
+      - ./backend:/usr/app
+      - /usr/app/node_modules
+      - /usr/app/dist
     restart: unless-stopped

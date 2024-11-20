@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import Database, { SqliteError } from "better-sqlite3";
 import { drizzle } from "drizzle-orm/better-sqlite3";
-import { getStopsAsGeoJSON, importGtfs } from "gtfs";
+import { getAgencies, getStopsAsGeoJSON, importGtfs, openDb } from "gtfs";
 import config from '../configs/gtfs.config';
 import { stopTimes } from "../models/db/schema/stop-times";
 import { type ColumnBaseConfig, isNull, or, sql } from "drizzle-orm";
@@ -18,26 +18,39 @@ function toTimestamp(column: SQLiteColumn<ColumnBaseConfig<'string', 'SQLiteText
 
 async function ensureDatabase() {
     try {
+        openDb(config);
+        getAgencies();
         return new Database(config.sqlitePath);
     }
     catch (e) {
-        if ((e instanceof SqliteError) && e.code === 'SQLITE_CANTOPEN') {
+        if ((e instanceof SqliteError) && (e.code === 'SQLITE_CANTOPEN' || e.code === 'SQLITE_ERROR')) {
             console.log('Database not found, importing GTFS');
             await importGtfs(config);
-            console.log('Loaded data, setting arrivalTimestamp and departureTimestamp');
+            console.log('Setting arrivalTimestamp and departureTimestamp');
             const db = new Database(config.sqlitePath);
+            // In theory it should be enough to set these where either (or just arrivalTime) is null, but it didn't seem to work in practice
             await drizzle(db).update(stopTimes).set({
                     arrivalTimestamp: toTimestamp(stopTimes.arrivalTime),
                     departureTimestamp: toTimestamp(stopTimes.departureTime),
                 })
                 .execute();
+            await fs.access('/usr/data/public/').catch(async () => {
+                console.log('Creating public data folder for GeoJSON files');
+                await fs.mkdir('/usr/data/public/')
+            });
             console.log('Creating GeoJSON files');
             try {
                 const fStops = await fs.open('/usr/data/public/stops.geo.json', 'w');
                 const fShapes = await fs.open('/usr/data/public/shapes.geo.json', 'w');
                 await Promise.all([
-                    fStops.writeFile(JSON.stringify(getStopsAsGeoJSON())),
-                    fShapes.writeFile(JSON.stringify(getStopsAsGeoJSON())),
+                    fStops.writeFile(JSON.stringify(getStopsAsGeoJSON())).then(() => {
+                        console.log('Stops GeoJSON written');
+                        fStops.close();
+                    }),
+                    fShapes.writeFile(JSON.stringify(getStopsAsGeoJSON())).then(() => {
+                        console.log('Shapes GeoJSON written');
+                        fStops.close();
+                    }),
                 ]);
             }
             catch (e) {
