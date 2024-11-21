@@ -14,6 +14,7 @@
 - [ ] Code could be cleaned up
   - [ ] `flyTo` should be in a util file (also, take a look at Mapbox GL JS's [built-in `flyTo`](https://docs.mapbox.com/mapbox-gl-js/api/#map#flyto))
 - [ ] Start stop doesn't show on final plan
+- [ ] Loading spinner in search bar doesn't show unless there had already been results before changing the query
 
 ### Potential improvements
 
