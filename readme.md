@@ -31,7 +31,8 @@
   - [ ] Allow for refreshing the source data with no downtime
 - [ ] Don't reload `incompletePaths` on every step, append/remove old paths instead
   - Since paths to `parentVertex` are cached, this might not even be a significant performance improvement. Low priority
-- [ ] Accessible mode: filter stops and routes to only those accessible with a wheelchair
+- [ ] Accessible planning mode: filter stops and routes to only those accessible with a wheelchair
+- [ ] Better accessibility, a11y support
 - [ ] Clickable stops for setting source and target
 - [ ] Use [WAMP](https://wamp-proto.org/) for request-response-based WebSocket communication
   - Skips sending headers on every request
