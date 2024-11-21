@@ -24,6 +24,7 @@ services:
       - 3333:3333
     environment:
       - PORT=3333
+    # Do not mount if database is in memory. Optional otherwise.
     volumes:
       - ./data:/usr/data
     restart: unless-stopped

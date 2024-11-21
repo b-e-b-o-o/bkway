@@ -12,8 +12,7 @@ import { faLocationDot } from '@fortawesome/free-solid-svg-icons/faLocationDot';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons/faMagnifyingGlass';
 import { faWheelchair } from '@fortawesome/free-solid-svg-icons/faWheelchair';
 import RouteBadge from '../../common/RouteBadge';
-
-const controller = new AbortController();
+import { CircularProgress } from '@mui/material';
 
 export default function SearchBar({
     placeholder = '',
@@ -27,6 +26,8 @@ export default function SearchBar({
     }) {
     const { setInitialViewState } = useViewStateContext();
     const [results, setResults] = useState<{ stop: Stop, routes: Route[] }[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const abortController = useRef<AbortController | null>(null);
     const input = useRef<HTMLInputElement>(null);
 
     function flyToStop(stop: Stop) {
@@ -44,13 +45,22 @@ export default function SearchBar({
         updateResults();
     }
 
-    function updateResults() {
+    async function updateResults() {
         if (!input.current || input.current.value.length < 2) {
             setResults([]);
             return;
         }
-        searchStops(input.current?.value, { signal: controller.signal })
-            .then(r => setResults(r))
+        setIsLoading(true);
+        if (abortController.current) {
+            abortController.current.abort();
+        }
+        const controller = new AbortController();
+        abortController.current = controller;
+        await searchStops(input.current?.value, { signal: controller.signal })
+            .then(r => {
+                setResults(r);
+                setIsLoading(false);
+            })
             .catch(e => {
                 if (e instanceof DOMException && e.name === 'AbortError')
                     return;
@@ -81,28 +91,29 @@ export default function SearchBar({
             results.length > 0 &&
             <div className='search-results'>
                 {
-                    results.filter(({ routes }) => routes.length > 0).map((result, index) => <div key={index}>
-                        <div
-                            tabIndex={-1} // Allow focus (search-container would get hidden on blur before onClick fires, instead we blur manually)
-                            className='search-result flex flex-row items-center min-h-12 p-2 text-xl cursor-pointer gap-2'
-                            onClick={() => { document.querySelector<HTMLElement>(':focus')?.blur?.(); flyToStop(result.stop); }}>
-                            <div className='location-icon'>
-                                <FontAwesomeIcon icon={faLocationDot} color='#aaf' />
+                    isLoading ? <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginY: '1rem' }}> <CircularProgress /> </Box> :
+                        results.filter(({ routes }) => routes.length > 0).map((result, index) => <div key={index}>
+                            <div
+                                tabIndex={-1} // Allow focus (search-container would get hidden on blur before onClick fires, instead we blur manually)
+                                className='search-result flex flex-row items-center min-h-12 p-2 text-xl cursor-pointer gap-2'
+                                onClick={() => { document.querySelector<HTMLElement>(':focus')?.blur?.(); flyToStop(result.stop); }}>
+                                <div className='location-icon'>
+                                    <FontAwesomeIcon icon={faLocationDot} color='#aaf' />
+                                </div>
+                                <Box sx={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column', textAlign: 'left', overflowX: 'hidden' }}>
+                                    {result.stop.stopName}
+                                    <Box sx={{ display: 'flex', gap: '0.25rem', marginY: '3px' }}>
+                                        {result.routes.map((route, i) => <RouteBadge key={i} route={route} size='xsmall' />)}
+                                    </Box>
+                                </Box>
+                                {result.stop.wheelchairBoarding == 1 &&
+                                    <Box sx={{ display: 'flex', flexDirection: 'row', height: '100%', marginLeft: 'auto' }}>
+                                        <FontAwesomeIcon icon={faWheelchair} color='rgb(162, 189, 214)' />
+                                    </Box>
+                                }
                             </div>
-                            <Box sx={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column', textAlign: 'left', overflowX: 'hidden' }}>
-                                {result.stop.stopName}
-                                <Box sx={{ display: 'flex', gap: '0.25rem', marginY: '3px' }}>
-                                    {result.routes.map((route, i) => <RouteBadge key={i} route={route} size='xsmall' />)}
-                                </Box>
-                            </Box>
-                            {result.stop.wheelchairBoarding == 1 &&
-                                <Box sx={{ display: 'flex', flexDirection: 'row', height: '100%', marginLeft: 'auto' }}>
-                                    <FontAwesomeIcon icon={faWheelchair} color='rgb(162, 189, 214)' />
-                                </Box>
-                            }
-                        </div>
-                        <Divider />
-                    </div>)
+                            <Divider />
+                        </div>)
                 }
             </div>
         }

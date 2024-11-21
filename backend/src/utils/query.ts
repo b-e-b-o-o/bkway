@@ -1,4 +1,4 @@
-import { and, between, eq, getTableColumns, gte, isNull, like, lte, min, not, or, sql } from 'drizzle-orm';
+import { and, between, eq, getTableColumns, gte, inArray, isNull, like, lte, min, not, or, sql } from 'drizzle-orm';
 
 import { getStops } from 'gtfs';
 import { getBoundsOfDistance } from 'geolib'
@@ -46,22 +46,26 @@ export async function searchStops(name: string) {
         )
         .orderBy(stops.stopName)
         .limit(remaining);
-    return Promise.all([...startsWith, ...contains].map(async (stop) => {
-        const tripIds = database.selectDistinct({ tripId: stopTimes.tripId })
-            .from(stops)
-            .innerJoin(stopTimes, eq(stopTimes.stopId, stops.stopId))
-            .where(eq(sql<string>`${stop.stopId}`, stops.stopId))
-            .as('tripIds');
-        const routeIds = database.selectDistinct({ routeId: trips.routeId })
-            .from(trips)
-            .innerJoin(tripIds, eq(tripIds.tripId, trips.tripId))
-            .as('routeIds');
+    const results = [...startsWith, ...contains];
+    const stopIds = results.map(stop => stop.stopId);
+    const tripIds = database.selectDistinct({ stopId: stopTimes.stopId, tripId: stopTimes.tripId })
+        .from(stops)
+        .innerJoin(stopTimes, eq(stopTimes.stopId, stops.stopId))
+        .where(inArray(stops.stopId, stopIds))
+        .as('tripIds');
+    const routeIds = database.selectDistinct({ stopId: tripIds.stopId, routeId: trips.routeId })
+        .from(trips)
+        .innerJoin(tripIds, eq(tripIds.tripId, trips.tripId))
+        .as('routeIds');
+    const stopRoutes = await database.select({ stopId: routeIds.stopId, routes: routes })
+        .from(routes)
+        .innerJoin(routeIds, eq(routeIds.routeId, routes.routeId))
+        .orderBy(routes.routeType, routes.routeShortName)
+
+    return Promise.all(results.map(stop => {
         return {
-            stop,
-            routes: await database.select({ ...getTableColumns(routes) })
-                .from(routes)
-                .innerJoin(routeIds, eq(routeIds.routeId, routes.routeId))
-                .orderBy(routes.routeType, routes.routeShortName)
+            stop: stop,
+            routes: stopRoutes.filter(route => route.stopId === stop.stopId).map(route => route.routes)
         }
     }));
 }

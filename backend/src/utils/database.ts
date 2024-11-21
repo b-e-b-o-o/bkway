@@ -25,9 +25,13 @@ async function ensureDatabase() {
     catch (e) {
         if ((e instanceof SqliteError) && (e.code === 'SQLITE_CANTOPEN' || e.code === 'SQLITE_ERROR')) {
             console.log('Database not found, importing GTFS');
-            await importGtfs(config);
-            console.log('Setting arrivalTimestamp and departureTimestamp');
             const db = new Database(config.sqlitePath);
+            await importGtfs({
+                ...config,
+                sqlitePath: undefined,
+                db: db
+            });
+            console.log('Setting arrivalTimestamp and departureTimestamp');
             // In theory it should be enough to set these where either (or just arrivalTime) is null, but it didn't seem to work in practice
             await drizzle(db).update(stopTimes).set({
                     arrivalTimestamp: toTimestamp(stopTimes.arrivalTime),
@@ -36,7 +40,7 @@ async function ensureDatabase() {
                 .execute();
             await fs.access('/usr/data/public/').catch(async () => {
                 console.log('Creating public data folder for GeoJSON files');
-                await fs.mkdir('/usr/data/public/')
+                await fs.mkdir('/usr/data/public/', { recursive: true });
             });
             console.log('Creating GeoJSON files');
             try {
@@ -45,12 +49,10 @@ async function ensureDatabase() {
                 await Promise.all([
                     fStops.writeFile(JSON.stringify(getStopsAsGeoJSON())).then(() => {
                         console.log('Stops GeoJSON written');
-                        fStops.close();
-                    }),
+                    }).finally(() => fStops.close()),
                     fShapes.writeFile(JSON.stringify(getStopsAsGeoJSON())).then(() => {
                         console.log('Shapes GeoJSON written');
-                        fStops.close();
-                    }),
+                    }).finally(() => fShapes.close()),
                 ]);
             }
             catch (e) {
@@ -66,4 +68,14 @@ async function ensureDatabase() {
     }
 }
 
-export const database = drizzle(await ensureDatabase());
+class Db {
+    static instance: Database.Database
+    static async getValue() {
+        if (!Db.instance) {
+            Db.instance = await ensureDatabase();
+        }    
+        return Db.instance;
+    }
+}
+
+export const database = drizzle(await Db.getValue());
