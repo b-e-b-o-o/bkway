@@ -15,14 +15,19 @@
   - [ ] `flyTo` should be in a util file (also, take a look at Mapbox GL JS's [built-in `flyTo`](https://docs.mapbox.com/mapbox-gl-js/api/#map#flyto))
 - [ ] Start stop doesn't show on final plan
 - [ ] Loading spinner in search bar doesn't show unless there had already been results before changing the query
+- [ ] Accented letters are case-sensitive when searching for stops
+- [ ] Certain trips stop times are above 24:00; pathfinding ignores those starting from 00:00-24:00 when exploring thesse
 
 ### Potential improvements
 
 - [ ] Brief explanations of algorithms in tooltips
 - [ ] Heuristics unit should be denoted with an *m* after the number
 - [ ] GitHub repo should be linked somewhere on the page
+- [ ] When both source and target stops have been selected, the map should zoom to a position where both are in view
 - [ ] On the pathfinding tab, there should be buttons to fly to selected stops
   - [ ] Also consider adding a highlight to last updated stop
+- [ ] Maximum transfer time is currently hardcoded to 1 hour, this should be on option
+- [ ] Option to limit total walking distance
 - [ ] Load environment variables from .env on backend
 - [ ] Improvements to data handling
   - [ ] Load database to memory (by setting its location to `:memory:`)
@@ -45,6 +50,7 @@
   - [ ] Backend runtime: [txiki.js](https://github.com/saghul/txiki.js/) (Can be compiled to a standalone executable using `tjs compile`)
 - [ ] Polyfill for 97%-ish browser support with [Babel](https://github.com/babel/babel)
 - [ ] i18n
+- [ ] Two-way pathfinding (the same algorithm running from the end stop in reverse, in parallel with the regular one)
 - [ ] Support different GTFS sources other than Budapest
   - Possibly using a tenant model on the backend?
 
