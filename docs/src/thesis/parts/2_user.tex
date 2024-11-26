@@ -8,9 +8,77 @@ Az alkalmazás böngészőben fut. Egy oldalból áll, mely nagy részét egy in
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.8\textwidth,frame]{screenshot_welcome}
-	\caption{Quisque ac tincidunt leo}
+	\caption{Az alkalmazás felülete térképpel és vezérlőpanellel}
 	\label{fig:screenshot-welcome}
 \end{figure}
+
+A térkép navigációja egérrel történik; a térkép nagyítása és kicsinyítése a görgetőkerékkel, a térkép mozgatása pedig az egér bal gombjának lenyomásával és húzásával. A térképen a BKK és a MÁV-HÉV járatainak a megállói láthatók, amik egy-egy színes körrel van jelölve, melyeknek a színét a megállóhoz tartozó járatok színe\footnote{A színek a közlekedési társaságok által használt, közismert színek (pl. a villamosok sárgák, a trolik pirosak).} határozza meg.
+
+\section{Útvonal megadása}
+
+Útvonal tervezéséhez szükség van egy indulási időpont\footnote{Az indulási idő budapesti időzóna szerint értendő, az alapértelmezett értéke az aktuális helyi idő.}, illetve egy kiinduló- és egy úticél megadására. Célpontoknak a térképen szereplő megállók közül kell választani, egyéb koordináta/cím megadására nincsen lehetőség. Ezeknek a megadására a vezérlőpanel "BEÁLLÍTÁSOK" fülén van lehetőség (\ref{fig:screenshot-settings-route}).
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.5\textwidth,frame]{screenshot_settings_route}
+	\caption{Az indulási idő, illetve a kiinduló- és célállomás beállítása}
+	\label{fig:screenshot-settings-route}
+\end{figure}
+
+Állomások választásához a megfelelő mezőbe kell írni, majd kattintással kiválasztani a megfelelő megállót - nem elég a nevét beírni, hiszen több, egymástól távoli megálló is rendelkezhet ugyanazzal a névvel. Megfelelő megálló választásához segítségképpen a listában a megállókból induló járatok is megjelennek az adott megálló neve alatt (\ref{fig:screenshot-search-stop}).
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.4\textwidth,frame]{screenshot_search_stop}
+	\caption{Az egyik \emph{Köztársaság tér} nevű megálló Törökbálinton, a másik Pécelen található}
+	\label{fig:screenshot-search-stop}
+\end{figure}
+
+Amennyiben nem ismerjük a megálló nevét, a térképen az egeret a megálló fölé helyezve megjelenik annak a neve (\ref{fig:screenshot-tooltip-stop-name}).
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth,frame]{screenshot_tooltip_stop_name}
+	\caption{A kurzor alatt lévő megálló neve egy információs buborékban jelenik meg}
+	\label{fig:screenshot-tooltip-stop-name}
+\end{figure}
+
+\section{Algoritmus kiválasztása}
+
+\subsection{Áttekintés az algoritmusokról}
+
+Az útvonalkereséshez négy különböző algoritmus használható, ezekről részletesebben a \ref{ch:TODO implementation}.~fejezetben olvashatunk.
+
+\paragraph{Áttekintés az algoritmusokról:}
+\begin{enumerate}
+	\item \textbf{BFS}: A "Breadth-First Search", azaz szélességi gráfbejárás egy soralapú algoritmus, ahol az újonnan felfedezett megállók egy sor (FIFO adatszerkezet) végére kerülnek be, így először az 1 megálló távolságra lévő megállók kerülnek felfedezésre, majd a 2, stb. . Az algoritmus alapvetően súlyozatlan gráfokon operál, súlyozott gráfokra való alkalmazásakor is figyelmen kívül hagyja az élek súlyát. Ennek következtében az útkeresés eredményeként garantáltan a legkevesebb megállóból álló utat kapjuk meg, attól függetlenül, hogy az adott út mennyi időbe telik. Ennek az algoritmusnak a futásideje egy hagyományos gráfon a legrosszabb esetben $O(|V| + |E|)$, ahol $V$ a csúcsok, $E$ az élek száma a gráfban.
+	\item \textbf{Dijkstra-algoritmus}: Az algoritmus a feltalálójáról, Edsger W. Dijkstra informatikusról kapta a nevét, és egy súlyozott gráfban keresi meg a legkisebb súlyú utat egy kiindulópontból az összes többi csúcsba. Az algoritmus a BFS-sel szemben egy prioritási sort használ, ahol a sor elemei a gráf csúcsai, és súly szerinti sorrendben kerülnek feldolgozásra. (Egy-egy csúcs súlya jelen esetben a kezdőállomásból való utazási távolságnak felel meg.) Az alkalmazásban elérhető algoritmusok közül ez az egyetlen, amely garantálja a legrövidebb utazási időt, viszont futásidőben a prioritási sor manipulálásának a komplexitásának\footnote{Az alkalmazás egy kupaccal implementálja a prioritási sort, így egy elem beillesztésének és eltávolításának a komplexitása legrosszabb esetben egyaránt $O(\log n)$.} következtében az algoritmus komplexitása is magasabb a BFS-hez képest. Az algoritmus futásideje egy hagyományos gráfon a legrosszabb esetben $O((|V| + |E|) \log |V|)$.
+	\item \textbf{Mohó algoritmus}: A mohó algoritmus a Dijkstra-algoritmushoz hasonlóan egy prioritásos soron alapul, azonban bevezeti a heurisztika fogalmát. A heurisztika egy olyan függvény, amely egy "megérzést" ad egy adott csúcsról, azaz megbecsüli, hogy az adott csúcs mennyire jó választás lehet a következő lépésben. Ebben az alkalmazásban ennek az implementációja a csúcs távolsága a célállomástól, a Föld felszínén egyenes vonalban utazott méterekben mérve\footnote{A képlet nem ugyan nem veszi figyelembe a tengerszint feletti magasságot, de ez Budapesten és környékén nem tesz drasztikus különbséget, így elfogadjuk közelítésnek.}. Az algoritmus a prioritási sorban a heurisztika értéke szerinti sorrendben dolgozza fel a csúcsokat, így általában sokkal gyorsabban eljut a célállomásba, viszont a BFS-hez hasonlóan ez sem veszi figyelembe az utazási időt, így praktikus használatra általában nem alkalmas. Az algoritmus futásideje egy hagyományos gráfon a legrosszabb esetben $O((|V| + |E|) \log |V|)$.
+	\item \textbf{A* algoritmus}: Az A* algoritmus egy továbbfejlesztett mohó algoritmus, amely a Dijkstra-algoritmus és a mohó algoritmus előnyeit igyekszik ötvözni. Az algoritmus a csúcsok súlyát (azaz a kezdőállomástól való utazási időt) és a heurisztikát (a csúcs távolságát a célállomástól) együtt veszi figyelembe a prioritási sorban, így a legjobb választásnak tűnő csúcsokat feldolgozva igyekszik a lehető leggyorsabban eljutni a célállomásba. A* algoritmus választásakor módunk van megadni egy súlyozó faktort, amellyel a heurisztika értékét szorozzuk, így az algoritmus viselkedését befolyásolhatjuk. Alacsonyabb szorzó esetén a Dijkstra-algoritmusra hasonlító viselkedést kapunk (lassabb futásidő, de rövidebb út), magasabb szorzó esetén a mohó algoritmushoz hasnlót (gyorsabb futásidő, de könnyebben eltér a legrövidebb úttól). Az alapértelmezett szorzó $1$, de saját tapasztalataim szerint a $0.3-0.5$ körüli súly jó egyensúlyt biztosít a futásidő és a "használható" eredmény között. Az algoritmus futásideje egy hagyományos gráfon a legrosszabb esetben $O((|V| + |E|) \log |V|)$.
+\end{enumerate}
+
+\paragraph{Röviden összefoglalva:}
+
+\begin{compactitem}
+	\item \textbf{BFS:} Legkevesebb megállóból álló útvonalat ad, de nem veszi figyelembe az utazási időt.
+	\item \textbf{Dijkstra:} Garantáltan a legrövidebb utazási időt adja, de magasabb futásidővel jár.
+	\item \textbf{Mohó:} Általában jelentősen gyorsabb a futásideje, de sem az utazási időt, sem az utazott megállók számát nem veszi figyelembe.
+	\item \textbf{A*:} Kompromisszum a Dijkstra és a mohó algoritmus között, súlyozó faktorral befolyásolhatjuk a viselkedését.
+\end{compactitem}
+
+\subsection{}
+
+\begin{figure}[H]
+	\centering
+	\subcaptionbox{Vestibulum quis mattis urna}{
+		\includegraphics[width=0.45\linewidth]{elte_cimer_szines}}
+	\hspace{5pt}
+	\subcaptionbox{Donec hendrerit quis dui sit amet venenatis}{
+		\includegraphics[width=0.45\linewidth]{elte_cimer_szines}}
+	\caption{Aenean porttitor mi volutpat massa gravida}
+	\label{fig:example-2}
+\end{figure}
+
 
 Lorem ipsum dolor sit amet $\mathbb{N}$\nomenclature{$\mathbb{N}$}{Set of natural numbers}, consectetur adipiscing elit. Duis nibh leo, dapibus in elementum nec, aliquet id sem. Suspendisse potenti. Nullam sit amet consectetur nibh. Donec scelerisque varius turpis at tincidunt. Cras a diam in mauris viverra vehicula. Vivamus mi odio, fermentum vel arcu efficitur, lacinia viverra nibh. Aliquam aliquam ante mi, vel pretium arcu dapibus eu. Nulla finibus ante vel arcu tincidunt, ut consectetur ligula finibus. Mauris mollis lectus sed ipsum bibendum, ac ultrices erat dictum. Suspendisse faucibus euismod lacinia $\mathbb{Z}$\nomenclature{$\mathbb{Z}$}{Set of integer numbers}.
 
