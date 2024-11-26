@@ -14,9 +14,21 @@ Az alkalmazás böngészőben fut. Egy oldalból áll, mely nagy részét egy in
 
 A térkép navigációja egérrel történik; a térkép nagyítása és kicsinyítése a görgetőkerékkel, a térkép mozgatása pedig az egér bal gombjának lenyomásával és húzásával. A térképen a BKK és a MÁV-HÉV járatainak a megállói láthatók, amik egy-egy színes körrel van jelölve, melyeknek a színét a megállóhoz tartozó járatok színe\footnote{A színek a közlekedési társaságok által használt, közismert színek (pl. a villamosok sárgák, a trolik pirosak).} határozza meg.
 
-\section{Útvonal megadása}
+\section{Definíciók}
 
-Útvonal tervezéséhez szükség van egy indulási időpont\footnote{Az indulási idő budapesti időzóna szerint értendő, az alapértelmezett értéke az aktuális helyi idő.}, illetve egy kiinduló- és egy úticél megadására. Célpontoknak a térképen szereplő megállók közül kell választani, egyéb koordináta/cím megadására nincsen lehetőség. Ezeknek a megadására a vezérlőpanel "BEÁLLÍTÁSOK" fülén van lehetőség (\ref{fig:screenshot-settings-route}).
+\begin{itemize}
+	\item \textbf{Gráf:} Formálisan csúcsok és élek halmaza, ahol minden él két csúcsot köt össze. Az alkalmazás által használt modellben a közlekedési hálózatot egy irányított, súlyozott gráffal modellezzük, így "gráf" alatt a továbbiakban ezt értjük, amennyiben mást nem jelzünk.
+	\item \textbf{Csúcs:} A gráf eleme, mely egy megállót jelképez. A továbbiakban a "csúcs" és a "megálló" kifejezések egymás szinonimájaként értendőek, kontextustól függően használjuk őket.
+	\item \textbf{Él:} A gráf eleme, mely két csúcsot köt össze. Az élek irányítottak, azaz csak egy irányba utazhatóak; illetve súlyozottak, azaz minden élhez egy súlyt rendelünk, mely az élen való áthaladás költségét jelképezi. Az alkalmazásban két féle él található:
+	\begin{compactenum}
+		\item \textbf{Utazási él:} Két megálló közötti közvetlen járatot jelképez, melynek a súlya az utazás időtartamának és a járatra való várakozás idejének az összege. Ez utóbbi alól az első utazási él mentesül, hiszen az csak későbbi indulást jelent, nem várakozást.\\\textit{Megjegyzés: A program csak olyan járatokat vesz figyelembe, melyekre a várakozási idő nem haladja meg a 60 percet.}
+		\item \textbf{Átszállási él:} Két megálló közötti gyaloglást jelképez, melynek a súlya a $2 \text{perc} + 1 \frac{\text{másodperc}}{\text{méter}}$ képlet alapján számolódik, vagyis minden átszállás alapsúlya 2 perc, és az utak közötti távolság légvonalban.\\\textit{Megjegyzés: Amennyiben az útvonal első éle átszállási él, annak 0 a súlya --- ez azért van, mert könnyű az azonos nevű és egy helyen lévő megállókat összekeverni választáskor, és ezzel a módszerrel akadályozza meg a program azt, hogy egy ilyen hiba miatt hosszabbnak tűnjön az út, mint amilyen valójában.}
+	\end{compactenum}
+\end{itemize}
+
+\section{Útvonal beállításai}
+
+Útvonal tervezéséhez szükség van egy indulási időpont\footnote{Az indulási idő budapesti időzóna szerint értendő, az alapértelmezett értéke az aktuális helyi idő.}, illetve egy kiinduló- és egy úticél megadására. Célpontoknak a térképen szereplő megállók közül kell választani, egyéb koordináta/cím megadása nem lehetséges. Ezeknek a megadására a vezérlőpanel "BEÁLLÍTÁSOK" fülén van lehetőség (\ref{fig:screenshot-settings-route}).
 
 \begin{figure}[H]
 	\centering
@@ -25,7 +37,9 @@ A térkép navigációja egérrel történik; a térkép nagyítása és kicsiny
 	\label{fig:screenshot-settings-route}
 \end{figure}
 
-Állomások választásához a megfelelő mezőbe kell írni, majd kattintással kiválasztani a megfelelő megállót - nem elég a nevét beírni, hiszen több, egymástól távoli megálló is rendelkezhet ugyanazzal a névvel. Megfelelő megálló választásához segítségképpen a listában a megállókból induló járatok is megjelennek az adott megálló neve alatt (\ref{fig:screenshot-search-stop}).
+Állomások választásához a megfelelő mezőbe kell írni, majd kattintással kiválasztani a megfelelő megállót --- nem elég a nevét beírni, hiszen több, egymástól távoli megálló is rendelkezhet ugyanazzal a névvel (\ref{fig:screenshot-search-stop}). Megfelelő megálló választásához segítségképpen a listában a megállókból induló járatok is megjelennek az adott megálló neve alatt.
+
+A kiinduló- és célállomás felcserélése a két beviteli mező közti dupla nyílra kattintva lehetséges (\ref{fig:screenshot-settings-route}).
 
 \begin{figure}[H]
 	\centering
@@ -34,7 +48,7 @@ A térkép navigációja egérrel történik; a térkép nagyítása és kicsiny
 	\label{fig:screenshot-search-stop}
 \end{figure}
 
-Amennyiben nem ismerjük a megálló nevét, a térképen az egeret a megálló fölé helyezve megjelenik annak a neve (\ref{fig:screenshot-tooltip-stop-name}).
+A térképen az egeret egy megálló fölé helyezve megjelenik annak a neve (\ref{fig:screenshot-tooltip-stop-name}); ez segítséget nyújthat, ha nem ismerjük a célpontunk közelében lévő megállók nevét.
 
 \begin{figure}[H]
 	\centering
@@ -45,7 +59,7 @@ Amennyiben nem ismerjük a megálló nevét, a térképen az egeret a megálló 
 
 \section{Algoritmus kiválasztása}
 
-\subsection{Áttekintés az algoritmusokról}
+\subsection{Választható algoritmusok}
 
 Az útvonalkereséshez négy különböző algoritmus használható, ezekről részletesebben a \ref{ch:TODO implementation}.~fejezetben olvashatunk.
 
@@ -66,7 +80,48 @@ Az útvonalkereséshez négy különböző algoritmus használható, ezekről r�
 	\item \textbf{A*:} Kompromisszum a Dijkstra és a mohó algoritmus között, súlyozó faktorral befolyásolhatjuk a viselkedését.
 \end{compactitem}
 
-\subsection{}
+\subsection{Algoritmusok beállításai}
+
+Az alapértelmezett algoritmus a BFS. Ezt az útvonal beállításai alatt, úgyszintén a vezérlőpanel "BEÁLLÍTÁSOK" fülén lehet megváltoztatni (\ref{fig:screenshot-settings-algorithm}).
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.5\textwidth,frame]{screenshot_settings_algorithm}
+	\caption{Az elérhető algoritmusok listája}
+	\label{fig:screenshot-settings-algorithm}
+\end{figure}
+
+Választott algoritmustól függetlenül beállítható az is, hogy mi a maximális sétáló távolság, amin belül az alkalmazás felajánl átszállásokat. Ennek az alapértelmezett értéke 150 méter, ami tapasztalataim szerint általában elég azonos nevű, egy csoportban lévő megállók közti átszálláshoz.
+
+Amennyiben a választott algoritmus az A*, akkor a heurisztika súlyozó faktora is beállítható, mely alapértelmezetten $1$ (\ref{fig:screenshot-settings-heuristic}).
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\textwidth,frame]{screenshot_settings_heuristic}
+	\caption{A beállításokat információs buborékok magyarázzák}
+	\label{fig:screenshot-settings-heuristic}
+\end{figure}
+
+\section{Útvonal tervezése}
+
+Amennyiben megtörtént a kezdő- és célállomás megadása, illetve az algoritmust és annak paraméter(ei)t is beállítottuk, megkezdődhet az útvonal tervezése. Ez a vezérlőpanel "ÚTVONAL" fülén történik, mely érvényes beállítások megadása után válik kattinthatóvá (\ref{fig:screenshot-route-initial}).
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.4\textwidth,frame]{screenshot_route_initial}
+	\caption{Az algoritmus alapállapota az "ÚTVONAL" fülön}
+	\label{fig:screenshot-route-initial}
+\end{figure}
+
+A fül tetején az algoritmus léptetésére szolgáló gombok találhatók, melyek a következők:
+\begin{compactitem}
+	\item \textbf{Újraindítás}: Az algoritmus visszaállítása a kezdőállapotba.
+	\item \textbf{Futtatás}: Az algoritmus addig fut, amíg el nem éri a célállomást. Amíg az algoritmus fut, a többi gomb nem érhető el, ez pedig átváltozik \textbf{Szüneteltetés} gombbá, ami leállítja az algoritmust.
+	\item \textbf{Léptetés}: Az algoritmus egy lépéssel halad előre, majd megáll.
+\end{compactitem}
+
+Ezek alatt egy csúszka található, amelyen azt állíthatjuk be, hogy az algoritmus léptetéskor mennyit várakozik két lépés között. Az alapértelmezett értéke $0.75$ másodperc.
+\textit{Megjegyzés: Természetesen lehetséges, hogy az alkalmazás többet várakozik a beállítottnál, különösen alacsony értékek esetén. 0 másodperc esetén az algoritmus a lehető leggyorsabban fut.}
 
 \begin{figure}[H]
 	\centering

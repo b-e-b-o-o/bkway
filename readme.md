@@ -43,9 +43,18 @@
 - [ ] Use [WAMP](https://wamp-proto.org/) for request-response-based WebSocket communication
   - Skips sending headers on every request
 - [ ] Unused columns (especially those always null) should be omitted from responses
+- [ ] More information about the algorithm's current status
+  - [ ] List of already visited nodes
+  - [ ] List of possible inEdges for each node
+  - [ ] View queue/heap even after the algorithm has found a route
+- [ ] Searching for multiple routes
+  - [ ] Multiple routes with the same algorithm (eg. top 3)
+  - [ ] Running multiple algorithms at once
+- [ ] History/stepping backwards
 - [ ] Light mode?
 - [ ] Use better alternatives for:
   - [ ] Package manager: [pnpm](https://github.com/pnpm/pnpm) or [Deno](https://github.com/denoland/deno)
+    - Deno would require Deno >= 2.0, as node-gtfs curently [isn't compatible](https://github.com/BlinkTagInc/node-gtfs/issues/157) with Deno 1.x
   - [ ] Backend bundler: [esbuild](https://github.com/evanw/esbuild)
   - [ ] Backend runtime: [txiki.js](https://github.com/saghul/txiki.js/) (Can be compiled to a standalone executable using `tjs compile`)
 - [ ] Polyfill for 97%-ish browser support with [Babel](https://github.com/babel/babel)
