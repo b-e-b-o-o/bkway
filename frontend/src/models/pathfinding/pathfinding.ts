@@ -128,18 +128,19 @@ export abstract class Pathfinding {
         }
     }
 
-    private async visit(e: DirectedWeightedEdge) {
+    private visit(e: DirectedWeightedEdge) {
         e.visited = true;
         const v = e.target;
-        const isSameSource = e.source === v.transitParentVertex();
-        if (v.visited && (!isSameSource || v.parentEdge === e))
+        if (v.isRoot) {
             return;
-        v.heuristic = v.location.distanceMeters(this.end.location);
-        const newDistance = e.source.distance.plus(e.weight);
-        if (v.parentEdge === undefined || (isSameSource && v.distance.after(newDistance))) {
-            v.distance = newDistance;
-            v.parentEdge = e;
         }
+        const newDistance = e.source.distance.plus(e.weight);
+        if (v.parentEdge && !(+v.distance > +newDistance) && !(v.distance.equals(newDistance) && v.parentEdge.trip?.tripId === e.trip?.tripId)) {
+            return;
+        }
+        v.parentEdge = e;
+        v.distance = newDistance;
+        v.heuristic = v.location.distanceMeters(this.end.location);
         if (!v.visited)
             this.data.push(v);
         v.visited = true;
