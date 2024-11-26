@@ -1,7 +1,7 @@
 import { and, between, eq, getTableColumns, gte, inArray, isNull, like, lte, min, not, or, sql } from 'drizzle-orm';
 
 import { getStops } from 'gtfs';
-import { getBoundsOfDistance } from 'geolib'
+import { getBoundsOfDistance, getDistance } from 'geolib'
 import { LocationType, stops } from '../models/db/schema/stops'
 import { database } from '../utils/database';
 import { stopTimes } from '../models/db/schema/stop-times';
@@ -70,13 +70,13 @@ export async function searchStops(name: string) {
     }));
 }
 
-export async function getWalkingNeighbors(stopId: string, bbox = 150) {
+export async function getWalkingNeighbors(stopId: string, distance = 150) {
     const source = getStops({ stop_id: stopId })[0];
     const [bboxLower, bboxUpper] = getBoundsOfDistance(
         { lat: source.stop_lat!, lon: source.stop_lon! },
-        bbox
+        distance
     );
-    return database.select()
+    const bbox_stops = await database.select()
         .from(stops)
         .where(
             and(
@@ -85,7 +85,11 @@ export async function getWalkingNeighbors(stopId: string, bbox = 150) {
                 isNull(stops.locationType),
                 not(eq(stops.stopId, source.stop_id))
             )
-        );
+    );
+    return bbox_stops.filter((stop) => getDistance(
+        { lat: source.stop_lat!, lon: source.stop_lon! },
+        { lat: stop.stopLat!, lon: stop.stopLon! })
+        <= distance);
 }
 
 export async function getNeighbors(stopId: string, time: string) {
