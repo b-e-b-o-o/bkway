@@ -71,11 +71,13 @@ export default function TripCard({ vertex, showRouteFromRoot = true }: TripCardP
         if (vertex.isRoot) return;
         return <Box>
             <Typography gutterBottom variant='body2'>
+                Érkezési idő: {Time.of(vertex.time).toString({ hours: false })}
+                <br />
                 <Tooltip
-                    title={<>Tartalmazza a várakozási időt. A gyalogos átszállások számítása:<br />2 perc + 1 másodperc/méter</>}
+                    title={<>Tartalmazza a várakozási időt. A gyalogos átszállások számítása:<br />2 perc + 1 másodperc / gyalogolt méter</>}
                     sx={{ textDecoration: 'underline dotted' }}>
                     <span style={{ "textDecoration": "underline dotted" }}>Utazási idő:</span>
-                </Tooltip> {vertex.distance.toString({ hours: false })} ({Math.round(+vertex.distance)} mp)
+                </Tooltip> {vertex.distance.toString()} ({Math.round(+vertex.distance)} mp)
                 <br />
                 <Tooltip
                     title="A megálló és a célállomás távolsága légvonalban (m)"
