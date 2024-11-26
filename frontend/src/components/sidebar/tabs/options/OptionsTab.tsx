@@ -41,7 +41,9 @@ export default function OptionsTab() {
 
     const [startStop, setStartStop] = useState<Stop | undefined>(pathfinding?.start.stop);
     const [endStop, setEndStop] = useState<Stop | undefined>(pathfinding?.end.stop);
-    const [startTime, setStartTime] = useState(dayjs((1000 * +pathfinding?.graph.time!) || now())); // 1000 * time is NaN if pathfinding is undefined
+    const [startTime, setStartTime] = useState(
+        pathfinding ? dayjs(1000 * +pathfinding.graph.time).tz("Etc/GMT") : now()
+    );
     const [walkingDistance, setWalkingDistance] = useState(PathfindingConfig.walkingDistance);
     const [heuristicWeight, setHeuristicWeight] = useState(PathfindingConfig.heuristicWeight);
 
