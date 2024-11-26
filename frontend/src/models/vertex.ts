@@ -10,7 +10,7 @@ import type { Path } from "../types/mapdata";
 import { PathfindingConfig } from "./pathfinding/pathfindingConfig";
 
 /** Gets added to every transfer time when walking */
-const BASE_TRANSFER_TIME = Time.of(120); // 2 minutes
+const BASE_TRANSFER_TIME = Time.of(60); // 1 minute
 
 export abstract class Vertex {
     public static nextId = 0;

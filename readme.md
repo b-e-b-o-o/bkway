@@ -36,6 +36,7 @@
   - [ ] Use *.env* variables for data location (including database and GeoJSON files)
   - [ ] Create joined table (possibly view?) for joined stops -> routes for searching stops
   - [ ] Allow for refreshing the source data with no downtime
+- [ ] Use implementation of PriorityQueue where removing an arbitrary item is possible to allow for changing `parentEdge` if we find a faster route
 - [ ] Don't reload `incompletePaths` on every step, append/remove old paths instead
   - Since paths to `parentVertex` are cached, this might not even be a significant performance improvement. Low priority
 - [ ] Accessible planning mode: filter stops and routes to only those accessible with a wheelchair

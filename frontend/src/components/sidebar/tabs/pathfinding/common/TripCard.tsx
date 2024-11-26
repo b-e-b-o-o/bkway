@@ -74,7 +74,7 @@ export default function TripCard({ vertex, showRouteFromRoot = true }: TripCardP
                 Érkezési idő: {Time.of(vertex.time).toString({ hours: false })}
                 <br />
                 <Tooltip
-                    title={<>Tartalmazza a várakozási időt. A gyalogos átszállások számítása:<br />2 perc + 1 másodperc / gyalogolt méter</>}
+                    title={<>Tartalmazza a várakozási időt. A gyalogos átszállások számítása:<br />1 perc + 1 másodperc / gyalogolt méter</>}
                     sx={{ textDecoration: 'underline dotted' }}>
                     <span style={{ "textDecoration": "underline dotted" }}>Utazási idő:</span>
                 </Tooltip> {vertex.distance.toString()} ({Math.round(+vertex.distance)} mp)

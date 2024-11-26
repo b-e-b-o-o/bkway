@@ -22,7 +22,7 @@ A térkép navigációja egérrel történik; a térkép nagyítása és kicsiny
 	\item \textbf{Él:} A gráf eleme, mely két csúcsot köt össze. Az élek irányítottak, azaz csak egy irányba utazhatóak; illetve súlyozottak, azaz minden élhez egy súlyt rendelünk, mely az élen való áthaladás költségét jelképezi. Az alkalmazásban két féle él található:
 	\begin{compactenum}
 		\item \textbf{Utazási él:} Két megálló közötti közvetlen járatot jelképez, melynek a súlya az utazás időtartamának és a járatra való várakozás idejének az összege. Ez utóbbi alól az első utazási él mentesül, hiszen az csak későbbi indulást jelent, nem várakozást.\\\textit{Megjegyzés: A program csak olyan járatokat vesz figyelembe, melyekre a várakozási idő nem haladja meg a 60 percet.}
-		\item \textbf{Átszállási él:} Két megálló közötti gyaloglást jelképez, melynek a súlya a $2 \text{perc} + 1 \frac{\text{másodperc}}{\text{méter}}$ képlet alapján számolódik, vagyis minden átszállás alapsúlya 2 perc, és az utak közötti távolság légvonalban.\\\textit{Megjegyzés: Amennyiben az útvonal első éle átszállási él, annak 0 a súlya --- ez azért van, mert könnyű az azonos nevű és egy helyen lévő megállókat összekeverni választáskor, és ezzel a módszerrel akadályozza meg a program azt, hogy egy ilyen hiba miatt hosszabbnak tűnjön az út, mint amilyen valójában.}
+		\item \textbf{Átszállási él:} Két megálló közötti gyaloglást jelképez, melynek a súlya a $1 \text{perc} + 1 \frac{\text{másodperc}}{\text{méter}}$ képlet alapján számolódik, vagyis minden átszállás alapsúlya 1 perc, és az utak közötti távolság légvonalban.\\\textit{Megjegyzés: Amennyiben az útvonal első éle átszállási él, annak 0 a súlya --- ez azért van, mert könnyű az azonos nevű és egy helyen lévő megállókat összekeverni választáskor, és ezzel a módszerrel akadályozza meg a program azt, hogy egy ilyen hiba miatt hosszabbnak tűnjön az út, mint amilyen valójában.}
 	\end{compactenum}
 \end{itemize}
 
@@ -113,15 +113,19 @@ Amennyiben megtörtént a kezdő- és célállomás megadása, illetve az algori
 	\label{fig:screenshot-route-initial}
 \end{figure}
 
+\subsection{Az algoritmus futtatása}
+
 A fül tetején az algoritmus léptetésére szolgáló gombok találhatók, melyek a következők:
-\begin{compactitem}
+\begin{itemize}
 	\item \textbf{Újraindítás}: Az algoritmus visszaállítása a kezdőállapotba.
 	\item \textbf{Futtatás}: Az algoritmus addig fut, amíg el nem éri a célállomást. Amíg az algoritmus fut, a többi gomb nem érhető el, ez pedig átváltozik \textbf{Szüneteltetés} gombbá, ami leállítja az algoritmust.
 	\item \textbf{Léptetés}: Az algoritmus egy lépéssel halad előre, majd megáll.
-\end{compactitem}
+\end{itemize}
 
 Ezek alatt egy csúszka található, amelyen azt állíthatjuk be, hogy az algoritmus léptetéskor mennyit várakozik két lépés között. Az alapértelmezett értéke $0.75$ másodperc.
-\textit{Megjegyzés: Természetesen lehetséges, hogy az alkalmazás többet várakozik a beállítottnál, különösen alacsony értékek esetén. 0 másodperc esetén az algoritmus a lehető leggyorsabban fut.}
+\textit{Megjegyzés: Természetesen lehetséges, hogy egy csúcs feldolgozása tovább tart a várakozási időnél, különösen alacsony értékek esetén.}
+
+\subsection{Az algoritmus állapota}
 
 \begin{figure}[H]
 	\centering
