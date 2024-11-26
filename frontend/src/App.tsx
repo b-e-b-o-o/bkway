@@ -1,4 +1,5 @@
 import './App.css';
+import 'maplibre-gl/dist/maplibre-gl.css';
 
 import { ThemeProvider } from "@emotion/react";
 import { library } from "@fortawesome/fontawesome-svg-core";
