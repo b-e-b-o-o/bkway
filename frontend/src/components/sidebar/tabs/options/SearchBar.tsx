@@ -46,14 +46,15 @@ export default function SearchBar({
     }
 
     async function updateResults() {
-        if (!input.current || input.current.value.length < 2) {
-            setResults([]);
-            return;
-        }
-        setIsLoading(true);
         if (abortController.current) {
             abortController.current.abort();
         }
+        if (!input.current || input.current.value.length < 2) {
+            setResults([]);
+            setIsLoading(false);
+            return;
+        }
+        setIsLoading(true);
         const controller = new AbortController();
         abortController.current = controller;
         await searchStops(input.current?.value, { signal: controller.signal })
@@ -88,14 +89,25 @@ export default function SearchBar({
             />
         </label>
         {
-            results.length > 0 &&
+            (isLoading || results.length > 0) &&
             <div className='search-results'>
                 {
                     isLoading ? <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginY: '1rem' }}> <CircularProgress /> </Box> :
                         results.filter(({ routes }) => routes.length > 0).map((result, index) => <div key={index}>
-                            <div
+                            <Box
                                 tabIndex={-1} // Allow focus (search-container would get hidden on blur before onClick fires, instead we blur manually)
-                                className='search-result flex flex-row items-center min-h-12 p-2 text-xl cursor-pointer gap-2'
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    minHeight: '3rem',
+                                    padding: '0.5rem',
+                                    fontSize: '1.25rem',
+                                    lineHeight: '1.75rem',
+                                    cursor: 'pointer',
+                                    gap: '0.5rem'
+                                }}
+                                className='search-result'
                                 onClick={() => { document.querySelector<HTMLElement>(':focus')?.blur?.(); flyToStop(result.stop); }}>
                                 <div className='location-icon'>
                                     <FontAwesomeIcon icon={faLocationDot} color='#aaf' />
@@ -111,7 +123,7 @@ export default function SearchBar({
                                         <FontAwesomeIcon icon={faWheelchair} color='rgb(162, 189, 214)' />
                                     </Box>
                                 }
-                            </div>
+                            </Box>
                             <Divider />
                         </div>)
                 }
