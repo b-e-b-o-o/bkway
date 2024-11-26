@@ -26,7 +26,7 @@ export default function PathfindingTab() {
                     </> :
                     <>
                         <div>
-                            {isHeap ? 'Kupac' : 'Sor'} ({pathfinding.data.size} megálló)
+                            {isHeap ? 'Prioritási sor' : 'Sor'} ({pathfinding.data.size} megálló)
                             <hr />
                         </div>
                         {Array.from(pathfinding.data.elements()).map((v, i) => <TripCard vertex={v} key={i} />)}
