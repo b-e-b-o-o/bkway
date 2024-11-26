@@ -28,6 +28,7 @@
   - [ ] Also consider adding a highlight to last updated stop
 - [ ] Maximum transfer time is currently hardcoded to 1 hour, this should be on option
 - [ ] Option to limit total walking distance
+- [ ] Option to optimize for travel distance in meters (for Dijkstra's and A*)
 - [ ] Load environment variables from .env on backend
 - [ ] Improvements to data handling
   - [ ] Load database to memory (by setting its location to `:memory:`)
@@ -44,6 +45,7 @@
   - Skips sending headers on every request
 - [ ] Unused columns (especially those always null) should be omitted from responses
 - [ ] More information about the algorithm's current status
+  - [ ] Display total travel distance in meters
   - [ ] List of already visited nodes
   - [ ] List of possible inEdges for each node
   - [ ] View queue/heap even after the algorithm has found a route
