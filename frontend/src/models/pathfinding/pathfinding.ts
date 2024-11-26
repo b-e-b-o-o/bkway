@@ -74,11 +74,10 @@ export abstract class Pathfinding {
             return;
         const vertices: Vertex[] = [];
         let currentVertex: Vertex | undefined = this.end;
-        // Doesn't include root (on purpose!)
-        do {
+        while (currentVertex) {
             vertices.push(currentVertex);
             currentVertex = currentVertex.parentVertex;
-        } while (currentVertex?.parentVertex);
+        };
         vertices.reverse();
         return vertices;
     }
