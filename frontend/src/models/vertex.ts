@@ -133,6 +133,10 @@ export abstract class Vertex {
         return this.#walkingEdges;
     }
 
+    getKnownWalkingEdges(): DirectedWeightedEdge[] {
+        return this.#walkingEdges ?? [];
+    }
+
     async getTransitEdges(): Promise<DirectedWeightedEdge[]> {
         if (!this.#transitEdges) {
             this.#transitEdges = [];

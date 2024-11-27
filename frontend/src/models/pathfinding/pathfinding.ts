@@ -130,15 +130,26 @@ export abstract class Pathfinding {
     private visit(e: DirectedWeightedEdge) {
         e.visited = true;
         const v = e.target;
-        if (v.visited) {
+        if (v.isRoot) {
             return;
         }
-        v.visited = true;
+        if (v.visited) {
+            this.data.remove(v);
+        }
+        else {
+            v.heuristic = v.location.distanceMeters(this.end.location);
+        }
         const newDistance = e.source.distance.plus(e.weight);
-        v.parentEdge = e;
-        v.distance = newDistance;
-        v.heuristic = v.location.distanceMeters(this.end.location);
-        this.data.push(v);
+        if (newDistance.before(v.distance)) {
+            v.parentEdge = e;
+            v.distance = newDistance;
+            this.data.push(v);
+        }
+        if (v.visited) {
+            for (const e of v.getKnownWalkingEdges())
+                this.visit(e);
+        }
+        v.visited = true;
         if (v.id === this.end.id) {
             this.end = v;
         }
