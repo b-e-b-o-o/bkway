@@ -1,8 +1,25 @@
 \chapter{Fejlesztői dokumentáció}
-\label{ch:impl}
+\label{ch:dev}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis nibh leo, dapibus in elementum nec, aliquet id sem. Suspendisse potenti. Nullam sit amet consectetur nibh. Donec scelerisque varius turpis at tincidunt.
+\section{Bevezetés}
 
+Az alkalmazáshoz való technológiák kiválasztásakor fontos mind a felhasználó, mind a fejlesztő igényeit figyelmbe venni. Szerencsére, jelen esetben van megoldás, amely minden oldal számára a legtöbb kényelmet nyújtja, mégpedig a webalkalmazás. A felhasználó számára könnyű elérést, platformfüggetlenséget, és egy megszokott felületet hordoz magával, ami különösen fontos egy oktatási céllal rendelkező alkalmazásnál, hiszen még kevesebb akadályt helyez a felhasználó és a "tananyag" közé. Fejlesztői szempontból is kényelmes egy ilyen alkalmazást a böngészőre írni, hiszen a JavaScript ökoszisztémában könyvtárak és keretrendszerek tömkelege áll rendelkezésre, melyek segítségével gyorsan és hatékonyan lehet egy webalkalmazást fejleszteni.
+
+\section{Adatforrás}
+
+Az adatok a BKK\nomenclature{BKK}{Budapesti Közlekedési Központ} által szolgáltatott OpenData Portálon\cite{bkkopendata} nyilvánosan elérhető adatbázisból származnak. Az adatokat a BKK a GTFS\index{GTFS -- General Transit Feed Specification} (General Transit Feed Specification) formátumban teszik elérhetővé, ami egy Google-nél kifejlesztett\cite{gtfsabout} nyilvánosan elérhető specifikáció, mely egy szabványos formátumot definiál a tömegközlekedési adatok szolgáltatására.
+
+\section{Felhasznált technológiák}
+
+\subsection{Alkalmazás felépítése}
+
+Az alkalmazás egy backendből és egy frontendből áll, REST API-n\nomenclature{REST}{REpresentational State Transfer, egy szoftverarchitektúra típus, ami megkötésekkel garantálja többek között az adatok gyorsítótárazhatóságát\cite{rest}} keresztül kommunikálnak egymással. A backend feladata a GTFS formátumban elérhető adatok adatbázisba való betöltése, valamit ezen adatok szolgáltatása a frontend számára. A frontend egy webalkalmazás, mely a felhasználói felületet biztosítja a felhasználók számára.
+
+Fontos megemlíteni, hogy az útvonal tervezése és az algoritmusok futtatása a frontenden történik. Azért választottam ezt a megoldást, hogy az API-n átvitt adatok komplexitását minimalizáljam; mivel a frontendnek egyébként is szüksége van az összes információra az algoritmus belső állapotáról, így a számításokat a frontendre helyezve elég az adatbázis-lekérdezéseket és azok eredményét kommunikálni a kettő között.
+
+\subsection{Backend technológiák}
+
+A backend egy \textit{Node.js} alapú alkalmazás, mely az \textit{Express.js} keretrendszert használja a REST API megvalósítására 
 
 \section{Tételek, definíciók, megjegyzések}
 

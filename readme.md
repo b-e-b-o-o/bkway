@@ -61,6 +61,7 @@
 - [ ] Polyfill for 97%-ish browser support with [Babel](https://github.com/babel/babel)
 - [ ] i18n
 - [ ] Two-way pathfinding (the same algorithm running from the end stop in reverse, in parallel with the regular one)
+- [ ] [RAPTOR](https://kuanbutts.com/2020/09/12/raptor-simple-example/)
 - [ ] Support different GTFS sources other than Budapest
   - Possibly using a tenant model on the backend?
 

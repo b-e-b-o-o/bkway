@@ -144,10 +144,10 @@ export abstract class Pathfinding {
             v.parentEdge = e;
             v.distance = newDistance;
             this.data.push(v);
-        }
-        if (v.visited) {
-            for (const e of v.getKnownWalkingEdges())
-                this.visit(e);
+            if (v.visited) {
+                for (const e of v.getKnownWalkingEdges())
+                    this.visit(e);
+            }
         }
         v.visited = true;
         if (v.id === this.end.id) {

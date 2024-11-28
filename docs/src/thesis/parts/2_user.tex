@@ -7,7 +7,7 @@ Az alkalmazás böngészőben fut. Egy oldalból áll, mely nagy részét egy in
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.8\textwidth,frame]{screenshot_welcome}
+	\includegraphics[width=0.8\textwidth]{screenshot_welcome}
 	\caption{Az alkalmazás felülete térképpel és vezérlőpanellel}
 	\label{fig:screenshot-welcome}
 \end{figure}
@@ -32,7 +32,7 @@ A térkép navigációja egérrel történik; a térkép nagyítása és kicsiny
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.5\textwidth,frame]{screenshot_settings_route}
+	\includegraphics[width=0.5\textwidth]{screenshot_settings_route}
 	\caption{Az indulási idő, illetve a kiinduló- és célállomás beállítása}
 	\label{fig:screenshot-settings-route}
 \end{figure}
@@ -43,7 +43,7 @@ A kiinduló- és célállomás felcserélése a két beviteli mező közti dupla
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.4\textwidth,frame]{screenshot_search_stop}
+	\includegraphics[width=0.4\textwidth]{screenshot_search_stop}
 	\caption{Az egyik \emph{Köztársaság tér} nevű megálló Törökbálinton, a másik Pécelen található}
 	\label{fig:screenshot-search-stop}
 \end{figure}
@@ -52,7 +52,7 @@ A térképen az egeret egy megálló fölé helyezve megjelenik annak a neve (\r
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.8\textwidth,frame]{screenshot_tooltip_stop_name}
+	\includegraphics[width=0.8\textwidth]{screenshot_tooltip_stop_name}
 	\caption{A kurzor alatt lévő megálló neve egy információs buborékban jelenik meg}
 	\label{fig:screenshot-tooltip-stop-name}
 \end{figure}
@@ -129,7 +129,7 @@ Az alapértelmezett algoritmus a BFS. Ezt az útvonal beállításai alatt, úgy
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.5\textwidth,frame]{screenshot_settings_algorithm}
+	\includegraphics[width=0.5\textwidth]{screenshot_settings_algorithm}
 	\caption{Az elérhető algoritmusok listája}
 	\label{fig:screenshot-settings-algorithm}
 \end{figure}
@@ -140,7 +140,7 @@ Amennyiben a választott algoritmus az A*, akkor a heurisztika súlyozó faktora
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.7\textwidth,frame]{screenshot_settings_heuristic}
+	\includegraphics[width=0.7\textwidth]{screenshot_settings_heuristic}
 	\caption{A beállításokat információs buborékok magyarázzák}
 	\label{fig:screenshot-settings-heuristic}
 \end{figure}
@@ -151,7 +151,7 @@ Amennyiben megtörtént a kezdő- és célállomás megadása, illetve az algori
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.4\textwidth,frame]{screenshot_route_initial}
+	\includegraphics[width=0.4\textwidth]{screenshot_route_initial}
 	\caption{Az algoritmus alapállapota az "ÚTVONAL" fülön}
 	\label{fig:screenshot-route-initial}
 \end{figure}
@@ -192,18 +192,38 @@ Ezeken az információkon kívül a dobozban a megállóig tartó út is láthat
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.5\textwidth,frame]{screenshot_route_card}
+	\includegraphics[width=0.5\textwidth]{screenshot_route_card}
 	\caption{A megálló részletes információi}
 	\label{fig:screenshot-route-card}
 \end{figure}
 
 Ezen ismeretek birtokában nincs más hátra, mint lépésről lépésre végignézni az algoritmus futását, és megfigyelni, hogy milyen útvonalon jutunk el a célállomásig.
 
-\subsection{Útvonal megjelenítése}
+\subsection{Útvonalak a térképen}
+
+Az algoritmus futása közben a térképen is ki vannak rajzolva a sorra következő megállók, illetve az a kiindulóállomásból vezető út. Az út a megfelelő közlekedési eszköz színével, illetve gyalogos él esetén szürkével (és egy egyenes vonallal) van jelölve. Az egeret egy utazási él fölé helyezve megjelenik annak a járat neve és az utazás hossza is (\ref{fig:screenshot-route-map-started}).
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\textwidth]{screenshot_route_map_started}
+	\caption{Az utazás hossza egy megálló távolságra értendő}
+	\label{fig:screenshot-route-map-started}
+\end{figure}
+
+Amennyiben az algoritmus megtalálta a célállomást, a térképen csak az az út marad megjelenítve, és az oldalsó menüben is az út megállóinak a listája lesz látható (\ref{fig:screenshot-route-map-finished}).
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\textwidth]{screenshot_route_map_finished}
+	\caption{Kész útvonal a térképen}
+	\label{fig:screenshot-route-map-finished}
+\end{figure}
 
 \subsection{Megjegyzés az átszállásokról}
 
-Ugyan a hétköznapokban általában "egy megállóként" szokás gondolni az egymás mellett lévő, azonos nevű megállókra, a valóságban nem ilyen egyszerű a helyzet. A forrásadatban a fizikai megállók külön-külön vannak azonosítva, így a program számára akár két olyan megálló is teljesen különállónak tűnhet, ami a valóságban ugyanahhoz a vonalhoz tartozik, csak az egyiknél a járat az egyik irányban, a másiknál az ellentétes irányban áll meg. Ennek következtében, ha pusztán tömegközlekedéssel keresnénk utat, akkor az alkalmazás nem javasolna olyan átszállásokat, ahol két járat egymás mellett lévő megállói között kellene átszállni; még a célállomást is eltévesztené, ha az út rossz oldalára érkezik.
+Ugyan a hétköznapokban általában "egy megállóként" szokás gondolni az egymás mellett lévő, azonos nevű megállókra, a valóságban nem ilyen egyszerű a helyzet. A forrásadatban a fizikai megállók külön-külön vannak azonosítva, így a program számára akár két olyan megálló is teljesen különállónak tűnhet, ami a valóságban ugyanahhoz a vonalhoz tartozik, csak az egyiknél a járat az egyik irányban, a másiknál az ellentétes irányban áll meg. Ennek következtében, ha pusztán tömegközlekedéssel keresnénk utat, akkor az alkalmazás nem javasolna olyan átszállásokat, ahol két járat egymás mellett lévő megállói között kellene átszállni; még a célállomást is eltévesztené, amikor az út rossz oldalára érkezik.
 
-Erre természetes megoldás a gyalogos átszállások bevezetése. Így 
+Erre természetes megoldás a gyalogos élek bevezetése, így az egymás közelében lévő megállókat szinte egy megállóként kezelhetjük. A program ezt úgy valósítja meg, hogy amint egy új utazási élt ismer meg, a célpontjától sétatávolságra lévő megállókat is hozzáadja az ismert megállók listájához, átszállási éllel összekötve őket az eredeti megállóval. Ugyanígy viselkedik egy útvonaltervezés megkezdésekor, amikor az indulóállomás közelében lévő megállókat "fedezi fel".
+
+Ennek mellékhatásaként amennyiben a választott úticélunkhoz el lehet jutni közvetlen oda érkező járattal is, és egy korábban felfedezhető (pl. Dijksra-algoritmus esetén egy 1 perccel hamarabb elérhető) megállóból való sétálással is, akkor a program a sétálást tartalmazó utat fogja megtalálni, akkor is, ha a sétálás 1 percnél tovább tartana. Ez egy apró, de említésre érdemes bökkenő, hiszen a Dijkstra-algoritmustól azt várnánk, hogy minden esetben a leggyorsabb utat találja meg a két végpont között.
 
