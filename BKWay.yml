@@ -13,7 +13,7 @@ paths:
     description: Get stops reachable from a stop with a single stop of travelling via a transit vehicle, and information about the route taken
     get:
       responses:
-        "200":
+        200:
           description: OK
           content:
             application/json:
@@ -32,11 +32,19 @@ paths:
                       $ref: "#/components/schemas/StopTime"
                     route:
                       $ref: "#/components/schemas/Route"
+      parameters:
+        - name: stopId
+          in: path
+          description: Stop ID
+          required: true
+          schema:
+            type: string
+            minLength: 1
   /stops/{stopId}/nearby:
     description: Get stops within a certain radius of a stop
     get:
       responses:
-        "200":
+        200:
           description: OK
           content:
             application/json:
@@ -44,6 +52,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Stop"
+        500:
+          description: ERROR
       parameters:
         - name: stopId
           in: path
@@ -64,22 +74,26 @@ paths:
     description: Get all stops as a GeoJson object
     get:
       responses:
-        "200":
+        200:
           description: OK
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/StopsGeoJson"
+        500:
+          description: ERROR
   /data/shapes.geo.json:
     description: Get all shapes as a GeoJson object
     get:
       responses:
-        "200":
+        200:
           description: OK
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ShapesGeoJson"
+        500:
+          description: ERROR
 
 components:
   schemas:

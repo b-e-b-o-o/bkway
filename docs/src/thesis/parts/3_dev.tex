@@ -9,6 +9,8 @@ Az alkalmazáshoz való technológiák kiválasztásakor fontos mind a felhaszn�
 
 Az adatok a BKK\nomenclature{BKK}{Budapesti Közlekedési Központ} által szolgáltatott OpenData Portálon\cite{bkkopendata} nyilvánosan elérhető adatbázisból származnak. Az adatokat a BKK a GTFS\index{GTFS -- General Transit Feed Specification} (General Transit Feed Specification) formátumban teszik elérhetővé, ami egy Google-nél kifejlesztett\cite{gtfsabout} nyilvánosan elérhető specifikáció, mely egy szabványos formátumot definiál a tömegközlekedési adatok szolgáltatására.
 
+\section{Tervezés és követelemények}
+
 \section{Magas szintű áttekintés}
 
 \subsection{Alkalmazás felépítése}
@@ -128,7 +130,24 @@ A táblák a következő információkat tartalmazzák\cite{gtfsspec}:
     \item \textit{pathways}: Megállók közti átjárókat tartalmaz (pl. aluljárók). Ezt a táblát sem használjuk --- csak néhány átjáró van benne (jelenlegi adatok szerint 6000-nél több megállóra 500-nál kevesebb átjáró), így önmagában nem lenne elég információ az egy csoportba tartozó megállók összekötésére. Egyszerűbb és a felhasználó számára is következetesebb bármelyik 2 megálló közötti gyaloglást azonosan kezelni.
 \end{enumerate}
 
+Az adatbázis a Docker Compose fájlban mountolt \textit{data} mappába kerül, amely a \textit{frontend} és a \textit{backend} mappák mellett foglal helyet. Az alkalmazás induláskor ellenőrzi, hogy az adatbázis létezik-e (illetve sikeres-e egy lekérdezés), és ha nem, akkor betölti az adatokat a GTFS adatokból. Az adatforrás a \texttt{src/configs/gtfs.config.ts} fájlban állítható be.
+
 A gtfs könyvtár a hivatalos specifikáción felül is tartalmaz néhány segédoszlopot, amelyek a gyors lekérdezést segítik. Ezek az eredeti adatokban "óra:perc:másodperc" szöveges formátumban szereplő időpontokat egész számokká alakítják, amiket sokkal gyorsabban lehet összehasonlítani. Azonban a GTFS specifikáció szerint az éjfél után közlekedő járatok időpontjai átléphetik az "24:00:00" időpontot, amit a gtfs könyvtár nem kezel helyesen. Így betöltés után az időpontokat a programnak újra kell számolnia, hogy a betöltött adatbázisban ne null értékek legynek.
+
+Amint az adatbázis betöltése megtörténik, az alkalmazás GeoJson fájlokat generál a frontend számára, melyek úgyszintén a \textit{data} mappába kerülnek (\ref{fig:data-folder-structure}). Ezek a fájlok tartalmazzák a megállók és az útvonalak geometriáját, amelyeket a frontend a térképen megjelenít.
+
+% dirtree?
+\begin{figure}[H]
+    \texttt{
+        data\\
+        |-- db.sqlite\\
+        \'-- public\\
+        \hspace{1em} |-- shapes.geo.json\\
+        \hspace{1em} \'-- stops.geo.json
+    }
+    \caption{A \textit{data} mappa szerkezete az adatok betöltését követően}
+    \label{fig:data-folder-structure}
+\end{figure}
 
 % \lstset{caption={Alkalmazás indítása különböző konfigurációkban}, label=src:compose-dev}
 % \begin{lstlisting}[language={JavaScript}]

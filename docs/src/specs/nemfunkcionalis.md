@@ -7,7 +7,7 @@
 - A szoftver kezdeti megnyitásakor legkésőbb 5 másodperc alatt teljesen betöltődik és használhatóvá válik
 - A szoftver általános használat közben folyatosan, megakadás közben fut egy középkategóriás számítógépen, egy modern böngészőben
   - Kivétel ez alól az animált útvonaltervezés, amelynek a futása közben a szoftver akadozhat, de nem annyira, hogy használhatatlanná váljon, vagy megakadályozza az animáció leállítását
-- A backend válaszideje API hívásokra gyors (pl. helyi) kapcsolat esetén nem több, mint 500 ezredmásodperc (bármilyen lehetséges, érvényes API hívásra)
+- A backend válaszideje API hívásokra nem több, mint 5 másodperc (bármilyen lehetséges, érvényes API hívásra)
 - A szoftver felhasználói bevitelre adott válasz ideje nem több, mint 100 ezredmásodperc
   - Ebbe beleértendő a betöltést jelző válasz, amíg az alkalmazás API hívásokra várakozik
 - A szoftver nem használ a szükségesnél több processzorkapacitást (pl. nem használja processzortól függetlenül az összes elérhető teljesítményt)
@@ -59,7 +59,7 @@
 
 ### Fenntartási
 
-- Minden API végpont teljes mértékben dokumentálva és tesztelve van
+- Minden API végpont tesztelve és OpenAPI 3 formátumban dokumentálva van
 
 ## Külső követelmények
 
