@@ -7,29 +7,27 @@ import { getNeighbors, getWalkingNeighbors, searchStops } from "../utils/query";
 
 const router = Router()
 
-router.get('/', (req: Request, res: Response) => {
-  let filter: Record<string, any> = {};
-  // why https://stackoverflow.com/q/17781472
-  for (const { name } of stops.schema) {
-    if (name in req.query)
-      filter[name] = req.query[name];
-  }
-  res.send(getStops(filter));
-})
-
 router.get('/:stopId/nearby', async (req: Request, res: Response) => {
   const { stopId } = req.params;
   const { distance } = req.query;
-  const distanceM = Number.parseInt(distance?.toString() ?? 'NaN', 10) ?? 150;
-  res.send(await getWalkingNeighbors(stopId, distanceM));
+  const distanceM = Number.parseInt(distance?.toString() ?? 'NaN', 10);
+  if (isNaN(distanceM) || distanceM < 0)
+      return res.status(400).json({ message: '`distance` must be a valid non-negative number!' })
+  const result = await getWalkingNeighbors(stopId, distanceM);
+  if (result === undefined)
+    return res.status(404).json({ message: 'Stop not found' });
+  res.json(result);
 });
 
 router.get('/:stopId/neighbors', async (req: Request, res: Response) => {
   const { stopId } = req.params;
   const { time } = req.query;
   if (typeof time !== 'string')
-    return res.status(400).send('`time` parameter must be formatted as hh:mm:ss');
-  res.send(await getNeighbors(stopId, time));
+    return res.status(400).json({ message: '`time` parameter must be formatted as hh:mm:ss'});
+  const result = await getNeighbors(stopId, time);
+  if (result === undefined)
+    return res.status(404).json({ message: 'Stop not found' });
+  res.json(result);
 });
 
 router.get('/search', async (req: Request, res: Response) => {

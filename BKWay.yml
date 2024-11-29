@@ -32,6 +32,19 @@ paths:
                       $ref: "#/components/schemas/StopTime"
                     route:
                       $ref: "#/components/schemas/Route"
+        400:
+          description: BAD REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        404:
+          description: NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+
       parameters:
         - name: stopId
           in: path
@@ -40,6 +53,12 @@ paths:
           schema:
             type: string
             minLength: 1
+        - name: time
+          in: query
+          description: Departure time (HH:mm:ss)
+          required: true
+          schema:
+            $ref: "#/components/schemas/Time"
   /stops/{stopId}/nearby:
     description: Get stops within a certain radius of a stop
     get:
@@ -52,8 +71,20 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Stop"
+        400:
+          description: BAD REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        404:
+          description: NOT FOUND
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
         500:
-          description: ERROR
+          description: INTERNAL SERVER ERROR
       parameters:
         - name: stopId
           in: path
@@ -81,7 +112,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/StopsGeoJson"
         500:
-          description: ERROR
+          description: INTERNAL SERVER ERROR
   /data/shapes.geo.json:
     description: Get all shapes as a GeoJson object
     get:
@@ -93,10 +124,17 @@ paths:
               schema:
                 $ref: "#/components/schemas/ShapesGeoJson"
         500:
-          description: ERROR
+          description: INTERNAL SERVER ERROR
 
 components:
   schemas:
+    ErrorMessage:
+      type: object
+      properties:
+        message:
+          type: string
+      required: [message]
+
     Time:
       description: Time of day
       type: string

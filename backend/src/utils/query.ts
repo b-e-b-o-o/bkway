@@ -72,6 +72,7 @@ export async function searchStops(name: string) {
 
 export async function getWalkingNeighbors(stopId: string, distance = 150) {
     const source = getStops({ stop_id: stopId })[0];
+    if (!source) return;
     const [bboxLower, bboxUpper] = getBoundsOfDistance(
         { lat: source.stop_lat!, lon: source.stop_lon! },
         distance
@@ -96,6 +97,15 @@ export async function getNeighbors(stopId: string, time: string) {
     const [h, m, s = '0'] = time.split(':');
     const fromTime = (+h * 60 + +m) * 60 + +s; // obviously, 0x1e::0b11101 === 24:00:30
     const toTime = fromTime + 3600; // TODO: don't hardcode this either
+
+    if ((await
+            database.select()
+            .from(stops)
+            .where(eq(stops.stopId, stopId))
+        ).length === 0
+    ) {
+        return;
+    }
 
     let rides = database.select()
         .from(stopTimes)
