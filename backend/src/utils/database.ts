@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import Database, { SqliteError } from "better-sqlite3";
 import { drizzle } from "drizzle-orm/better-sqlite3";
-import { getAgencies, getStopsAsGeoJSON, importGtfs, openDb } from "gtfs";
+import { getAgencies, getShapesAsGeoJSON, getStopsAsGeoJSON, importGtfs, openDb } from "gtfs";
 import config from '../configs/gtfs.config';
 import { stopTimes } from "../models/db/schema/stop-times";
 import { type ColumnBaseConfig, isNull, or, sql } from "drizzle-orm";
@@ -50,7 +50,7 @@ async function ensureDatabase() {
                     fStops.writeFile(JSON.stringify(getStopsAsGeoJSON())).then(() => {
                         console.log('Stops GeoJSON written');
                     }).finally(() => fStops.close()),
-                    fShapes.writeFile(JSON.stringify(getStopsAsGeoJSON())).then(() => {
+                    fShapes.writeFile(JSON.stringify(getShapesAsGeoJSON())).then(() => {
                         console.log('Shapes GeoJSON written');
                     }).finally(() => fShapes.close()),
                 ]);

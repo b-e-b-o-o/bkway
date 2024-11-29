@@ -75,7 +75,7 @@ export default function SearchBar({
             return;
         input.current.value = stop?.stopName ?? '';
         updateResults();
-        return abortController.current?.abort;
+        return () => abortController.current?.abort();
     }, [stop])
 
     return <div className='search-container'>

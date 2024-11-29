@@ -1,14 +1,16 @@
 ---
-
 openapi: 3.0.3
 info:
   title: BKWay API specification
-  version: 1.0.0
+  version: 2.0.0
 servers:
-  - url: http://192.168.0.66:3333
+  - url: http://127.0.0.1:3333
     description: Local development server
+  - url: http://bkway.bee-612.space
+    description: Production server
 paths:
-  /nearby_stops:
+  /stops/{stopId}/neighbors:
+    description: Get stops reachable from a stop with a single stop of travelling via a transit vehicle, and information about the route taken
     get:
       responses:
         "200":
@@ -18,67 +20,20 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Stop"
-      parameters:
-        - name: lat
-          in: query
-          description: Latitude
-          required: true
-          schema:
-            type: number
-            minimum: -90
-            maximum: 90
-        - name: lon
-          in: query
-          description: Longitude
-          required: true
-          schema:
-            type: number
-            minimum: -90
-            maximum: 90
-        - name: radius
-          in: query
-          description: Bounding box side length in meters
-          required: true
-          schema:
-            type: number
-            minimum: 0
-            maximum: 1000
-  /stops:
-    get:
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Stop"
-      parameters:
-        - name: q
-          in: query
-          description: Search query
-          schema:
-            type: string
-  /stops/{stopId}:
-    get:
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Stop"
-      parameters:
-        - name: stopId
-          in: path
-          description: Stop ID
-          required: true
-          schema:
-            type: string
-            minLength: 1
+                  type: object
+                  properties:
+                    stop:
+                      $ref: "#/components/schemas/Stop"
+                    trip:
+                      $ref: "#/components/schemas/Trip"
+                    departureTime:
+                      $ref: "#/components/schemas/StopTime"
+                    arrivalTime:
+                      $ref: "#/components/schemas/StopTime"
+                    route:
+                      $ref: "#/components/schemas/Route"
   /stops/{stopId}/nearby:
+    description: Get stops within a certain radius of a stop
     get:
       responses:
         "200":
@@ -97,15 +52,16 @@ paths:
           schema:
             type: string
             minLength: 1
-        - name: radius
+        - name: distance
           in: query
-          description: Bounding box side length in meters
+          description: Maximum distance from the stop in meters
           required: true
           schema:
             type: number
             minimum: 0
             maximum: 1000
-  /stops/{stopId}/routes:
+  /data/stops.geo.json:
+    description: Get all stops as a GeoJson object
     get:
       responses:
         "200":
@@ -113,18 +69,9 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Route"
-      parameters:
-        - name: stopId
-          in: path
-          description: Stop ID
-          required: true
-          schema:
-            type: string
-            minLength: 1
-  /routes:
+                $ref: "#/components/schemas/StopsGeoJson"
+  /data/shapes.geo.json:
+    description: Get all shapes as a GeoJson object
     get:
       responses:
         "200":
@@ -132,37 +79,66 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Route"
-      parameters:
-        - name: q
-          in: query
-          description: Search query
-          schema:
-            type: string
-  /routes/{routeId}:
-    get:
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Route"
-      parameters:
-        - name: routeId
-          in: path
-          description: Route ID
-          required: true
-          schema:
-            type: string
-            minLength: 1
+                $ref: "#/components/schemas/ShapesGeoJson"
 
 components:
   schemas:
+    Time:
+      description: Time of day
+      type: string
+      format: HH:mm:ss
+
+    Timestamp:
+      description: ISO 8601 timestamp
+      type: string
+      format: YYYY-MM-DDTHH:mm:ss.SSSZ
+
+    WheelchairBoarding:
+      description: |
+        Indicates whether wheelchair boarding is possible at a stop. Valid options are:
+
+        `0` - No information
+
+        `1` - Some vehicles can accommodate at least one rider in a wheelchair
+
+        `2` - No riders in wheelchairs can be accommodated
+      type: integer
+      enum: [0, 1, 2]
+
+    RouteType:
+      externalDocs:
+        url: "https://gtfs.org/documentation/schedule/reference/#routestxt"
+      type: integer
+      enum: [0, 1, 2, 3, 4, 5, 6, 7, 11, 12, 109]
+      description: |
+        Indicates the type of transportation used on a route. Valid options are:
+
+        `0` - Tram, Streetcar, Light rail. Any light rail or street level system within a metropolitan area.
+
+        `1` - Subway, Metro. Any underground rail system within a metropolitan area.
+
+        `2` - Rail. Used for intercity or long-distance travel.
+
+        `3` - Bus. Used for short- and long-distance bus routes.
+
+        `4` - Ferry. Used for short- and long-distance boat service.
+
+        `5` - Cable tram. Used for street-level rail cars where the cable runs beneath the vehicle (e.g., cable car in San Francisco).
+
+        `6` - Aerial lift, suspended cable car (e.g., gondola lift, aerial tramway). Cable transport where cabins, cars, gondolas or open chairs are suspended by means of one or more cables.
+
+        `7` - Funicular. Any rail system designed for steep inclines.
+
+        `11` - Trolleybus. Electric buses that draw power from overhead wires using poles.
+
+        `12` - Monorail. Railway in which the track consists of a single rail or a beam.
+
+        `109` - Budapest HÉV. Rapid transit and commuter rail lines in and around Budapest. Not part of the official GTFS specification.
+
     Stop:
       type: object
+      externalDocs:
+        url: "https://gtfs.org/documentation/schedule/reference/#stopstxt"
       properties:
         stopId:
           type: string
@@ -198,13 +174,13 @@ components:
             Location type. Valid options are:
 
             `0` (or blank) - **Stop** (or **Platform**). A location where passengers board or disembark from a transit vehicle. Is called a platform when defined within a `parentStation`. 
-            
+
             `1` - **Station**. A physical structure or area that contains one or more platform.
-            
+
             `2` - **Entrance/Exit**. A location where passengers can enter or exit a station from the street. If an entrance/exit belongs to multiple stations, it may be linked by pathways to both, but the data provider must pick one of them as parent.
-            
+
             `3` - **Generic Node**. A location within a station, not matching any other `locationType`, that may be used to link together pathways define in pathways.txt.
-            
+
             `4` - **Boarding Area**. A specific location on a platform, where passengers can board and/or alight vehicles.
         parentStation:
           type: string
@@ -219,8 +195,11 @@ components:
           type: string
       required:
         - stopId
+
     Route:
       type: object
+      externalDocs:
+        url: "https://gtfs.org/documentation/schedule/reference/#routestxt"
       properties:
         routeId:
           type: string
@@ -235,32 +214,7 @@ components:
         routeDesc:
           type: string
         routeType:
-          type: integer
-          enum: [0, 1, 2, 3, 4, 5, 6, 7, 11, 12, 109]
-          description: |
-            Indicates the type of transportation used on a route. Valid options are:
-
-            `0` - Tram, Streetcar, Light rail. Any light rail or street level system within a metropolitan area.
-            
-            `1` - Subway, Metro. Any underground rail system within a metropolitan area.
-            
-            `2` - Rail. Used for intercity or long-distance travel.
-            
-            `3` - Bus. Used for short- and long-distance bus routes.
-            
-            `4` - Ferry. Used for short- and long-distance boat service.
-            
-            `5` - Cable tram. Used for street-level rail cars where the cable runs beneath the vehicle (e.g., cable car in San Francisco).
-            
-            `6` - Aerial lift, suspended cable car (e.g., gondola lift, aerial tramway). Cable transport where cabins, cars, gondolas or open chairs are suspended by means of one or more cables.
-            
-            `7` - Funicular. Any rail system designed for steep inclines.
-            
-            `11` - Trolleybus. Electric buses that draw power from overhead wires using poles.
-            
-            `12` - Monorail. Railway in which the track consists of a single rail or a beam.
-            
-            `109` - Budapest HÉV. Rapid transit and commuter rail lines in and around Budapest. Not part of the official GTFS specification.
+          $ref: "#/components/schemas/RouteType"
         routeUrl:
           type: string
         routeColor:
@@ -280,3 +234,282 @@ components:
       required:
         - routeId
         - routeType
+
+    Trip:
+      type: object
+      externalDocs:
+        url: "https://gtfs.org/documentation/schedule/reference/#tripstxt"
+      properties:
+        tripId:
+          type: string
+          minLength: 1
+        routeId:
+          type: string
+          minLength: 1
+        serviceId:
+          type: string
+          minLength: 1
+        tripHeadsign:
+          type: string
+        tripShortName:
+          type: string
+        directionId:
+          type: integer
+          enum: [0, 1]
+        blockId:
+          type: string
+        shapeId:
+          type: string
+        wheelchairAccessible:
+          type: integer
+          enum: [0, 1, 2]
+        bikesAllowed:
+          type: integer
+          enum: [0, 1, 2]
+      required:
+        - tripId
+        - routeId
+        - serviceId
+        - tripHeadsign
+        - directionId
+        - shapeId
+        - wheelchairAccessible
+        - bikesAllowed
+
+    StopTime:
+      type: object
+      externalDocs:
+        url: "https://gtfs.org/documentation/schedule/reference/#stop_timestxt"
+      properties:
+        tripId:
+          type: string
+          minLength: 1
+        arrivalTime:
+          $ref: "#/components/schemas/Time"
+        arrivalTimestamp:
+          $ref: "#/components/schemas/Timestamp"
+        departureTime:
+          $ref: "#/components/schemas/Time"
+        departureTimestamp:
+          $ref: "#/components/schemas/Timestamp"
+        locationGroupId:
+          nullable: true
+          type: string
+        locationId:
+          nullable: true
+          type: string
+        stopId:
+          type: string
+          minLength: 1
+        stopSequence:
+          type: integer
+        stopHeadsign:
+          nullable: true
+          type: string
+        startPickupDropoffWindow:
+          allOf:
+            - $ref: "#/components/schemas/Time"
+            - nullable: true
+        startPickupDropoffWindowTimestamp:
+          allOf:
+            - $ref: "#/components/schemas/Timestamp"
+            - nullable: true
+        pickupType:
+          enum: [0, 1, 2, 3]
+          nullable: true
+        dropOffType:
+          enum: [0, 1, 2, 3]
+          nullable: true
+        continuousPickup:
+          enum: [0, 1, 2, 3]
+          nullable: true
+        continuousDropoff:
+          enum: [0, 1, 2, 3]
+          nullable: true
+        shapeDistTraveled:
+          type: number
+        timepoint:
+          type: integer
+          enum: [0, 1]
+        pickupBookingRuleId:
+          type: string
+          nullable: true
+        dropOffBookingRuleId:
+          type: string
+          nullable: true
+      required:
+        - tripId
+        - arrivalTime
+        - arrivalTimestamp
+        - departureTime
+        - departureTimestamp
+        - stopId
+        - stopSequence
+        - shapeDistTraveled
+
+    Point:
+      description: 2-dimensional GeoJson point
+      externalDocs:
+        url: "https://tools.ietf.org/html/rfc7946#section-3.1.2"
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [Point]
+        coordinates:
+          type: array
+          items:
+            type: number
+          minItems: 2
+          maxItems: 2
+      required:
+        - type
+        - coordinates
+
+    ShapesGeoJson:
+      description: GeoJson object containing shapes
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [FeatureCollection]
+        features:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [Feature]
+              properties:
+                type: object
+                properties:
+                  agency_name:
+                    type: string
+                  route_id:
+                    type: string
+                  agency_id:
+                    type: string
+                  route_short_name:
+                    type: string
+                  route_desc:
+                    type: string
+                  route_type:
+                    $ref: "#/components/schemas/RouteType"
+                  route_color:
+                    type: string
+                  route_text_color:
+                    type: string
+                  route_sort_order:
+                    type: integer
+                required:
+                  - route_id
+                  - agency_id
+                  - route_short_name
+                  - route_desc
+                  - agency_name
+                  - route_type
+                  - route_color
+                  - route_text_color
+                  - route_sort_order
+              geometry:
+                type: object
+                externalDocs:
+                  url: "https://tools.ietf.org/html/rfc7946#section-3.1.5"
+                properties:
+                  type:
+                    type: string
+                    enum: [MultiLineString]
+                  coordinates:
+                    type: array
+                    items:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/Point"
+                      minItems: 2
+                required:
+                  - type
+                  - coordinates
+            required:
+              - type
+              - properties
+              - geometry
+      required:
+        - type
+        - features
+
+    StopsGeoJson:
+      description: GeoJson object containing stops
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [FeatureCollection]
+        features:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [Feature]
+              properties:
+                type: object
+                properties:
+                  agency_name:
+                    type: string
+                  stop_id:
+                    type: string
+                  stop_code:
+                    type: string
+                  stop_name:
+                    type: string
+                  wheelchair_boarding:
+                    $ref: "#/components/schemas/WheelchairBoarding"
+                  routes:
+                    type: array
+                    minItems: 1
+                    items:
+                      type: object
+                      properties:
+                        route_id:
+                          type: string
+                        agency_id:
+                          type: string
+                        route_short_name:
+                          type: string
+                        route_desc:
+                          type: string
+                        route_type:
+                          $ref: "#/components/schemas/RouteType"
+                        route_color:
+                          type: string
+                        route_text_color:
+                          type: string
+                        route_sort_order:
+                          type: integer
+                      required:
+                        - route_id
+                        - agency_id
+                        - route_short_name
+                        - route_desc
+                        - route_type
+                        - route_color
+                        - route_text_color
+                        - route_sort_order
+                required:
+                  - agency_name
+                  - stop_id
+                  - stop_code
+                  - stop_name
+                  - wheelchair_boarding
+                  - routes
+              geometry:
+                $ref: "#/components/schemas/Point"
+            required:
+              - type
+              - properties
+              - geometry
+      required:
+        - type
+        - features

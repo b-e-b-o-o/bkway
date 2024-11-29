@@ -9,7 +9,7 @@ Az alkalmazáshoz való technológiák kiválasztásakor fontos mind a felhaszn�
 
 Az adatok a BKK\nomenclature{BKK}{Budapesti Közlekedési Központ} által szolgáltatott OpenData Portálon\cite{bkkopendata} nyilvánosan elérhető adatbázisból származnak. Az adatokat a BKK a GTFS\index{GTFS -- General Transit Feed Specification} (General Transit Feed Specification) formátumban teszik elérhetővé, ami egy Google-nél kifejlesztett\cite{gtfsabout} nyilvánosan elérhető specifikáció, mely egy szabványos formátumot definiál a tömegközlekedési adatok szolgáltatására.
 
-\section{Felhasznált technológiák}
+\section{Magas szintű áttekintés}
 
 \subsection{Alkalmazás felépítése}
 
@@ -19,16 +19,145 @@ Fontos megemlíteni, hogy az útvonal tervezése és az algoritmusok futtatása 
 
 \subsection{Verziókövetés}
 
-Fejlesztéshez a \textit{git} használatával tartom számon a változásokat, így a fejlesztés során bármikor visszaállítható egy korábbi verzió, vagy összehasonlítható két verzió közötti különbség.
+A változtatásokat \textit{git} használatával tartom számon, így a fejlesztés során bármikor visszaállítható egy korábbi verzió, vagy összehasonlítható két verzió közötti különbség.
 
-\subsection{Backend felépítése}
+\subsection{Backend áttekintés}
 
-A backend egy \textit{Node.js}\footnote{A \textit{Node.js} egy platform, ami JavaScript kód szerveroldali futtatását teszi lehetővé} alapú alkalmazás, mely az \textit{Express.js} keretrendszert használja a REST API megvalósítására. Fontos tényező volt a környezet kiválasztásában, hogy az NPM\footnote{Az NPM egy csomagnyilvántartás JavaScript csomagoknak, saját állításuk szerint a világ legnagyobb csomagnyilvántartása\cite{nodeabout}}-en megtalálható \textit{node-gtfs}\cite{nodegtfs} csomag egyike volt a kevés elérhető könyvtáraknak\footnote{A GTFS adatok feldolgozására való könyvtárak listája megtalálható a \url{https://gtfs.org/resources/gtfs/} oldalon \textit(Letöltés dátuma: 2024.11.22.)}, amelyek képesek GTFS adatok adatbázisba való betöltésére és lekérdezésére. További előnye a \textit{Node.js} backend választásának, hogy a frontenddel azonos a fejlesztői környezet, így a fejlesztéshez nem kell új programokat telepíteni, és a frontend és a backend fejlesztése közötti váltást is egyszerűvé teszi.
+% \footnote{A \textit{Node.js} egy platform, ami JavaScript kód szerveroldali futtatását teszi lehetővé}
+A backend egy \textit{Node.js} alapú alkalmazás, mely az \textit{Express.js} keretrendszert használja a REST API megvalósítására. Fontos tényező volt a környezet kiválasztásában, hogy az NPM\footnote{Az NPM egy csomagnyilvántartás JavaScript csomagoknak, saját állításuk szerint a világ legnagyobb csomagnyilvántartása\cite{nodeabout}}-en megtalálható \textit{node-gtfs}\cite{nodegtfs} csomag egyike volt a kevés elérhető könyvtáraknak\footnote{A GTFS adatok feldolgozására való könyvtárak listája megtalálható a \url{https://gtfs.org/resources/gtfs/} oldalon \textit(Letöltés dátuma: 2024.11.22.)}, amelyek képesek GTFS adatok adatbázisba való betöltésére és lekérdezésére. További előnye a \textit{Node.js} backend választásának, hogy a frontenddel azonos a fejlesztői környezet, így a fejlesztéshez nem kell új programokat telepíteni, és a frontend és a backend fejlesztése közötti váltást is egyszerűvé teszi.
 
-Hogy a backend akár távoli szerveren is egyszerűen beindítható legyen a teljes tesztkörnyezet reprodukálása nélkül, az alkalmazást \textit{Dockerizáljuk}\index{Docker -- virtualizációs technológia, mely alkalmazások platformfüggetlen futtatását teszi lehetővé}; így egy \texttt{git clone [repo] \&\& docker compose up -d} paranccsal bárhol egyszerűen futtatható a backend (ahol a Docker és a git telepítve van).
+Hogy a backend akár távoli szerveren is egyszerűen beindítható legyen a teljes tesztkörnyezet reprodukálása nélkül, az alkalmazást Dockerizáljuk\index{Docker -- virtualizációs technológia, mely alkalmazások platformfüggetlen futtatását teszi lehetővé}; így egy \texttt{git clone [repo] \&\& docker compose up -d} paranccsal bárhol egyszerűen futtatható a backend (ahol a Docker és a git telepítve van).
 
-A kód olvashatósága és karbantarthatósága érdekében a backend kódja TypeScript\footnote{A TypeScript egy nyelv, ami a JavaScriptre épül, de statikus típusokat is támogat\cite{typescript}} nyelven íródik, ami JavaScriptre fordul, így a Node.js is képes futtatni.
+Az olvashatóság és karbantarthatóság érdekében a backend kódja TypeScript\footnote{A TypeScript egy nyelv, ami a JavaScriptre épül, de statikus típusokat is támogat\cite{typescript}} nyelven íródik.
 
-\subsection{Frontend felépítése}
+\subsection{Frontend áttekintés}
 
-A frontend egy \textit{React.js}\footnote{A \textit{React.js} egy JavaScript könyvtár, melyet a Facebook fejlesztett ki, és felhasználói felületek fejlesztésére szolgál} alapú webalkalmazás, mely a backendhez hasonlóan \textit{TypeScript} nyelven van írva. A \textit{React.js} egy komponens alapú keretrendszer, melynek segítségével a felhasználói felületet kisebb, önállóan működő komponensekre bonthatjuk, így a kód olvashatóbb és karbantarthatóbb lesz. Azért erre esett a választás Angular és Vue helyett, mert a React népszerűsége messze túlszárnyalja ezekét\cite{reactcomparison}, így a fejlesztők számára könnyen elérhetőek a segédanyagok és a közösség támogatása is.
+A frontend egy \textit{React} webalkalmazás, mely a backendhez hasonlóan \textit{TypeScript} nyelven van írva. A \textit{React} egy komponens alapú könyvtár, melynek segítségével a felhasználói felületet kisebb, önállóan működő komponensekre bonthatjuk, így a kód olvashatóbb és karbantarthatóbb lesz. Azért erre esett a választásom Angular és Vue helyett, mert a React népszerűsége messze túlszárnyalja ezekét\cite{reactcomparison}, így a fejlesztők számára könnyen elérhetőek a segédanyagok és a közösség támogatása is.
+
+Az utak térképen való megjelenítéséhez a két fő lehetőség a \textit{deck.gl}, és az erre épülő\cite{kepler} \textit{kepler.gl}, amit az Ubernél fejlesztettek nagy volumenű utazási adat megjelenítésére. A döntésem a \textit{deck.gl}-re esett, mert egyszerű utak és megállók megjelenítésére szükségtelen a \textit{kepler.gl} komplexitása, illetve a \textit{deck.gl} dokumentációját is részletesebbnek és könnyebben érthetőnek találtam. A React választása melletti érv volt az is, hogy a \textit{deck.gl} a Reacthoz biztosít előre elkészített komponenseket (más könyvtárakkal ellentétben), így a két technológia jól egymásra épül.
+
+\subsection{Fejlesztői környezet felállítása}
+
+Az alkalmazás fejlesztéséhez a következő programok telepítése szükséges:
+
+\begin{compactitem}
+    \item \textit{Node.js (és npm csomagkezelő)}: Bár a backend és a frontend is Dockerben futtatható, az Intellisense számára érdemes a host gépen is telepíteni a használt csomagokat.
+    \item \textit{Docker}
+    \item \textit{git}
+    \item \textit{IDE/szövegszerkesztő}: Én a Visual Studio Code-ot használom és javaslom, mert ingyenes és egyszerűen bővíthető JavaScript és Docker támogatáshoz, de használható más IDE (pl. WebStorm) is.
+\end{compactitem}
+
+Függőségek telepítéséhez a backend és a frontend mappákban a \texttt{npm install} parancsot kell futtatni.
+
+\subsection{Alkalmazás futtatása}
+
+Az alkalmazást fejlesztéshez is Dockerben futtatjuk, hogy a program írásakor feltételezhessük, hogy mindig ugyanaz a környezet áll rendelkezésre. A Dockerfile a frontend és a backend esetében egyaránt négy stage-et tartalmaz:
+
+\begin{compactenum}
+    \item \texttt{base}: Az alap image, amely `node:lts-alpine`-t használ. Erre épül az összes többi stage.
+    \item \texttt{development}: Az \texttt{npm run dev} parancsot futtatja. Ennek a futtatásakor az alkalmazás figyeli a fájlrendszert\footnote{A fájlrendszer figyeléséről frontend esetén a \textit{vite}, backend esetén a \textit{tsx} gondoskodik.}, és újraindítja a kódot minden alkalommal, amikor egy fájl frissül (frontenden csak azokat a komponeneseket, amiket érinti a frissítés --- ezt HMR-nek, azaz Hot Module Reload-nak hívják).
+    \item \texttt{build}: Az \texttt{npm run build} parancsot futtatja, ami JavaScript-re fordítja a TypeScript kódot.
+    \item \texttt{production}: A \texttt{build}-ből lemásolja a lefordított kódot és futtatja azt.
+\end{compactenum}
+
+A stage-ek külön bontásának köszönhetően a \texttt{production} image a lehető legkisebb lesz, és a Docker építéskor gyorsítótárban tudja tárolni a lépések közös elemeit. A különválasztott fejlesztői és a produkciós környezetnek megfelelően két külön Docker Compose fájl is található a projektben: a \texttt{docker-compose.debug.yml} a fejlesztői környezetet állítja fel, míg a \texttt{docker-compose.yml} a produkciós környezetet. Az indításkor az ennek megfelelő parancs használandó (\ref{src:compose-dev}).
+
+\lstset{caption={Alkalmazás indítása különböző konfigurációkban}, label=src:compose-dev}
+\begin{lstlisting}[language={bash}]
+    # Fejlesztői környezet indítása
+    docker compose -f docker-compose.debug.yml up -d --build
+
+    # Produkciós környezet indítása
+    docker compose up -d --build
+\end{lstlisting}
+
+Bár produkciós környezethez minden adott, hogy Dockerből futtatható legyen az alkalmazás mindkét része, a frontend statikusan kiszolgálható fájlokra fordul le, így ezt nem érdemes egy Docker konténerben futtatni. Ehelyett javasolt az \texttt{npm run build} által a \textit{dist} könyvtárba lefordított fájlokat egy webszerveren keresztül kiszolgálni, például Nginx vagy Apache HTTP szerver segítségével.
+
+\section{Backend}
+
+\subsection{Könyvtárszerkezet}
+
+A backend könyvtárszerkezete a következő:
+
+\begin{compactitem}
+    \item \texttt{src}: A forráskódokat tartalmazó könyvtár.
+    \item \texttt{src/configs}: Konfigurációs fájlok helye.
+    \item \texttt{src/models}: Adatbázis sémák helye.
+    \item \texttt{src/routes}: A REST API végpontokat tartalmazó fájlok.
+    \item \texttt{src/utils}: Segédfüggvények adatok betöltésére és lekérdezésére.
+    \item \texttt{src/index.ts}: Az alkalmazás belépési pontja.
+    \item \texttt{.dockerignore}: \texttt{.gitignore}-hoz hasonlóan a Docker által figyelmen kívül hagyott fájlok listája.
+    \item \texttt{Dockerfile}: A Docker image felépítéséhez szükséges fájl.
+    \item \texttt{drizzle.config.ts}: A \textit{drizzle-kit} konfigurációs fájlja (részletek a \ref{TODO} fejezetben).
+    \item \texttt{package.json}: A függőségeket és egyéb metainformációkat tartalmazó fájl.
+    \item \texttt{package-lock.json}: Az \texttt{npm} csomagkezelő által generált fájl, mely a telepített függőségek pontos verzióit tartalmazza.
+    \item \texttt{generate-types.ts}: Segédscript, mely az adatbázis sémából TypeScript típusokat generál a frontend számára.
+    \item \texttt{tsconfig.json}: A TypeScript konfigurációs fájl.
+\end{compactitem}
+
+\subsection{Adatbázis}
+
+A program indításakor az első lépés az adatbázis létrehozása és feltöltése a GTFS adatokkal. Az adatok betöltésére és lekérdezésére a korábban említett \textit{node-gtfs} csomagot használom. (NPM-en és kódban egyszerűen \textit{gtfs}-nek hívják, korábban a GitHub-on szereplő nevét használtam a szabványtól való megkülönböztetés végett. A továbbiakban kisbetűvel írva, gtfs-ként fogok hivatkozni rá.)
+
+A gtfs a GTFS adatokat egy SQLite adatbázisba tölti be, melynek sémája a GTFS specifikációban meghatározott táblákat tartalmazza (\ref{fig:gtfs-schema}). 
+
+\pagebreak
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{entity_relationship}
+    \caption{GTFS adatbázis sémája}
+    \label{fig:gtfs-schema}
+\end{figure}
+
+\pagebreak
+
+\textit{Megjegyzés: A teljes GTFS szabvány ennél jóval több táblát tartalmaz, de a legtöbbjük opcionális. A \ref{fig:gtfs-schema} ábra csak azokat a táblákat tartalmazza, amelyeket a BKK OpenData Portálán elérhető adatok tartalmaznak. Ezen táblákban is vannak olyan opcionális mezők, amelyekről a BKK nem szolgáltat adatokat. Ezek a mezők a teljesség kedvéért szerepelnek a sémában, de} null \textit{típussal vannak jelölve.}
+
+A táblák a következő információkat tartalmazzák\cite{gtfsspec}:
+
+\begin{enumerate}
+    \item \textit{agency}: A közlekedési társaságok adatait (pl. weboldal) tartalmazza. Ebben a táblában a BKK és a MÁV-HÉV adatai szerepelnek.
+    \item \textit{feed\_info}: Az adatbázis verziószámát és az érvényességi időszakot tartalmazza (ez itt letöltés napjától az év végéig tart).
+    \item \textit{routes}: Ez a tábla tartalmazza a járatokat (pl. 4-es villamos, 9-es busz).
+    \item \textit{trips}: Ez a tábla tartalmazza a járatok útjait --- ha egy járat óránként közlekedik 9:00-tól 20:00-ig, akkor 24-szer fog szerepelni ebben a táblában: 12 oda- és ugyanennyi visszaút mindegyike egyedi azonosítóval.
+    \item \textit{stop\_times}: Minden \textit{trips}-ben szereplő út egyes megállóit tartalmazza, az érkezési és indulási időpontokkal. Ez a legnagyobb tábla, jelenleg közel 6 millió rekorddal.
+    \item \textit{calendar\_dates}: Arról tartalmaz információt, hogy melyik járat melyik napon lett szolgálatba állítva, illetve kiállítva. Ezt a táblát nem használjuk\footnote{A program célja nem pontos információk szolgáltatása, hanem algoritmusok demostrálása egy ismert környezetben. Ha a cél pontos menetrendi információk megjelenítése lenne, akkor valós idejű adatokat is figyelembe kell venni, ami jelentősen növelné a program bonyolultságát, és nem tartozik a dolgozat témájába.}.
+    \item \textit{shapes}: Az egyes járatok útvonalát tartalmazza pontokban; koordináta-párokat tárol, amelyeket összekötve az adott járat pontos útvonalát kapjuk a térképen. A frontend ezt a táblát használja az útvonalak megjelenítésére.
+    \item \textit{stops}: A megállók adatait tartalmazza (pl. nevük, koordinátájuk).
+    \item \textit{pathways}: Megállók közti átjárókat tartalmaz (pl. aluljárók). Ezt a táblát sem használjuk --- csak néhány átjáró van benne (jelenlegi adatok szerint 6000-nél több megállóra 500-nál kevesebb átjáró), így önmagában nem lenne elég információ az egy csoportba tartozó megállók összekötésére. Egyszerűbb és a felhasználó számára is következetesebb bármelyik 2 megálló közötti gyaloglást azonosan kezelni.
+\end{enumerate}
+
+A gtfs könyvtár a hivatalos specifikáción felül is tartalmaz néhány segédoszlopot, amelyek a gyors lekérdezést segítik. Ezek az eredeti adatokban "óra:perc:másodperc" szöveges formátumban szereplő időpontokat egész számokká alakítják, amiket sokkal gyorsabban lehet összehasonlítani. Azonban a GTFS specifikáció szerint az éjfél után közlekedő járatok időpontjai átléphetik az "24:00:00" időpontot, amit a gtfs könyvtár nem kezel helyesen. Így betöltés után az időpontokat a programnak újra kell számolnia, hogy a betöltött adatbázisban ne null értékek legynek.
+
+% \lstset{caption={Alkalmazás indítása különböző konfigurációkban}, label=src:compose-dev}
+% \begin{lstlisting}[language={JavaScript}]
+% function toTimestamp(column) {
+%     return sql`
+%         (60 * (
+%             -- "óra:perc:másodperc" -> "óra"
+%             60 * substr(${column}, 1, instr(${column}, ':') - 1) +
+%             -- "perc:másodperc" -> "perc"
+%             substr(
+%                 -- "óra:perc:másodperc" -> "perc:másodperc"
+%                 substr(${column}, instr(${column}, ':') + 1),
+%                 1,
+%                 instr(
+%                     substr(${column}, instr(${column}, ':') + 1),
+%                     ':'
+%                 ) - 1
+%             )
+%         )) +
+%         -- Másodpercek
+%         -- "perc:másodperc" -> "másodperc"
+%         substr(
+%             -- "óra:perc:másodperc" -> "perc:másodperc"
+%             substr(${column}, instr(${column}, ':') + 1),
+%             instr(
+%                 substr(${column}, instr(${column}, ':') + 1),
+%                 ':'
+%             ) + 1
+%         )
+%     `;
+% }
+% \end{lstlisting}

@@ -8,7 +8,7 @@
     "build": "tsc && tsc-alias",
     "generate:types": "tsc -d --emitDeclarationOnly --declarationDir dist/types --module es2022 --moduleResolution node --skipLibCheck src/models/db/types/schema.ts"
   },
-  "author": "",
+  "author": "Szabó-Galiba Máté",
   "license": "ISC",
   "description": "",
   "dependencies": {

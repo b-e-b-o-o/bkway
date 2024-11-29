@@ -62,12 +62,12 @@ export async function searchStops(name: string) {
         .innerJoin(routeIds, eq(routeIds.routeId, routes.routeId))
         .orderBy(routes.routeType, routes.routeShortName)
 
-    return Promise.all(results.map(stop => {
+    return results.map(stop => {
         return {
             stop: stop,
             routes: stopRoutes.filter(route => route.stopId === stop.stopId).map(route => route.routes)
         }
-    }));
+    });
 }
 
 export async function getWalkingNeighbors(stopId: string, distance = 150) {
