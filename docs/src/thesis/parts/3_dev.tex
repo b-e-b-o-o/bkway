@@ -11,6 +11,289 @@ Az adatok a BKK\nomenclature{BKK}{Budapesti Közlekedési Központ} által szolg
 
 \section{Tervezés és követelemények}
 
+\subsection{Nem funkcionális követelmények}
+
+\subsubsection{Termék követelmények}
+
+\begin{enumerate}
+    \item Hatékonyság
+    \begin{compactitem}     
+        \item A szoftver kezdeti megnyitásakor legkésőbb 5 másodperc alatt teljesen betöltődik és használhatóvá válik
+        \item A szoftver általános használat közben folyatosan, megakadás közben fut egy középkategóriás számítógépen, egy modern böngészőben
+        \begin{compactitem}     
+            \item Kivétel ez alól az animált útvonaltervezés, amelynek a futása közben a szoftver akadozhat, de nem annyira, hogy használhatatlanná váljon, vagy megakadályozza az animáció leállítását
+        \end{compactitem}
+        \item A backend válaszideje API hívásokra nem több, mint 5 másodperc (bármilyen lehetséges, érvényes API hívásra)
+        \item A szoftver felhasználói bevitelre adott válasz ideje nem több, mint 100 ezredmásodperc
+        \begin{compactitem}     
+            \item Ebbe beleértendő a betöltést jelző válasz, amíg az alkalmazás API hívásokra várakozik
+        \end{compactitem}
+        \item A szoftver nem használ a szükségesnél több processzorkapacitást (pl. nem használja processzortól függetlenül az összes elérhető teljesítményt)
+    \end{compactitem}
+    \item Megbízhatóság
+    \begin{compactitem}
+        \item A szoftverben ne legyen olyan egyszerűen előidézhető vagy gyakran bekövetkező hibajelenség, ami előfordulása esetén ellehetetleníti vagy jelentősen megnehezíti a szoftver használatát
+    \end{compactitem}
+    \item Biztonság
+    \begin{compactitem}
+        \item A szoftver ne tároljon felhasználói adatokat
+        \item A szoftver ne tároljon érzékeny adatokat
+        \item A szoftver ne tároljon jelszavakat
+    \end{compactitem}
+    \item Hordozhatóság
+    \begin{compactitem}
+        \item A szoftver kliens oldala bármilyen WebGL-t támogató modern böngészőben fut, különös tekintettel a Chromium alapú böngészőkre
+        \item A szoftver a kliens oldalon állandó, stabil internetkapcsolatot és a szerverrel való kapcsolatatot igényel
+        \item A szoftver szerver oldala az adatok letöltéséhez stabil internetkapcsolatot igényel, ezt követően csak a klienssel szükséges kommunikálnia
+    \end{compactitem}
+    \item Felhasználhatóság
+    \begin{compactitem}
+        \item A szoftver intuitív és könnyen használható
+        \item A szoftver kliens oldalának a használatához nem szükséges külön telepítés, komoly számítógépes tapasztalattal nem rendelkező felhasználók számára is egyértelmű
+        \item A weboldal felülete egy átlagos számítógéphasználó számára külső segítség nélkül elsajátítható, amennyiben ismerik a szoftver által bemutatott útkereső algoritmusokat
+        \item A szoftver szerver oldalának az üzemeltetése hálózati és Docker-compose ismeretségeket igényel
+    \end{compactitem}
+\end{enumerate}
+
+\subsubsection{Menedzselési követelemények}
+
+\begin{enumerate}
+    \item Környezeti
+    \begin{compactitem}
+        \item A szoftver kliens oldalon egy egeret és egy billentyűzetet igényel
+        \item A szoftver szerver oldalának a futtatásához legalább egy középkategóriás számítógépnek megfelelő harver szükséges, eltekintve a perifériáktól
+    \end{compactitem}
+    \item Működési
+    \begin{compactitem}
+        \item A szoftver legfeljebb egy órás összefüggő időtartamokban lesz használva a kliens oldalon
+        \item A szerver oldalon a szoftver folyamatosan fut, legfeljebb 4-5 naponta lehet szükséges karbantartási műveleteket végezni rajta, pl. a szoftver újraindítása (eltekintve az adatforrások frissítésétől)
+    \end{compactitem}
+    \item Fejlesztési
+    \begin{compactitem}
+        \item  Frontenden Node.js, React, TypeScript
+        \begin{compactitem}
+            \item  Térkép és adatok megjelenítéséhez deck.gl, react-map-gl
+        \end{compactitem}
+        \item  Backenden Node.js, Express, TypeScript
+        \begin{compactitem}
+            \item  REST API szerver
+            \item  SQLite adatbázis
+            \item  Adatok importálásához node-GTFS
+        \end{compactitem}
+        \item  Visual Studio Code fejlesztői környezet
+        \item  Docker
+        \item  64-bit architektúra
+        \item  Verziókezeléshez Git kliens
+    \end{compactitem}
+    \item Fenntartási
+    \begin{compactitem}
+        \item Minden API végpont tesztelve és OpenAPI 3 formátumban dokumentálva van
+    \end{compactitem}
+\end{enumerate}
+
+\subsubsection{Külső követelmények}
+
+\begin{compactitem}
+    \item A szoftverhez felhasznált külső forrásból származó médiafájlok jogtiszták
+    \item A szoftver nem tartalmaz erkölcsileg megkérdőjelezhető, sértő tartalmat
+\end{compactitem}
+
+\subsection{Funkcionális követelmények}
+
+\subsubsection{Funkciók}
+
+\begin{enumerate}
+    \item Útkeresés két megálló között budapesti tömegközlekedési járatokon
+    \begin{itemize}
+        \item Beállítások megadása
+        \begin{itemize}
+            \item Indulási és érkezési megálló kiválasztása
+            \item Indulási idő megadása
+            \item Útvonaltervezési algoritmus kiválasztása
+            \begin{compactenum}
+                \item BFS keresés
+                \item Dijkstra algoritmus
+                \item Mohó algoritmus
+                \item A* algoritmus
+            \end{compactenum}
+            \item Útvonaltervezési algoritmus paramétereinek megadása
+            \begin{compactitem}
+                \item Maximális sétatávolság átszállások között
+                \item A* algoritmus esetén: heurisztika súlyozása
+            \end{compactitem}
+        \end{itemize}
+        \item Útvonaltervezés
+        \begin{itemize}
+            \item Algoritmus léptetése
+            \item Algoritmus futtatásának indítása
+            \item Algoritmus futtatásának szüneteltetése
+            \item Algoritmus futtatásának folytatása
+            \item Algoritmus visszaállítása alapállpotba
+            \item Algoritmus eredményének megjelenítése
+            \begin{compactitem}
+                \item Potenciális útvonalak megjelenítése a térképen
+                \item Soron következő megállók megjelenítése
+            \end{compactitem}
+        \end{itemize}
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Felhasználási eset diagram}
+
+A program felhasználói eseteit a \ref{fig:use-case} ábra mutatja be.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{use_case}
+    \caption{Felhasználási eset diagram}
+    \label{fig:use-case}
+\end{figure}
+
+\subsection{Felhasználói történet}
+
+A felhasználói történetek a \ref{tab:user-stories-algorithm}., \ref{tab:user-stories-route}., \ref{tab:user-stories-parameters}., és a \ref{tab:user-stories-control}. táblákban olvashatóak.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|p{10cm}|}
+        \hline
+        \textbf{1}  
+        & AS A          & Felhasználó \\ \hline
+        & I WANT TO     & Megváltoztatni a használt algoritmust \\ \hline
+        & SO THAT       & Más algoritmusok vizualizációját tekintsem meg \\ \hline
+        \hline
+        1 & GIVEN   & A "beállítások" fül van kiválasztva \\ \hline
+        & WHEN    & A legördülő menüben a \textbf{BFS algoritmust} választom \\ \hline
+        & THEN    & Az útvonaltervezés a \textbf{BFS algoritmussal} fog történni \\ \hline
+        \hline
+        2 & GIVEN   & A "beállítások" fül van kiválasztva \\ \hline
+        & WHEN    & A legördülő menüben a \textbf{Mohó algoritmust} választom \\ \hline
+        & THEN    & Az útvonaltervezés a \textbf{Mohó algoritmussal} fog történni \\ \hline
+        \hline
+        3 & GIVEN   & A "beállítások" fül van kiválasztva \\ \hline
+        & WHEN    & A legördülő menüben az \textbf{A* algoritmust} választom \\ \hline
+        & THEN    & Az útvonaltervezés \textbf{A* algoritmussal} fog történni \\ \hline
+        \hline
+        4 & GIVEN   & A "beállítások" fül van kiválasztva \\ \hline
+        & WHEN    & A legördülő menüben a \textbf{Dijkstra algoritmust} választom \\ \hline
+        & THEN    & Az útvonaltervezés a \textbf{Dijkstra algoritmussal} fog történni \\ \hline
+    \end{tabular}
+    \caption{Felhasználói történet: algoritmus választása}
+    \label{tab:user-stories-algorithm}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|p{10cm}|}
+    \hline
+    \textbf{2}
+    & AS A          & Felhasználó \\ \hline
+    & I WANT TO     & Kiválasztani az tervezendő útvonalat \\ \hline
+    & SO THAT       & Megtekinthetem az útvonaltervezést a választott útvonalon \\ \hline
+    \hline
+    1 & GIVEN   & A "beállítások" fül van kiválasztva \\ \hline
+    & WHEN    & Az "indulási állomás" mezőbe beírom egy állomás nevét \\ \hline
+    & THEN    & Az útvonaltervezés a kiválasztott állomástól fog indulni \\ \hline
+    \hline
+    2 & GIVEN   & A "beállítások" fül van kiválasztva \\ \hline
+    & WHEN    & Az "érkezési állomás" mezőbe beírom egy állomás nevét \\ \hline
+    & THEN    & Az útvonaltervezés a kiválasztott állomást fogja megkeresni \\ \hline
+    \hline
+    3 & GIVEN   & A "beállítások" fül van kiválasztva \\ \hline
+    & WHEN    & Az "indulási idő" mezőben kiválasztok egy időt \\ \hline
+    & THEN    & Az útvonal első járata a kiválasztott idő után fog indulni \\ \hline
+    \end{tabular}
+    \caption{Felhasználói történet: útvonal kiválasztása}
+    \label{tab:user-stories-route}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|p{10cm}|}
+        \hline
+        \textbf{3}
+        & AS A          & Felhasználó \\ \hline
+        & I WANT TO     & Megváltoztatni a használt algoritmus paramétereit \\ \hline
+        & SO THAT       & Más paraméterekkel tekintsem meg az útvonaltervezést \\ \hline
+        \hline
+        1 & GIVEN & A "beállítások" fül van kiválasztva \\ \hline
+        & AND     & Az A* algoritmus van kiválasztva \\ \hline
+        & WHEN    & A "heuristika súlya" mezőben módosítom a súlyt \\ \hline
+        & THEN    & Az útvonaltervezés a választott súlyt fogja használni \\ \hline
+        \hline
+        2 & GIVEN & A "beállítások" fül van kiválasztva \\ \hline
+        & WHEN    & A "gyalogos távolság" mezőben módosítom a távolságot \\ \hline
+        & THEN    & Az algoritmus által tervezett útvonal részeként nem fog szerepelni
+                    két járat között olyan átszállás, ami a megadottnál nagyobb távolságú \\ \hline
+    \end{tabular}
+    \caption{Felhasználói történet: algoritmus paramétereinek módosítása}
+    \label{tab:user-stories-parameters}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|p{10cm}|}
+        \hline
+        \textbf{4}
+        & AS A          & Felhasználó \\ \hline
+        & I WANT TO     & Interaktívan megtekinteni a tervezett útvonalat \\ \hline
+        & SO THAT       & Láthatom az útvonaltervezés lépéseit \\ \hline
+        \hline
+        1 & GIVEN   & Az "útvonal" fül van kiválasztva \\ \hline
+        & AND     & Válaszottam indulási állomást, érkezési állomást és indulási időt \\ \hline
+        & AND     & Az algoritmus még nem talált utat a kiválasztott állomások között \\ \hline
+        & WHEN    & A "következő lépés" gombra kattintok \\ \hline
+        & THEN    & Az algoritmus elvégzi a következő lépését \\ \hline
+        \hline
+        2 & GIVEN   & Az "útvonal" fül van kiválasztva \\ \hline
+        & AND     & Válaszottam indulási állomást, érkezési állomást és indulási időt \\ \hline
+        & AND     & Az algoritmus még nem talált utat a kiválasztott állomások között \\ \hline
+        & WHEN    & Az "animáció indítása" gombra kattintok \\ \hline
+        & THEN    & Az algoritmus addig fut, amíg nem találja meg a cél állomást, vagy nem szüneteltetem \\ \hline
+        \hline
+        3 & GIVEN   & Az "útvonal" fül van kiválasztva \\ \hline
+        & AND     & Az algoritmus az "animáció indítása" gombra való kattintás hatására fut \\ \hline
+        & WHEN    & Az "animáció szüneteltetése" gombra kattintok \\ \hline
+        & THEN    & A program további interakció nélkül nem végez több lépést \\ \hline
+        \hline
+        4 & GIVEN   & Az "útvonal" fül van kiválasztva \\ \hline
+        & AND     & Az algoritmus talált utat a kiválasztott állomások között \\ \hline
+        & WHEN    & A "visszaállítás" gombra kattintok \\ \hline
+        & THEN    & Az algoritmus "elfelejti" a talált utat és megállókat, és az alapállapotába áll \\ \hline
+    \end{tabular}
+    \caption{Felhasználói történetek}
+    \label{tab:user-stories-control}
+\end{table}
+
+\subsection{Felhasználói felület tervek}
+
+Az alkalmazás nyitóoldala a \ref{fig:wireframe-settings}. ábrán látható.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{wireframe_settings}
+    \caption{Beállítások felület terve}
+    \label{fig:wireframe-settings}
+\end{figure}
+
+Innen az "indulási állomás" és az "érkezési állomás" mezőkbe beírva egy állomás nevének a részletét rákereshetünk arra, és kiválaszthatjuk azt. A keresési találatok megjelenítését a \ref{fig:wireframe-search}. ábra mutatja be.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{wireframe_search}
+    \caption{Megálló keresésének felület terve}
+    \label{fig:wireframe-search}
+\end{figure}
+
+Ezen állomások kiválasztása után az "indulási idő" mezőben kiválaszthatjuk az indulási időt (vagy az alapértelmezettet használhatjuk), majd az "útvonal" gombra kattintva a \ref{fig:wireframe-plan}. ábrán látható felületen irányíthatjuk az algoritmus futását, és tekinthetjük meg annak állapotát és eredményét.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{wireframe_plan}
+    \caption{Algoritmus irányításának felület terve}
+    \label{fig:wireframe-plan}
+\end{figure}
+
 \section{Magas szintű áttekintés}
 
 \subsection{Alkalmazás felépítése}

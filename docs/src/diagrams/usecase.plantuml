@@ -14,6 +14,7 @@ left to right direction
 (Algoritmus választása) <.. (A* algoritmus) : <<include>>
 
 (Beállítások módosítása) <.. (Algoritmus paramétereinek módosítása) : <<include>>
+(Algoritmus paramétereinek módosítása) <.. (Maximális sétatávolság) : <<include>>
 (Algoritmus paramétereinek módosítása) <.. (Heurisztika súlya) : <<include>>
 
 :Felhasználó: ..> (Útvonaltervezés)
