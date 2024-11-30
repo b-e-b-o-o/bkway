@@ -18,6 +18,7 @@
 
 ### Potential improvements
 
+- [ ] **Slider for heuristic weight!! (0% - 100%)**
 - [ ] Brief explanations of algorithms in tooltips
 - [ ] Heuristics unit should be denoted with an *m* after the number
 - [ ] GitHub repo should be linked somewhere on the page

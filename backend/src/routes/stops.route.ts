@@ -22,7 +22,7 @@ router.get('/:stopId/nearby', async (req: Request, res: Response) => {
 router.get('/:stopId/neighbors', async (req: Request, res: Response) => {
   const { stopId } = req.params;
   const { time } = req.query;
-  if (typeof time !== 'string')
+  if (typeof time !== 'string' || time.match(/^\d\d:\d\d(:\d\d)?$/g) === null)
     return res.status(400).json({ message: '`time` parameter must be formatted as hh:mm:ss'});
   const result = await getNeighbors(stopId, time);
   if (result === undefined)

@@ -89,6 +89,7 @@ paths:
         - name: stopId
           in: path
           description: Stop ID
+          example: "F00985"
           required: true
           schema:
             type: string
@@ -96,6 +97,7 @@ paths:
         - name: distance
           in: query
           description: Maximum distance from the stop in meters
+          example: 150
           required: true
           schema:
             type: number
@@ -477,7 +479,11 @@ components:
                     items:
                       type: array
                       items:
-                        $ref: "#/components/schemas/Point"
+                        type: array
+                        items:
+                          type: number
+                        minItems: 2
+                        maxItems: 2
                       minItems: 2
                 required:
                   - type
