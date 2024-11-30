@@ -482,35 +482,45 @@
 
 \lstdefinelanguage{JavaScript}{
 % https://devdoc.net/web/developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Reserved_Words.html#Keywords
-  keywords={abstract, arguments, await, boolean, break, byte, case, catch, char, class, const, continue, debugger, default, delete, do, double, else, enum, eval, export, extends, false, final, finally, float, for, function, goto, if, implements, import, in, instanceof, int, interface, let, long, native, new, null, package, private, protected, public, return, short, static, super, switch, synchronized, this, throw, throws, transient, true, try, typeof, var, void, volatile, while, with, yield},
-  keywordstyle=\color{blue}\bfseries,
+	keywords={abstract, arguments, await, boolean, break, byte, case, catch, char, class, const, continue, debugger, default, delete, do, double, else, enum, eval, export, extends, false, final, finally, float, for, function, goto, if, implements, import, in, instanceof, int, interface, let, long, native, new, null, package, private, protected, public, return, short, static, super, switch, synchronized, this, throw, throws, transient, true, try, typeof, var, void, volatile, while, with, yield},
+	keywordstyle=\color{blue}\bfseries,
 %   ndkeywords={class, export, boolean, throw, implements, import, this},
 %   ndkeywordstyle=\color{darkgray}\bfseries,
-  identifierstyle=\color{black},
-  sensitive=false,
-  comment=[l]{//},
-  morecomment=[s]{/*}{*/},
-  commentstyle=\color{purple}\ttfamily,
-  stringstyle=\color{red}\ttfamily,
-  morestring=[b]',
-  morestring=[b]"
+	identifierstyle=\color{black},
+	sensitive=false,
+	comment=[l]{//},
+	morecomment=[s]{/*}{*/},
+	commentstyle=\color{purple}\ttfamily,
+	stringstyle=\color{red}\ttfamily,
+	morestring=[b]',
+	morestring=[b]"
 }
 
-\lstset{
-   language=JavaScript,
-   backgroundcolor=\color{lightgray},
-   extendedchars=true,
-   basicstyle=\footnotesize\ttfamily,
-   showstringspaces=false,
-   showspaces=false,
-   numbers=left,
-   numberstyle=\footnotesize,
-   numbersep=9pt,
-   tabsize=2,
-   breaklines=true,
-   showtabs=false,
-   captionpos=b
+\definecolor{Green}{rgb}{0.13, 0.55, 0.13}
+\lstdefinestyle{gitdiff}{
+	moredelim=[is][\color{red}]{-}{-},  % Lines starting with - are red
+	moredelim=[is][\color{Green}]{+}{+},  % Lines starting with + are green
+	% showstringspaces=false,
+	% breaklines=true,
+	literate={\\+}{{+}}1 {\\-}{{-}}1
+%   escapeinside={(*@}{@*)},  % Define escape characters to allow more control inside lstlisting
 }
+
+% \lstset{
+%    language=JavaScript,
+%    backgroundcolor=\color{lightgray},
+%    extendedchars=true,
+%    basicstyle=\footnotesize\ttfamily,
+%    showstringspaces=false,
+%    showspaces=false,
+%    numbers=left,
+%    numberstyle=\footnotesize,
+%    numbersep=9pt,
+%    tabsize=2,
+%    breaklines=true,
+%    showtabs=false,
+%    captionpos=b
+% }
 
 % ------------------------------
 % Cover page

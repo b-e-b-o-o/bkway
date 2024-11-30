@@ -434,7 +434,7 @@ Amint az adatbázis betöltése megtörténik, az alkalmazás GeoJson fájlokat 
     \label{fig:data-folder-structure}
 \end{figure}
 
-A GeoJson fájlok generálásán kívül a többi lekérdezéshez (például megállók kereséséhez) a gtfs könyvtár nem biztosít megfelelő eszközöket, így saját lekérdezéseket kell írni. Erre a \textit{Drizzle ORM} nevű könyvtárat használom, amely egy egyszerű ORM\footnote{Object-Relational Mapping, egy programozási technika, amely az objektumorientált programozást és a relációs adatbázisokat kapcsolja össze\cite{orm}} az SQLite adatbázishoz. Azért erre esett a választásom például \textit{Prisma} helyett, mert a Drizzle csak egy vékony réteget biztosít az SQL felett\cite{drizzledocs}, így több irányításunk van a pontos lekérdezések felett, és nem kell a könyvtár által generált SQL kódot megérteni, ha egy lekérdezést optimalizálni szeretnénk. Emellett teljesítményteszteken is jobban teljesített a fent említett Prisma-nál\cite{drizzlebenchmark}. Az előnye a nyers SQL írásával szemben, hogy a Drizzle TypeScript segítségével biztosítja a típusbiztonságot, így egyszerűbb és biztonságosabb a lekérdezések írása.
+A GeoJson fájlok generálásán kívül a többi lekérdezéshez (például megállók kereséséhez) a gtfs könyvtár nem biztosít megfelelő eszközöket, így saját lekérdezéseket kell írni. Erre a \textit{Drizzle ORM} nevű könyvtárat használom, amely egy egyszerű ORM\footnote{Object-Relational Mapping, egy programozási technika, amely az objektumorientált programozást és a relációs adatbázisokat kapcsolja össze} az SQLite adatbázishoz. Azért erre esett a választásom például \textit{Prisma} helyett, mert a Drizzle csak egy vékony réteget biztosít az SQL felett\cite{drizzledocs}, így több irányításunk van a pontos lekérdezések felett, és nem kell a könyvtár által generált SQL kódot megérteni, ha egy lekérdezést optimalizálni szeretnénk. Emellett teljesítményteszteken is jobban teljesített a fent említett Prisma-nál\cite{drizzlebenchmark}. Az előnye a nyers SQL írásával szemben, hogy a Drizzle TypeScript segítségével biztosítja a típusbiztonságot, így egyszerűbb és biztonságosabb a lekérdezések írása.
 
 \subsection{Szerkezet}
 
@@ -491,17 +491,19 @@ A frontend az algoritmusok futtatásáért felelős, és a felhasználói felül
 
 \paragraph{Algoritmus:} "Algoritmus" alatt útvonaltervező algoritmusokat értek, azaz olyan utasítássorozatokat, amelyeknek a célja egy kezdő- és egy végpont közötti út megtalálása.
 
-\paragraph{Heurisztika:} A heurisztika egy olyan függvény, amely egy algoritmus számára egy becslést ad egy adott csúcsból a célig vezető út hosszáról. A heurisztikus keresés egy olyan útkereső algoritmus, amely használ heurisztikát a keresés irányítására.
+\paragraph{Heurisztika:} A heurisztika egy olyan $h(n)$ függvény, amely egy algoritmus számára egy becslést ad egy adott csúcsból ($n$) a célig vezető legrövidebb út hosszáról\cite{russell2020artificial}.
 
 \subsection{Algoritmusok}
 
-Az algoritmusok két fő csoportba sorolhatók: informált és informálatlan algoritmusok. Az informálatlan algoritmusok keresés közben nem veszik figyelembe a célt, csak a kezdőpontot, és a gráfot járják be. Az informált algoritmusok a célt is figyelembe veszik, és ennek megfelelően működnek.
+Az algoritmusok két fő csoportba sorolhatók: informált és informálatlan algoritmusok\cite{russell2020artificial}. Az informálatlan algoritmusok keresés közben nem veszik figyelembe a célt, csak a kezdőpontot, és a gráfot járják be. Az informált algoritmusok a célt is figyelembe veszik, és ennek megfelelően működnek.
 
-\subsubsection{BFS (Breadth-First Search)}
+\subsubsection{BFS (Breadth-First Search) útkeresés}
 
 A BFS algoritmus egy szélességi keresésen alapuló algoritmus. Az algoritmus a kezdeti csúcsból indul, és a szomszédos csúcsokat egy sorban tárolja. Az algoritmus minden szomszédos csúcsot meglátogat, majd a sorban következő csúcsot veszi ki és annak szomszédait tárolja. Az algoritmus addig fut, amíg el nem éri a célt, vagy nincs több szomszédos csúcs a sorban.
 
-Az algoritmus egy sor adatszerkezetet használ, ami a következő műveleteket támogatja:
+A BFS nem tesz különbséget a különböző súlyú élek között, így általában nem szokás súlyozott gráfokon alkalmazni\cite{russell2020artificial}.
+
+Az algoritmus egy \textit{sor} adatszerkezetet használ\cite{russell2020artificial}, ami a következő műveleteket támogatja:
 
 \begin{itemize}
     \item \texttt{push}: Egy elem hozzáadása a sor végéhez.
@@ -526,40 +528,97 @@ function BFS(graph, start, goal):
                 queue.append(neighbor)
 \end{lstlisting}
 
-\subsubsection{Dijkstra}
+\subsubsection{Dijkstra algoritmus}
 
-A Dijkstra algoritmus egy súlyozott gráfokon való legrövidebb út keresésére alkalmas algoritmus. Az algoritmus a kezdeti csúcsból indul, és a szomszédos csúcsokat egy prioritási sorban tárolja. Az algoritmus minden szomszédos csúcsot meglátogat, majd a prioritási sorból a legkisebb súlyú csúcsot ves
+A Dijkstra algoritmus egy súlyozott gráfokon való legrövidebb út\cite{russell2020artificial} keresésére alkalmas algoritmus. Az algoritmus az indulási csúcsnál kezd, és a szomszédos csúcsokat egy prioritási sorban tárolja. Az algoritmus minden szomszédos csúcsot meglátogat, majd a prioritási sorból a legkisebb súlyú csúcsot veszi ki és annak szomszédait tárolja. Mivel mindig az aktuális legkisebb súlyú csúcsot veszi ki, és egy csúcs súlya annak az időben mért távolsága az indulóállomástól, az algoritmus garantálja, hogy a célhoz vezető út a legrövidebb lesz (hiszen ha létezne rövidebb út a találtnál, azt már megtalálta volna korábban). Az algoritmus addig fut, amíg el nem éri a célt, vagy nincs több szomszédos csúcs a prioritási sorban.
 
+Az algoritmus egy prioritási sor adatszerkezetet használ, ami a következő műveleteket támogatja:
 
+\begin{compactitem}
+    \item \texttt{insert(elem, weight)}: Egy elem hozzáadása a sorba adott súllyal.
+    \item \texttt{extract\_min}: A legkisebb elem kivétele a sorból.
+\end{compactitem}
 
-% \lstset{caption={Alkalmazás indítása különböző konfigurációkban}, label=src:compose-dev}
-% \begin{lstlisting}[language={JavaScript}]
-% function toTimestamp(column) {
-%     return sql`
-%         (60 * (
-%             -- "óra:perc:másodperc" -> "óra"
-%             60 * substr(${column}, 1, instr(${column}, ':') - 1) +
-%             -- "perc:másodperc" -> "perc"
-%             substr(
-%                 -- "óra:perc:másodperc" -> "perc:másodperc"
-%                 substr(${column}, instr(${column}, ':') + 1),
-%                 1,
-%                 instr(
-%                     substr(${column}, instr(${column}, ':') + 1),
-%                     ':'
-%                 ) - 1
-%             )
-%         )) +
-%         -- Másodpercek
-%         -- "perc:másodperc" -> "másodperc"
-%         substr(
-%             -- "óra:perc:másodperc" -> "perc:másodperc"
-%             substr(${column}, instr(${column}, ':') + 1),
-%             instr(
-%                 substr(${column}, instr(${column}, ':') + 1),
-%                 ':'
-%             ) + 1
-%         )
-%     `;
-% }
-% \end{lstlisting}
+A csúcs távolságát az indulóállomásból $g(n)$ jelöli (ez az indulóállomás esetében értelemszerűen $0$). Új csúcs súlyát egy $f(n)$-nel jelölt \textit{kiértékelőfüggvény} számítja ki. mivel az algoritmus csak a távolságot veszi figyelembe, a Dijkstra algoritmusnál a kiértékelőfüggvény $f(n) = g(n)$.
+
+Az algoritmus pszeudokódja a következő:
+
+\lstset{caption={Dijkstra algoritmus pszeudokódja}, label=src:dijkstra}
+\begin{lstlisting}[language={Python}]
+function Dijkstra(graph, start, goal):
+    pq = PriorityQueue()
+    pq.insert((start, 0))
+    visited = set()
+
+    while pq:
+        current, current_distance = pq.extract_min()
+        if current == goal:
+            return current
+        visited.add(current)
+        for neighbor in graph[current]:
+            if neighbor not in visited:
+                new_distance = current_distance + distance(current, neighbor)
+                pq.insert((neighbor, new_distance))
+\end{lstlisting}
+
+\subsubsection{Mohó algoritmus}
+
+A mohó algoritmus a Dijkstra algoritmusnak egy olyan változata, amely pusztán egy heurisztika alapján végzi az útkeresést\cite{russell2020artificial}. Ennek a kiértékelőfüggvénye $f(n) = h(n)$, ahol $h(n)$ a heurisztika értéke az adott csúcsra --- ez azt jelenti, hogy az algoritmus pusztán heurisztika alapján dönti el, hogy melyik csúcsot válassza következőnek.
+
+A programban használt heurisztika a két pont közötti távolság a Föld\footnote{A program implementációjában a számításokhoz a \textit{distance-from} csomag szolgáltatja a távolság számításához szükséges függvényeket. Ez a könyvtár a Földet egy 6371 méter sugarú gömbként modellezi\cite{distancefrom-github}.} felszínén, egy egyenes vonalban. Ez jó választás\cite{russell2020artificial}, hiszen
+\begin{compactenum}
+    \item Ennél rövidebb út nem létezhet, így a heurisztika mindig alulbecsüli a távolságot, és
+    \item Egyetlen képlet segítségével, gyorsan kiszámítható.
+\end{compactenum}
+
+Ez az algoritmus a legtöbb esetben sokkal gyorsabban találja meg a célt, mint a Dijkstra algoritmus, viszont nem garantálja, hogy a talált út a legrövidebb lesz --- sőt, egy olyan hálózaton, mint a tömegközlekedés, az utazási idő figyelmen kívül hagyása a tapasztalataim szerint még többet ront az eredmény minőségén, mint például egy gyalogos útvonaltervezésnél.
+
+\lstset{caption={Különbség a Dijkstra és a mohó algoritmus között}, label=src:greedy}
+\begin{lstlisting}[language={Python}, style=gitdiff]
+function Greedy(graph, start, goal):
+    pq = PriorityQueue()
+    pq.insert((start, 0))
+    visited = set()
+
+    while pq:
+        current, current_distance = pq.extract_min()
+        if current == goal:
+            return current
+        visited.add(current)
+        for neighbor in graph[current]:
+            if neighbor not in visited:
+-\-\-\-             new_distance = current_distance \+ distance(current, neighbor) -
+-\-\-\-             pq.insert((neighbor, new_distance)) -
++\+\+\+             pq.insert((neighbor, heuristic(neighbor))) +
+\end{lstlisting}
+
+\subsubsection{A* algoritmus}
+
+Az A* algoritmus\footnote{A szakirodalomban az A* algoritmus nem mindig tartalmazza a heurisztika súlyozását, ilyenkor ezt a változatot \textit{súlyozott A*}-nak nevezik\cite{russell2020artificial}. Én az egyszerűség kedvéért erre a variánsra egyszerűen A*-ként hivatkozom, a "súlyozatlan" változatot pedig nem említem meg.} a Dijkstra és a mohó algoritmusok kombinációja, amely a Dijkstra algoritmus pontosságát ötvözi a mohó algoritmus gyorsaságával. Ezt úgy éri el, hogy a prioritási sor elemeit a súlyok és a súlyozott heurisztika összege szerint rendezi.
+
+"Súlyozott heurisztika" alatt egyszerűen a heurisztika és egy $W$ súly szorzatát értem. Az A* kiértékelőfüggvénye tehát a következő\cite{russell2020artificial}:
+
+$$f(n) = g(n) + W \times h(n)$$
+
+A súly értékének változtatásával az algoritmus többet vagy kevesebbet fog támaszkodni a heurisztikára, tehát a súly csökkentéséhez közelebb kerülhetünk a Dijkstra algoritmushoz pontos eredményeihez, míg a súly növelésével a mohó algoritmus gyorsaságához.
+
+Az algoritmus pszeudokódja a következő:
+
+\lstset{caption={A* algoritmus pszeudokódja}, label=src:astar}
+\begin{lstlisting}[language={Python}, style=gitdiff]
+function Greedy(graph, start, goal):
+    pq = PriorityQueue()
+    pq.insert((start, 0))
+    visited = set()
+
+    while pq:
+        current, current_distance = pq.extract_min()
+        if current == goal:
+            return current
+        visited.add(current)
+        for neighbor in graph[current]:
+            if neighbor not in visited:
+                new_distance = current_distance \+ distance(current, neighbor)
+-\-\-\-             pq.insert((neighbor, new_distance)) -
++\+\+\+             pq.insert((neighbor, new_distance \+ heuristic(neighbor))) +
+\end{lstlisting}
