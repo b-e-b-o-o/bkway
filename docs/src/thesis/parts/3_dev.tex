@@ -3,13 +3,13 @@
 
 \section{Bevezetés}
 
-Az alkalmazáshoz való technológiák kiválasztásakor fontos mind a felhasználó, mind a fejlesztő igényeit figyelmbe venni. Szerencsére, jelen esetben van megoldás, amely minden oldal számára a legtöbb kényelmet nyújtja, mégpedig a webalkalmazás. A felhasználó számára könnyű elérést, platformfüggetlenséget, és egy megszokott felületet hordoz magával, ami különösen fontos egy oktatási céllal rendelkező alkalmazásnál, hiszen még kevesebb akadályt helyez a felhasználó és a "tananyag" közé. Fejlesztői szempontból is kényelmes egy ilyen alkalmazást a böngészőre írni, hiszen a JavaScript ökoszisztémában könyvtárak és keretrendszerek tömkelege áll rendelkezésre, melyek segítségével gyorsan és hatékonyan lehet egy webalkalmazást fejleszteni.
+Az alkalmazáshoz való technológiák kiválasztásakor fontos mind a felhasználó, mind a fejlesztő igényeit figyelembe venni. Szerencsére, jelen esetben van megoldás, amely minden oldal számára a legtöbb kényelmet nyújtja, mégpedig a webalkalmazás. A felhasználó számára könnyű elérést, platformfüggetlenséget, és egy megszokott felületet hordoz magával, ami különösen fontos egy oktatási céllal rendelkező alkalmazásnál, hiszen még kevesebb akadályt helyez a felhasználó és a "tananyag" közé. Fejlesztői szempontból is kényelmes egy ilyen alkalmazást a böngészőre írni, hiszen a JavaScript ökoszisztémában könyvtárak és keretrendszerek tömkelege áll rendelkezésre, melyek segítségével gyorsan és hatékonyan lehet egy webalkalmazást fejleszteni.
 
 \section{Adatforrás}
 
 Az adatok a BKK\nomenclature{BKK}{Budapesti Közlekedési Központ} által szolgáltatott OpenData Portálon\cite{bkkopendata} nyilvánosan elérhető adatbázisból származnak. Az adatokat a BKK a GTFS\index{GTFS -- General Transit Feed Specification} (General Transit Feed Specification) formátumban teszik elérhetővé, ami egy Google-nél kifejlesztett\cite{gtfsabout} nyilvánosan elérhető specifikáció, mely egy szabványos formátumot definiál a tömegközlekedési adatok szolgáltatására.
 
-\section{Tervezés és követelemények}
+\section{Tervezés és követelmények}
 
 \subsection{Nem funkcionális követelmények}
 
@@ -19,7 +19,7 @@ Az adatok a BKK\nomenclature{BKK}{Budapesti Közlekedési Központ} által szolg
     \item Hatékonyság
     \begin{compactitem}     
         \item A szoftver kezdeti megnyitásakor legkésőbb 5 másodperc alatt teljesen betöltődik és használhatóvá válik
-        \item A szoftver általános használat közben folyatosan, megakadás közben fut egy középkategóriás számítógépen, egy modern böngészőben
+        \item A szoftver általános használat közben folyamatosan, megakadás közben fut egy középkategóriás számítógépen, egy modern böngészőben
         \begin{compactitem}     
             \item Kivétel ez alól az animált útvonaltervezés, amelynek a futása közben a szoftver akadozhat, de nem annyira, hogy használhatatlanná váljon, vagy megakadályozza az animáció leállítását
         \end{compactitem}
@@ -43,7 +43,7 @@ Az adatok a BKK\nomenclature{BKK}{Budapesti Közlekedési Központ} által szolg
     \item Hordozhatóság
     \begin{compactitem}
         \item A szoftver kliens oldala bármilyen WebGL-t támogató modern böngészőben fut, különös tekintettel a Chromium alapú böngészőkre
-        \item A szoftver a kliens oldalon állandó, stabil internetkapcsolatot és a szerverrel való kapcsolatatot igényel
+        \item A szoftver a kliens oldalon állandó, stabil internetkapcsolatot és a szerverrel való kapcsolatot igényel
         \item A szoftver szerver oldala az adatok letöltéséhez stabil internetkapcsolatot igényel, ezt követően csak a klienssel szükséges kommunikálnia
     \end{compactitem}
     \item Felhasználhatóság
@@ -55,13 +55,13 @@ Az adatok a BKK\nomenclature{BKK}{Budapesti Közlekedési Központ} által szolg
     \end{compactitem}
 \end{enumerate}
 
-\subsubsection{Menedzselési követelemények}
+\subsubsection{Menedzselési követelmények}
 
 \begin{enumerate}
     \item Környezeti
     \begin{compactitem}
         \item A szoftver kliens oldalon egy egeret és egy billentyűzetet igényel
-        \item A szoftver szerver oldalának a futtatásához legalább egy középkategóriás számítógépnek megfelelő harver szükséges, eltekintve a perifériáktól
+        \item A szoftver szerver oldalának a futtatásához legalább egy középkategóriás számítógépnek megfelelő hardver szükséges, eltekintve a perifériáktól
     \end{compactitem}
     \item Működési
     \begin{compactitem}
@@ -78,7 +78,7 @@ Az adatok a BKK\nomenclature{BKK}{Budapesti Közlekedési Központ} által szolg
         \begin{compactitem}
             \item  REST API szerver
             \item  SQLite adatbázis
-            \item  Adatok importálásához node-GTFS
+            \item  Adatok importálásához node-gtfs
         \end{compactitem}
         \item  Visual Studio Code fejlesztői környezet
         \item  Docker
@@ -128,7 +128,7 @@ Az adatok a BKK\nomenclature{BKK}{Budapesti Közlekedési Központ} által szolg
             \item Algoritmus futtatásának indítása
             \item Algoritmus futtatásának szüneteltetése
             \item Algoritmus futtatásának folytatása
-            \item Algoritmus visszaállítása alapállpotba
+            \item Algoritmus visszaállítása alapállapotba
             \item Algoritmus eredményének megjelenítése
             \begin{compactitem}
                 \item Potenciális útvonalak megjelenítése a térképen
@@ -218,7 +218,7 @@ A felhasználói történetek a \ref{tab:user-stories-algorithm}., \ref{tab:user
         \hline
         1 & GIVEN & A "beállítások" fül van kiválasztva \\ \hline
         & AND     & Az A* algoritmus van kiválasztva \\ \hline
-        & WHEN    & A "heuristika súlya" mezőben módosítom a súlyt \\ \hline
+        & WHEN    & A "heurisztika súlya" mezőben módosítom a súlyt \\ \hline
         & THEN    & Az útvonaltervezés a választott súlyt fogja használni \\ \hline
         \hline
         2 & GIVEN & A "beállítások" fül van kiválasztva \\ \hline
@@ -261,7 +261,7 @@ A felhasználói történetek a \ref{tab:user-stories-algorithm}., \ref{tab:user
         & WHEN    & A "visszaállítás" gombra kattintok \\ \hline
         & THEN    & Az algoritmus "elfelejti" a talált utat és megállókat, és az alapállapotába áll \\ \hline
     \end{tabular}
-    \caption{Felhasználói történetek}
+    \caption{Felhasználói történet: Algoritmus irányítása}
     \label{tab:user-stories-control}
 \end{table}
 
@@ -341,7 +341,7 @@ Az alkalmazást fejlesztéshez is Dockerben futtatjuk, hogy a program írásakor
 
 \begin{compactenum}
     \item \texttt{base}: Az alap image, amely `node:lts-alpine`-t használ. Erre épül az összes többi stage.
-    \item \texttt{development}: Az \texttt{npm run dev} parancsot futtatja. Ennek a futtatásakor az alkalmazás figyeli a fájlrendszert\footnote{A fájlrendszer figyeléséről frontend esetén a \textit{vite}, backend esetén a \textit{tsx} gondoskodik.}, és újraindítja a kódot minden alkalommal, amikor egy fájl frissül (frontenden csak azokat a komponeneseket, amiket érinti a frissítés --- ezt HMR-nek, azaz Hot Module Replacement-nek hívják\cite{hmr}).
+    \item \texttt{development}: Az \texttt{npm run dev} parancsot futtatja. Ennek a futtatásakor az alkalmazás figyeli a fájlrendszert\footnote{A fájlrendszer figyeléséről frontend esetén a \textit{vite}, backend esetén a \textit{tsx} gondoskodik.}, és újraindítja a kódot minden alkalommal, amikor egy fájl frissül (frontenden csak azokat a komponenseket, amiket érinti a frissítés --- ezt HMR-nek, azaz Hot Module Replacement-nek hívják\cite{hmr}).
     \item \texttt{build}: Az \texttt{npm run build} parancsot futtatja, ami JavaScript-re fordítja a TypeScript kódot.
     \item \texttt{production}: A \texttt{build}-ből lemásolja a lefordított kódot és futtatja azt.
 \end{compactenum}
@@ -409,7 +409,7 @@ A táblák a következő információkat tartalmazzák\cite{gtfsspec}:
     \item \textit{routes}: Ez a tábla tartalmazza a járatokat (pl. 4-es villamos, 9-es busz).
     \item \textit{trips}: Ez a tábla tartalmazza a járatok útjait --- ha egy járat óránként közlekedik 9:00-tól 20:00-ig, akkor 24-szer fog szerepelni ebben a táblában: 12 oda- és ugyanennyi visszaút mindegyike egyedi azonosítóval.
     \item \textit{stop\_times}: Minden \textit{trips}-ben szereplő út egyes megállóit tartalmazza, az érkezési és indulási időpontokkal. Ez a legnagyobb tábla, jelenleg közel 6 millió rekorddal.
-    \item \textit{calendar\_dates}: Arról tartalmaz információt, hogy melyik járat melyik napon lett szolgálatba állítva, illetve kiállítva. Ezt a táblát nem használjuk\footnote{A program célja nem pontos információk szolgáltatása, hanem algoritmusok demostrálása egy ismert környezetben. Ha a cél pontos menetrendi információk megjelenítése lenne, akkor valós idejű adatokat is figyelembe kell venni, ami jelentősen növelné a program bonyolultságát, és nem tartozik a dolgozat témájába.}.
+    \item \textit{calendar\_dates}: Arról tartalmaz információt, hogy melyik járat melyik napon lett szolgálatba állítva, illetve kiállítva. Ezt a táblát nem használjuk\footnote{A program célja nem pontos információk szolgáltatása, hanem algoritmusok demonstrálása egy ismert környezetben. Ha a cél pontos menetrendi információk megjelenítése lenne, akkor valós idejű adatokat is figyelembe kell venni, ami jelentősen növelné a program bonyolultságát, és nem tartozik a dolgozat témájába.}.
     \item \textit{shapes}: Az egyes járatok útvonalát tartalmazza pontokban; koordináta-párokat tárol, amelyeket összekötve az adott járat pontos útvonalát kapjuk a térképen. A frontend ezeket az adatokat használja az útvonalak megjelenítésére.
     \item \textit{stops}: A megállók adatait tartalmazza (pl. nevük, koordinátájuk).
     \item \textit{pathways}: Megállók közti átjárókat tartalmaz (pl. aluljárók). Ezt a táblát sem használjuk --- csak néhány átjáró van benne (jelenlegi adatok szerint 6000-nél több megállóra 500-nál kevesebb átjáró), így önmagában nem lenne elég információ az egy csoportba tartozó megállók összekötésére. Egyszerűbb és a felhasználó számára is következetesebb bármelyik 2 megálló közötti gyaloglást azonosan kezelni.
@@ -417,7 +417,7 @@ A táblák a következő információkat tartalmazzák\cite{gtfsspec}:
 
 Az adatbázis a Docker Compose fájlban mountolt \textit{data} mappába kerül, amely a \textit{frontend} és a \textit{backend} mappák mellett foglal helyet. Az alkalmazás induláskor ellenőrzi, hogy az adatbázis létezik-e (illetve sikeres-e egy lekérdezés), és ha nem, akkor betölti az adatokat a GTFS adatokból. Az adatforrás a \textit{src/configs/gtfs.config.ts} fájlban állítható be.
 
-A gtfs könyvtár a hivatalos specifikáción felül is tartalmaz néhány segédoszlopot, amelyek a gyors lekérdezést segítik. Ezek az eredeti adatokban "óra:perc:másodperc" formátumban szereplő időpontokat egész számokká alakítják. Azonban a GTFS specifikáció szerint az éjfél után közlekedő járatok időpontjai átléphetik az "24:00:00" időpontot, amit a gtfs könyvtár nem kezel helyesen. Így betöltés után az időpontokat a programnak újra kell számolnia, hogy a betöltött adatbázisban ne null értékek legynek.
+A gtfs könyvtár a hivatalos specifikáción felül is tartalmaz néhány segédoszlopot, amelyek a gyors lekérdezést segítik. Ezek az eredeti adatokban "óra:perc:másodperc" formátumban szereplő időpontokat egész számokká alakítják. Azonban a GTFS specifikáció szerint az éjfél után közlekedő járatok időpontjai átléphetik az "24:00:00" időpontot, amit a gtfs könyvtár nem kezel helyesen. Így betöltés után az időpontokat a programnak újra kell számolnia, hogy a betöltött adatbázisban ne null értékek legyenek.
 
 Amint az adatbázis betöltése megtörténik, az alkalmazás GeoJson fájlokat generál a frontend számára, melyek úgyszintén a \textit{data} mappába kerülnek (\ref{fig:data-folder-structure}). Ezek a fájlok tartalmazzák a megállók és az útvonalak geometriáját\cite{rfc7946}, amelyeket a frontend a térképen megjelenít.
 
@@ -475,7 +475,7 @@ A frontend az algoritmusok futtatásáért felelős, és a felhasználói felül
 
 \subsection{Definíciók}
 
-\paragraph{Csúcs:} Egy gráf csúcsa egy egy pont a gráfban. Egy csúcsnak lehetnek szomszédos csúcsai, amelyekkel élek kötik össze. Ebben az alkalmazásban minden csúcs egy megállónak felel meg. A továbbiakban a két fogalmat szinonimaként használom.
+\paragraph{Csúcs:} Egy gráf csúcsa egy pont a gráfban. Egy csúcsnak lehetnek szomszédos csúcsai, amelyekkel élek kötik össze. Ebben az alkalmazásban minden csúcs egy megállónak felel meg. A továbbiakban a két fogalmat szinonimaként használom.
 
 \paragraph{Él:} Egy gráf éle egy csúcsból egy másikba mutató irányított vagy irányítatlan kapcsolat. Irányított élek esetén a két csúcs közül az egyik a kezdőpont, a másik a végpont. Egy él egy utazást reprezentál, amely egy megállóból egy másikba vezet. Az élek lehetnek súlyozatlanok és súlyozottak. Amennyiben súlyozottak, minden élhez egy súly van rendelve, ami a két csúcs közötti utazási időt jelenti. A továbbiakban "él" alatt irányított, súlyozott élt értek. Az alkalmazás szempontjából további két csoportba sorolhatók az élek: utazási élek és gyaloglási élek.
 
@@ -499,16 +499,16 @@ Az algoritmusok két fő csoportba sorolhatók: informált és informálatlan al
 
 \subsubsection{BFS (Breadth-First Search) útkeresés}
 
-A BFS algoritmus egy szélességi keresésen alapuló algoritmus. Az algoritmus a kezdeti csúcsból indul, és a szomszédos csúcsokat egy sorban tárolja. Az algoritmus minden szomszédos csúcsot meglátogat, majd a sorban következő csúcsot veszi ki és annak szomszédait tárolja. Az algoritmus addig fut, amíg el nem éri a célt, vagy nincs több szomszédos csúcs a sorban.
-
-A BFS nem tesz különbséget a különböző súlyú élek között, így általában nem szokás súlyozott gráfokon alkalmazni\cite{russell2020artificial}.
-
-Az algoritmus egy \textit{sor} adatszerkezetet használ\cite{russell2020artificial}, ami a következő műveleteket támogatja:
+A BFS algoritmus egy ún. \textit{sor} adatszerkezetet használ\cite{russell2020artificial}, ami a következő műveleteket támogatja:
 
 \begin{itemize}
     \item \texttt{push}: Egy elem hozzáadása a sor végéhez.
     \item \texttt{pop}: Az első elem kivétele a sor elejéről.
 \end{itemize}
+
+Az útkeresés a kiindulócsúcsban kezd, és a szomszédos csúcsokat egy sorba helyezi. Ezt követően minden lépésében kivesz egy csúcsot a sor elejéről, majd annak szomszédjait a sor végére helyezi. Ennek eredményeként először azokat a csúcsokat fedezi fel, amik 1 élre vannak a kiindulóponttól, majd azokat, amikhez 2 megállót kell utazni, és így tovább\cite{russell2020artificial}.A z algoritmus addig fut, amíg el nem éri a célt, vagy nincs több csúcs a sorban.
+
+A BFS nem tesz különbséget a különböző súlyú élek között, így általában nem szokás súlyozott gráfokon alkalmazni\cite{russell2020artificial}.
 
 Az algoritmus pszeudokódja a következő:
 
@@ -530,7 +530,7 @@ function BFS(graph, start, goal):
 
 \subsubsection{Dijkstra algoritmus}
 
-A Dijkstra algoritmus egy súlyozott gráfokon való legrövidebb út\cite{russell2020artificial} keresésére alkalmas algoritmus. Az algoritmus az indulási csúcsnál kezd, és a szomszédos csúcsokat egy prioritási sorban tárolja. Az algoritmus minden szomszédos csúcsot meglátogat, majd a prioritási sorból a legkisebb súlyú csúcsot veszi ki és annak szomszédait tárolja. Mivel mindig az aktuális legkisebb súlyú csúcsot veszi ki, és egy csúcs súlya annak az időben mért távolsága az indulóállomástól, az algoritmus garantálja, hogy a célhoz vezető út a legrövidebb lesz (hiszen ha létezne rövidebb út a találtnál, azt már megtalálta volna korábban). Az algoritmus addig fut, amíg el nem éri a célt, vagy nincs több szomszédos csúcs a prioritási sorban.
+A Dijkstra algoritmus egy súlyozott gráfokon való legrövidebb út\cite{russell2020artificial} keresésére alkalmas algoritmus. Az algoritmus az indulási csúcsnál kezd, és a szomszédos csúcsokat egy prioritási sorban tárolja. Az algoritmus minden szomszédos csúcsot meglátogat, majd a prioritási sorból a legkisebb súlyú csúcsot veszi ki és annak szomszédjait tárolja. Mivel mindig az aktuális legkisebb súlyú csúcsot veszi ki, és egy csúcs súlya annak az időben mért távolsága az indulóállomástól, az algoritmus garantálja, hogy a célhoz vezető út a legrövidebb lesz (hiszen ha létezne rövidebb út a találtnál, azt már megtalálta volna korábban). Az algoritmus addig fut, amíg el nem éri a célt, vagy nincs több szomszédos csúcs a prioritási sorban.
 
 Az algoritmus egy prioritási sor adatszerkezetet használ, ami a következő műveleteket támogatja:
 
@@ -622,3 +622,7 @@ function Greedy(graph, start, goal):
 -\-\-\-             pq.insert((neighbor, new_distance)) -
 +\+\+\+             pq.insert((neighbor, new_distance \+ heuristic(neighbor))) +
 \end{lstlisting}
+
+\subsection{Implementálás}
+
+Megfigyelhető, hogy az algoritmusok szerkezetükben nagyon hasonlóak egymáshoz. A prioritási sor-alapú algoritmusok esetében egyértelmű, hiszen csak egy-két sorban különböznek egymástól, ám a BFS 
