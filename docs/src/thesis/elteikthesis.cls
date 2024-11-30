@@ -323,10 +323,14 @@
 \RequirePackage{color}
 \RequirePackage{xcolor}
 % Predefined colors
+\definecolor{Green}{rgb}{0.13, 0.55, 0.13}
+
 \definecolor{codebackg}{rgb}{0.95,0.95,0.95}
 \definecolor{codecomment}{rgb}{0,0.6,0}
 \definecolor{codestring}{rgb}{0.58,0,0.82}
 \colorlet{todobackg}{orange!10}
+% Strikethrough text
+\RequirePackage[normalem]{ulem}
 % ------------------------------
 
 % ------------------------------
@@ -496,10 +500,9 @@
 	morestring=[b]"
 }
 
-\definecolor{Green}{rgb}{0.13, 0.55, 0.13}
 \lstdefinestyle{gitdiff}{
-	moredelim=[is][\color{red}]{-}{-},  % Lines starting with - are red
-	moredelim=[is][\color{Green}]{+}{+},  % Lines starting with + are green
+	moredelim=[is][\color{red}]{-}{-},
+	moredelim=[is][\color{Green}]{+}{+},
 	% showstringspaces=false,
 	% breaklines=true,
 	literate={\\+}{{+}}1 {\\-}{{-}}1

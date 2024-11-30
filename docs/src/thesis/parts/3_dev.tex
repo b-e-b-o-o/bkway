@@ -502,8 +502,8 @@ Az algoritmusok két fő csoportba sorolhatók: informált és informálatlan al
 A BFS algoritmus egy ún. \textit{sor} adatszerkezetet használ\cite{russell2020artificial}, ami a következő műveleteket támogatja:
 
 \begin{itemize}
-    \item \texttt{push}: Egy elem hozzáadása a sor végéhez.
-    \item \texttt{pop}: Az első elem kivétele a sor elejéről.
+    \item \texttt{push(elem)}: Egy elem hozzáadása a sor végéhez.
+    \item \texttt{pop()}: Az első elem kivétele a sor elejéről.
 \end{itemize}
 
 Az útkeresés a kiindulócsúcsban kezd, és a szomszédos csúcsokat egy sorba helyezi. Ezt követően minden lépésében kivesz egy csúcsot a sor elejéről, majd annak szomszédjait a sor végére helyezi. Ennek eredményeként először azokat a csúcsokat fedezi fel, amik 1 élre vannak a kiindulóponttól, majd azokat, amikhez 2 megállót kell utazni, és így tovább\cite{russell2020artificial}.A z algoritmus addig fut, amíg el nem éri a célt, vagy nincs több csúcs a sorban.
@@ -519,7 +519,7 @@ function BFS(graph, start, goal):
     visited = set()
 
     while queue:
-        current = queue.pop(0)
+        current = queue.pop()
         if current == goal:
             return current
         visited.add(current)
@@ -587,9 +587,9 @@ function Greedy(graph, start, goal):
         visited.add(current)
         for neighbor in graph[current]:
             if neighbor not in visited:
--\-\-\-             new_distance = current_distance \+ distance(current, neighbor) -
--\-\-\-             pq.insert((neighbor, new_distance)) -
-+\+\+\+             pq.insert((neighbor, heuristic(neighbor))) +
+- \-              new_distance = current_distance \+ distance(current, neighbor) -
+- \-              pq.insert((neighbor, new_distance)) -
++ \+              pq.insert((neighbor, heuristic(neighbor))) +
 \end{lstlisting}
 
 \subsubsection{A* algoritmus}
@@ -604,7 +604,7 @@ A súly értékének változtatásával az algoritmus többet vagy kevesebbet fo
 
 Az algoritmus pszeudokódja a következő:
 
-\lstset{caption={A* algoritmus pszeudokódja}, label=src:astar}
+\lstset{caption={Különbség a Dijkstra és az A* algoritmus között}, label=src:astar}
 \begin{lstlisting}[language={Python}, style=gitdiff]
 function Greedy(graph, start, goal):
     pq = PriorityQueue()
@@ -619,10 +619,39 @@ function Greedy(graph, start, goal):
         for neighbor in graph[current]:
             if neighbor not in visited:
                 new_distance = current_distance \+ distance(current, neighbor)
--\-\-\-             pq.insert((neighbor, new_distance)) -
-+\+\+\+             pq.insert((neighbor, new_distance \+ heuristic(neighbor))) +
+- \-              pq.insert((neighbor, new_distance)) -
++ \+              pq.insert((neighbor, new_distance \+ heuristic(neighbor))) +
 \end{lstlisting}
 
 \subsection{Implementálás}
 
-Megfigyelhető, hogy az algoritmusok szerkezetükben nagyon hasonlóak egymáshoz. A prioritási sor-alapú algoritmusok esetében egyértelmű, hiszen csak egy-két sorban különböznek egymástól, ám a BFS 
+Megfigyelhető, hogy az algoritmusok szerkezetükben nagyon hasonlóak egymáshoz. A prioritási sor-alapú algoritmusok esetében egyértelmű, hiszen csak egy-két sorban különböznek egymástól, ám a BFS sem különbözik sokban ezektől. Néhány triviális változó- illetve metódus-átnevezés után láthatjuk, hogy a BFS és a mohó algoritmus mindössze ennyiben különbözik:
+
+\lstset{
+    caption={Különbség a Dijkstra és a mohó algoritmus között},
+    label=src:asd,
+    escapechar=§}
+\begin{lstlisting}[language={Python}, style=gitdiff]
+
+- \-  function BFS(graph, start, goal): -
++ \+  function Dijkstra(graph, start, goal): +
+- \-      queue = Queue() -
++ \+      queue = PriorityQueue() +
+
+- \-      queue.insert(start) -
++ \+      queue.insert((start, 0)) +
+        visited = set()
+
+        while queue:
+- \-          current = queue.pop() -
++ \+          current, current_distance = queue.pop() +
+            if current == goal:
+                return current
+            visited.add(current)
+            for neighbor in graph[current]:
+                if neighbor not in visited:
+- \-                  queue.insert(neighbor) -
++ \+                  queue.insert((neighbor, heuristic(neighbor))) +
+\end{lstlisting}
+
+Mint látható, a program folyása teljes azonos köztük, az egyetlen különbség, hogy a prioritási sor alapú algoritmusok súlyt társítanak a sor elemeihez.
