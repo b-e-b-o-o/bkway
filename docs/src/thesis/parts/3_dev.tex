@@ -313,7 +313,8 @@ A backend egy \textit{Node.js} alapú alkalmazás, mely az \textit{Express.js} k
 
 Hogy a backend akár távoli szerveren is egyszerűen beindítható legyen a teljes tesztkörnyezet reprodukálása nélkül, az alkalmazást Dockerizáljuk\index{Docker -- virtualizációs technológia, mely alkalmazások platformfüggetlen futtatását teszi lehetővé}; így egy \texttt{git clone [repo] \&\& docker compose up -d} paranccsal bárhol egyszerűen futtatható a backend (ahol a Docker és a git telepítve van).
 
-Az olvashatóság és karbantarthatóság érdekében a backend kódja TypeScript\footnote{A TypeScript egy nyelv, ami a JavaScriptre épül, de statikus típusokat is támogat\cite{typescript}} nyelven íródik.
+% \footnote{A TypeScript egy nyelv, ami a JavaScriptre épül, de statikus típusokat is támogat\cite{typescript}}
+Az olvashatóság és karbantarthatóság érdekében a backend kódja TypeScript nyelven íródik.
 
 \subsection{Frontend áttekintés}
 
@@ -326,10 +327,10 @@ Az utak térképen való megjelenítéséhez a két fő lehetőség a \textit{de
 Az alkalmazás fejlesztéséhez a következő programok telepítése szükséges:
 
 \begin{compactitem}
-    \item \textit{Node.js (és npm csomagkezelő)}: Bár a backend és a frontend is Dockerben futtatható, az Intellisense számára érdemes a host gépen is telepíteni a használt csomagokat.
+    \item \textit{Node.js (és npm csomagkezelő)}: Bár a backend és a frontend is futtatható Dockerben, az Intellisense számára érdemes a host gépen is telepíteni a használt csomagokat.
     \item \textit{Docker}
     \item \textit{git}
-    \item \textit{IDE/szövegszerkesztő}: Én a Visual Studio Code-ot használom és javaslom, mert ingyenes és egyszerűen bővíthető JavaScript és Docker támogatáshoz, de használható más IDE (pl. WebStorm) is.
+    \item \textit{IDE/szövegszerkesztő}: Én a Visual Studio Code-ot használom és javaslom, de használható más IDE (pl. WebStorm) is.
 \end{compactitem}
 
 Függőségek telepítéséhez a backend és a frontend mappákban a \texttt{npm install} parancsot kell futtatni.
@@ -340,7 +341,7 @@ Az alkalmazást fejlesztéshez is Dockerben futtatjuk, hogy a program írásakor
 
 \begin{compactenum}
     \item \texttt{base}: Az alap image, amely `node:lts-alpine`-t használ. Erre épül az összes többi stage.
-    \item \texttt{development}: Az \texttt{npm run dev} parancsot futtatja. Ennek a futtatásakor az alkalmazás figyeli a fájlrendszert\footnote{A fájlrendszer figyeléséről frontend esetén a \textit{vite}, backend esetén a \textit{tsx} gondoskodik.}, és újraindítja a kódot minden alkalommal, amikor egy fájl frissül (frontenden csak azokat a komponeneseket, amiket érinti a frissítés --- ezt HMR-nek, azaz Hot Module Reload-nak hívják).
+    \item \texttt{development}: Az \texttt{npm run dev} parancsot futtatja. Ennek a futtatásakor az alkalmazás figyeli a fájlrendszert\footnote{A fájlrendszer figyeléséről frontend esetén a \textit{vite}, backend esetén a \textit{tsx} gondoskodik.}, és újraindítja a kódot minden alkalommal, amikor egy fájl frissül (frontenden csak azokat a komponeneseket, amiket érinti a frissítés --- ezt HMR-nek, azaz Hot Module Replacement-nek hívják\cite{hmr}).
     \item \texttt{build}: Az \texttt{npm run build} parancsot futtatja, ami JavaScript-re fordítja a TypeScript kódot.
     \item \texttt{production}: A \texttt{build}-ből lemásolja a lefordított kódot és futtatja azt.
 \end{compactenum}
@@ -365,12 +366,13 @@ Bár produkciós környezethez minden adott, hogy Dockerből futtatható legyen 
 A backend könyvtárszerkezete a következő:
 
 \begin{compactitem}
-    \item \texttt{src}: A forráskódokat tartalmazó könyvtár.
-    \item \texttt{src/configs}: Konfigurációs fájlok helye.
-    \item \texttt{src/models}: Adatbázis sémák helye.
-    \item \texttt{src/routes}: A REST API végpontokat tartalmazó fájlok.
-    \item \texttt{src/utils}: Segédfüggvények adatok betöltésére és lekérdezésére.
+    \item \texttt{src/}: A forráskódokat tartalmazó könyvtár, aminek a tartalma fordításra kerül.
+    \item \texttt{src/configs/}: Futásidőben használt konfigurációs fájlok helye.
+    \item \texttt{src/models/}: Adatbázis sémák helye.
+    \item \texttt{src/routes/}: A REST API végpontokat tartalmazó fájlok.
+    \item \texttt{src/utils/}: Segédfüggvények adatok betöltésére és lekérdezésére.
     \item \texttt{src/index.ts}: Az alkalmazás belépési pontja.
+    \item \texttt{test/}: Teszteléshez szükséges fájlok.
     \item \texttt{.dockerignore}: \texttt{.gitignore}-hoz hasonlóan a Docker által figyelmen kívül hagyott fájlok listája.
     \item \texttt{Dockerfile}: A Docker image felépítéséhez szükséges fájl.
     \item \texttt{drizzle.config.ts}: A \textit{drizzle-kit} konfigurációs fájlja (részletek a \ref{TODO} fejezetben).
@@ -397,7 +399,7 @@ A gtfs a GTFS adatokat egy SQLite adatbázisba tölti be, melynek sémája a GTF
 
 \pagebreak
 
-\textit{Megjegyzés: A teljes GTFS szabvány ennél jóval több táblát tartalmaz, de a legtöbbjük opcionális. A \ref{fig:gtfs-schema} ábra csak azokat a táblákat tartalmazza, amelyeket a BKK OpenData Portálán elérhető adatok tartalmaznak. Ezen táblákban is vannak olyan opcionális mezők, amelyekről a BKK nem szolgáltat adatokat. Ezek a mezők a teljesség kedvéért szerepelnek a sémában, de} null \textit{típussal vannak jelölve.}
+\textit{Megjegyzés: A teljes GTFS szabvány ennél jóval több táblát tartalmaz, de a legtöbbjük opcionális. A \ref{fig:gtfs-schema}. ábra csak azokat a táblákat tartalmazza, amelyeket a BKK OpenData Portálán elérhető adatok tartalmaznak. Ezen táblákban is vannak olyan opcionális mezők, amelyekről a BKK nem szolgáltat adatokat. Ezek a mezők a teljesség kedvéért szerepelnek a sémában, de} null \textit{típussal vannak jelölve.}
 
 A táblák a következő információkat tartalmazzák\cite{gtfsspec}:
 
@@ -408,16 +410,16 @@ A táblák a következő információkat tartalmazzák\cite{gtfsspec}:
     \item \textit{trips}: Ez a tábla tartalmazza a járatok útjait --- ha egy járat óránként közlekedik 9:00-tól 20:00-ig, akkor 24-szer fog szerepelni ebben a táblában: 12 oda- és ugyanennyi visszaút mindegyike egyedi azonosítóval.
     \item \textit{stop\_times}: Minden \textit{trips}-ben szereplő út egyes megállóit tartalmazza, az érkezési és indulási időpontokkal. Ez a legnagyobb tábla, jelenleg közel 6 millió rekorddal.
     \item \textit{calendar\_dates}: Arról tartalmaz információt, hogy melyik járat melyik napon lett szolgálatba állítva, illetve kiállítva. Ezt a táblát nem használjuk\footnote{A program célja nem pontos információk szolgáltatása, hanem algoritmusok demostrálása egy ismert környezetben. Ha a cél pontos menetrendi információk megjelenítése lenne, akkor valós idejű adatokat is figyelembe kell venni, ami jelentősen növelné a program bonyolultságát, és nem tartozik a dolgozat témájába.}.
-    \item \textit{shapes}: Az egyes járatok útvonalát tartalmazza pontokban; koordináta-párokat tárol, amelyeket összekötve az adott járat pontos útvonalát kapjuk a térképen. A frontend ezt a táblát használja az útvonalak megjelenítésére.
+    \item \textit{shapes}: Az egyes járatok útvonalát tartalmazza pontokban; koordináta-párokat tárol, amelyeket összekötve az adott járat pontos útvonalát kapjuk a térképen. A frontend ezeket az adatokat használja az útvonalak megjelenítésére.
     \item \textit{stops}: A megállók adatait tartalmazza (pl. nevük, koordinátájuk).
     \item \textit{pathways}: Megállók közti átjárókat tartalmaz (pl. aluljárók). Ezt a táblát sem használjuk --- csak néhány átjáró van benne (jelenlegi adatok szerint 6000-nél több megállóra 500-nál kevesebb átjáró), így önmagában nem lenne elég információ az egy csoportba tartozó megállók összekötésére. Egyszerűbb és a felhasználó számára is következetesebb bármelyik 2 megálló közötti gyaloglást azonosan kezelni.
 \end{enumerate}
 
-Az adatbázis a Docker Compose fájlban mountolt \textit{data} mappába kerül, amely a \textit{frontend} és a \textit{backend} mappák mellett foglal helyet. Az alkalmazás induláskor ellenőrzi, hogy az adatbázis létezik-e (illetve sikeres-e egy lekérdezés), és ha nem, akkor betölti az adatokat a GTFS adatokból. Az adatforrás a \texttt{src/configs/gtfs.config.ts} fájlban állítható be.
+Az adatbázis a Docker Compose fájlban mountolt \textit{data} mappába kerül, amely a \textit{frontend} és a \textit{backend} mappák mellett foglal helyet. Az alkalmazás induláskor ellenőrzi, hogy az adatbázis létezik-e (illetve sikeres-e egy lekérdezés), és ha nem, akkor betölti az adatokat a GTFS adatokból. Az adatforrás a \textit{src/configs/gtfs.config.ts} fájlban állítható be.
 
-A gtfs könyvtár a hivatalos specifikáción felül is tartalmaz néhány segédoszlopot, amelyek a gyors lekérdezést segítik. Ezek az eredeti adatokban "óra:perc:másodperc" szöveges formátumban szereplő időpontokat egész számokká alakítják, amiket sokkal gyorsabban lehet összehasonlítani. Azonban a GTFS specifikáció szerint az éjfél után közlekedő járatok időpontjai átléphetik az "24:00:00" időpontot, amit a gtfs könyvtár nem kezel helyesen. Így betöltés után az időpontokat a programnak újra kell számolnia, hogy a betöltött adatbázisban ne null értékek legynek.
+A gtfs könyvtár a hivatalos specifikáción felül is tartalmaz néhány segédoszlopot, amelyek a gyors lekérdezést segítik. Ezek az eredeti adatokban "óra:perc:másodperc" formátumban szereplő időpontokat egész számokká alakítják. Azonban a GTFS specifikáció szerint az éjfél után közlekedő járatok időpontjai átléphetik az "24:00:00" időpontot, amit a gtfs könyvtár nem kezel helyesen. Így betöltés után az időpontokat a programnak újra kell számolnia, hogy a betöltött adatbázisban ne null értékek legynek.
 
-Amint az adatbázis betöltése megtörténik, az alkalmazás GeoJson fájlokat generál a frontend számára, melyek úgyszintén a \textit{data} mappába kerülnek (\ref{fig:data-folder-structure}). Ezek a fájlok tartalmazzák a megállók és az útvonalak geometriáját, amelyeket a frontend a térképen megjelenít.
+Amint az adatbázis betöltése megtörténik, az alkalmazás GeoJson fájlokat generál a frontend számára, melyek úgyszintén a \textit{data} mappába kerülnek (\ref{fig:data-folder-structure}). Ezek a fájlok tartalmazzák a megállók és az útvonalak geometriáját\cite{rfc7946}, amelyeket a frontend a térképen megjelenít.
 
 % dirtree?
 \begin{figure}[H]
@@ -431,6 +433,104 @@ Amint az adatbázis betöltése megtörténik, az alkalmazás GeoJson fájlokat 
     \caption{A \textit{data} mappa szerkezete az adatok betöltését követően}
     \label{fig:data-folder-structure}
 \end{figure}
+
+A GeoJson fájlok generálásán kívül a többi lekérdezéshez (például megállók kereséséhez) a gtfs könyvtár nem biztosít megfelelő eszközöket, így saját lekérdezéseket kell írni. Erre a \textit{Drizzle ORM} nevű könyvtárat használom, amely egy egyszerű ORM\footnote{Object-Relational Mapping, egy programozási technika, amely az objektumorientált programozást és a relációs adatbázisokat kapcsolja össze\cite{orm}} az SQLite adatbázishoz. Azért erre esett a választásom például \textit{Prisma} helyett, mert a Drizzle csak egy vékony réteget biztosít az SQL felett\cite{drizzledocs}, így több irányításunk van a pontos lekérdezések felett, és nem kell a könyvtár által generált SQL kódot megérteni, ha egy lekérdezést optimalizálni szeretnénk. Emellett teljesítményteszteken is jobban teljesített a fent említett Prisma-nál\cite{drizzlebenchmark}. Az előnye a nyers SQL írásával szemben, hogy a Drizzle TypeScript segítségével biztosítja a típusbiztonságot, így egyszerűbb és biztonságosabb a lekérdezések írása.
+
+\subsection{Szerkezet}
+
+A backend osztályait és azok közötti kapcsolatokat a \ref{fig:backend-structure}. ábra mutatja be.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{class_backend}
+    \caption{Backend szerkezete}
+    \label{fig:backend-structure}
+\end{figure}
+
+\subsection{REST API}
+
+Az alkalmazás REST API-jának végpontjai a következők:
+
+\begin{itemize}
+    \item \texttt{GET /data/stops.geo.json}: GeoJson fájl, amely a megállók koordinátáit tartalmazza.
+    \item \texttt{GET /data/shapes.geo.json}: GeoJson fájl, amely az útvonalak koordinátáit tartalmazza.
+    \item \texttt{GET /stops/search}: Megállók keresése név alapján.
+    \item \texttt{GET /stops/:stopId/nearby}: Egy megállótól adott távolságon belüli megállók lekérdezése.
+    \item \texttt{GET /stops/:stopId/neighbors}: Egy megállótól az adott időpont utáni 1 órás intervallumban induló járatokkal elérhető megállók lekérdezése.
+\end{itemize}
+
+Teljes dokumentáció sémával és példákkal a TODO csatolmányban OpenAPI 3 formátumban található.
+
+\subsection{Tesztelés}
+
+A backend tesztelésénél a cél az összes API végpont kimerítő tesztelése volt. A tesztek futtatásához Postman\footnote{A Postman egy API tesztelő alkalmazás, amely lehetővé teszi az API végpontok tesztelését és a tesztek automatizálását.} nevű alkalmazást használtam, melynek segítségével a végpontok különböző paramétereivel tesztelhetőek. A tesztek futtatásához a Postman lehetőséget ad a tesztek automatizálására, így a tesztek futtatása egyszerűen megismételhető.
+
+A teszteléshez egy külön gtfs adatbázist használtam, mely a BKK GTFS adatbázisának egy részét tartalmazza. Erre azért volt szükség, mert az éles adatbázis bármikor változhat, és a tesztek konkrét megállók azonosítóira hagyatkoznak.
+
+A Postman-be betölthető ún. \textit{collection} fájlt a \textit{backend} mappában található \textit{postman} mappában található \textit{collection.json} fájl tartalmazza. A tesztek futtatásához a Postman Collection Runner használható.
+
+\section{Frontend}
+
+A frontend az algoritmusok futtatásáért felelős, és a felhasználói felületet biztosítja a felhasználók számára.
+
+\subsection{Definíciók}
+
+\paragraph{Csúcs:} Egy gráf csúcsa egy egy pont a gráfban. Egy csúcsnak lehetnek szomszédos csúcsai, amelyekkel élek kötik össze. Ebben az alkalmazásban minden csúcs egy megállónak felel meg. A továbbiakban a két fogalmat szinonimaként használom.
+
+\paragraph{Él:} Egy gráf éle egy csúcsból egy másikba mutató irányított vagy irányítatlan kapcsolat. Irányított élek esetén a két csúcs közül az egyik a kezdőpont, a másik a végpont. Egy él egy utazást reprezentál, amely egy megállóból egy másikba vezet. Az élek lehetnek súlyozatlanok és súlyozottak. Amennyiben súlyozottak, minden élhez egy súly van rendelve, ami a két csúcs közötti utazási időt jelenti. A továbbiakban "él" alatt irányított, súlyozott élt értek. Az alkalmazás szempontjából további két csoportba sorolhatók az élek: utazási élek és gyaloglási élek.
+
+\paragraph{Utazási él:} Két megálló között közlekedő járatokat reprezentáló él. Az utazási élek súlya magában foglalja a járatra való várakozási időt is.
+
+\paragraph{Gyaloglási él:} Két megálló közötti gyaloglást reprezentáló él. A gyaloglási élek is irányítottak.
+
+\paragraph{Gráf:} Egy gráfot $G = (V, E)$ párként definiálunk, ahol $V$ a csúcsok halmaza, $E$ pedig az élek halmaza. Egy gráf a BKK utazási hálózatát reprezentálja.
+
+\paragraph{Út:} Egy út egy gráfban két csúcs közötti élek sorozata. Az út bármelyik két egymást követő élére igaz, hogy ami az első él végpontja, az a másik él kezdőpontja. Az út hossza a súlyozott élek összege.
+
+\paragraph{Útvonaltervezés:} Az útvonaltervezés (vagy \textit{útkeresés}) egy gráfban két csúcs (az induló- és a célpont) között keres utat.
+
+\paragraph{Algoritmus:} "Algoritmus" alatt útvonaltervező algoritmusokat értek, azaz olyan utasítássorozatokat, amelyeknek a célja egy kezdő- és egy végpont közötti út megtalálása.
+
+\paragraph{Heurisztika:} A heurisztika egy olyan függvény, amely egy algoritmus számára egy becslést ad egy adott csúcsból a célig vezető út hosszáról. A heurisztikus keresés egy olyan útkereső algoritmus, amely használ heurisztikát a keresés irányítására.
+
+\subsection{Algoritmusok}
+
+Az algoritmusok két fő csoportba sorolhatók: informált és informálatlan algoritmusok. Az informálatlan algoritmusok keresés közben nem veszik figyelembe a célt, csak a kezdőpontot, és a gráfot járják be. Az informált algoritmusok a célt is figyelembe veszik, és ennek megfelelően működnek.
+
+\subsubsection{BFS (Breadth-First Search)}
+
+A BFS algoritmus egy szélességi keresésen alapuló algoritmus. Az algoritmus a kezdeti csúcsból indul, és a szomszédos csúcsokat egy sorban tárolja. Az algoritmus minden szomszédos csúcsot meglátogat, majd a sorban következő csúcsot veszi ki és annak szomszédait tárolja. Az algoritmus addig fut, amíg el nem éri a célt, vagy nincs több szomszédos csúcs a sorban.
+
+Az algoritmus egy sor adatszerkezetet használ, ami a következő műveleteket támogatja:
+
+\begin{itemize}
+    \item \texttt{push}: Egy elem hozzáadása a sor végéhez.
+    \item \texttt{pop}: Az első elem kivétele a sor elejéről.
+\end{itemize}
+
+Az algoritmus pszeudokódja a következő:
+
+\lstset{caption={BFS algoritmus pszeudokódja}, label=src:bfs}
+\begin{lstlisting}[language={Python}]
+function BFS(graph, start, goal):
+    queue = [start]
+    visited = set()
+
+    while queue:
+        current = queue.pop(0)
+        if current == goal:
+            return current
+        visited.add(current)
+        for neighbor in graph[current]:
+            if neighbor not in visited:
+                queue.append(neighbor)
+\end{lstlisting}
+
+\subsubsection{Dijkstra}
+
+A Dijkstra algoritmus egy súlyozott gráfokon való legrövidebb út keresésére alkalmas algoritmus. Az algoritmus a kezdeti csúcsból indul, és a szomszédos csúcsokat egy prioritási sorban tárolja. Az algoritmus minden szomszédos csúcsot meglátogat, majd a prioritási sorból a legkisebb súlyú csúcsot ves
+
+
 
 % \lstset{caption={Alkalmazás indítása különböző konfigurációkban}, label=src:compose-dev}
 % \begin{lstlisting}[language={JavaScript}]

@@ -6,48 +6,77 @@
 ' skinparam classAttributeIconSize 0
 
 allowmixing
-left to right direction
+' left to right direction
+
+artifact "index.ts" as index
+
+index ..> Routes
 
 package Utils {
     class Database {
-        + {static} async ensureDatabase(): Database
+        + {static} database: Database
+        - {static} async ensureDatabase(): Database
     }
 
     class AdvancedQuery {
-        + {static} async searchStops(name: string): Stop[]
-        + {static} async getNeighbors(stopId: string, time: DateTime): Travel[] 
+        + {static} async searchStops(name: string): Object[]
+        + {static} async getNeighbors(stopId: string, time: string): Object[]
+        + {static} async function getWalkingNeighbors(stopId: string, distance: number): Object[]
+
     }
+
+    AdvancedQuery ..> Database
 }
 
-package Types {
-    class Travel {
-        fromStopId: string
-        fromLat: number
-        fromLon: number
-        toStopId: string
-        toLat: number
-        toLon: number
-        path: [number, number][]
-        minutes: number
-        distance: number
-    }
-}
+Utils.Database ..> Configs
+
+' package Types {
+'     class Travel {
+'         fromStopId: string
+'         fromLat: number
+'         fromLon: number
+'         toStopId: string
+'         toLat: number
+'         toLon: number
+'         path: [number, number][]
+'         minutes: number
+'         distance: number
+'     }
+' }
 
 package Routes {
-    class Geojson {
+    class GeojsonRouter {
         + {static} stops()
         + {static} shapes()
     }
-    class Stops {
-        + {static} get(id: string)
-        + {static} all()
+    class StopsRouter {
         + {static} search(query: string)
         + {static} neighbors(stopId: string, time: DateTime)
+        + {static} nearby(stopId: string, distance: number)
     }
+    StopsRouter ..> Utils.AdvancedQuery
 }
 
 package Configs {
-    artifact "gtfs config, stb."
+    artifact "gtfs.config.ts" as gtfsconfig
 }
+
+package Models {
+    package db {
+        package schema {
+            artifact "agency"
+            artifact "calendar-dates"
+            artifact "feed-info"
+            artifact "pathways"
+            artifact "routes"
+            artifact "shapes"
+            artifact "stop-times"
+            artifact "stops"
+            artifact "trips"
+        }
+    }
+}
+
+Configs -[hidden]-> Models
 
 @enduml
