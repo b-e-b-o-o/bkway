@@ -32,13 +32,13 @@ Az adatok a BKK\nomenclature{BKK}{Budapesti Közlekedési Központ} által szolg
     \end{compactitem}
     \item Megbízhatóság
     \begin{compactitem}
-        \item A szoftverben ne legyen olyan egyszerűen előidézhető vagy gyakran bekövetkező hibajelenség, ami előfordulása esetén ellehetetleníti vagy jelentősen megnehezíti a szoftver használatát
+        \item A szoftverben nincs olyan egyszerűen előidézhető vagy gyakran bekövetkező hibajelenség, ami előfordulása esetén ellehetetleníti vagy jelentősen megnehezíti a szoftver használatát
     \end{compactitem}
     \item Biztonság
     \begin{compactitem}
-        \item A szoftver ne tároljon felhasználói adatokat
-        \item A szoftver ne tároljon érzékeny adatokat
-        \item A szoftver ne tároljon jelszavakat
+        \item A szoftver nem tárol felhasználói adatokat
+        \item A szoftver nem tárol érzékeny adatokat
+        \item A szoftver nem tárol jelszavakat
     \end{compactitem}
     \item Hordozhatóság
     \begin{compactitem}
@@ -151,7 +151,7 @@ A program felhasználói eseteit a \ref{fig:use-case} ábra mutatja be.
 
 \subsection{Felhasználói történet}
 
-A felhasználói történetek a \ref{tab:user-stories-algorithm}., \ref{tab:user-stories-route}., \ref{tab:user-stories-parameters}., és a \ref{tab:user-stories-control}. táblákban olvashatóak.
+A felhasználói történetek a \ref{tab:user-stories-algorithm}., \ref{tab:user-stories-route}., \ref{tab:user-stories-parameters}. és a \ref{tab:user-stories-control}. táblákban olvashatóak.
 
 \begin{table}[H]
     \centering
@@ -347,9 +347,10 @@ Az alkalmazást fejlesztéshez is Dockerben futtatjuk, hogy a program írásakor
     \item \texttt{production}: A \texttt{build}-ből lemásolja a lefordított kódot és futtatja azt.
 \end{compactenum}
 
-A stage-ek külön bontásának köszönhetően a \texttt{production} image a lehető legkisebb lesz, és a Docker építéskor gyorsítótárban tudja tárolni a lépések közös elemeit. A különválasztott fejlesztői és a telepítési környezetnek megfelelően két külön Docker Compose fájl is található a projektben: a \texttt{docker-compose.debug.yml} a fejlesztői környezetet állítja fel, míg a \texttt{docker-compose.yml} a telepítési környezetet. Az indításkor az ennek megfelelő parancs használandó (\ref{src:compose-dev}).
+A stage-ek külön bontásának köszönhetően a \texttt{production} image a lehető legkisebb lesz, és a Docker építéskor gyorsítótárban tudja tárolni a lépések közös elemeit. A különválasztott fejlesztői és a telepítési környezetnek megfelelően két külön Docker Compose fájl is található a projektben: a \texttt{docker-compose.debug.yml} a fejlesztői környezetet állítja fel, míg a \texttt{docker-compose.yml} a telepítési környezetet. Az indításkor az ennek megfelelő parancs használandó (\ref{src:compose-dev}). \\
 
 \lstset{caption={Alkalmazás indítása különböző konfigurációkban}, label=src:compose-dev}
+\begin{minipage}{\textwidth}
 \begin{lstlisting}[language={bash}]
     # Fejlesztői környezet indítása
     docker compose -f docker-compose.debug.yml up -d --build
@@ -357,6 +358,7 @@ A stage-ek külön bontásának köszönhetően a \texttt{production} image a le
     # Telepítési környezet indítása
     docker compose up -d --build
 \end{lstlisting}
+\end{minipage}
 
 Bár telepítési környezethez minden adott, hogy Dockerből futtatható legyen az alkalmazás mindkét része, a frontend statikusan kiszolgálható fájlokra fordul le, így ezt nem érdemes egy Docker konténerben futtatni. Ehelyett javasolt az \texttt{npm run build} által a \textit{dist} könyvtárba lefordított fájlokat egy webszerveren keresztül kiszolgálni, például Nginx vagy Apache HTTP szerver segítségével.
 
@@ -425,13 +427,13 @@ Amint az adatbázis betöltése megtörténik, az alkalmazás GeoJson fájlokat 
 
 % dirtree?
 \begin{figure}[H]
-    \texttt{
-        data\\
-        |-- db.sqlite\\
-        \'-- public\\
-        \hspace{1em} |-- shapes.geo.json\\
-        \hspace{1em} \'-- stops.geo.json
-    }
+    \begin{verbatim}
+        data
+        |-- db.sqlite
+        ˙-- public
+            |-- shapes.geo.json
+            ˙-- stops.geo.json
+    \end{verbatim}
     \caption{A \textit{data} mappa szerkezete az adatok betöltését követően}
     \label{fig:data-folder-structure}
 \end{figure}
@@ -487,6 +489,8 @@ A tesztelés folyamata a következő:
         \item Az importált collection-t megnyitva, jobb felül található a "Run" gomb.
     \end{compactitem}
 \end{enumerate}
+
+A tesztek futtatásának eredménye sikeres volt (\ref{fig:screenshot-postman}).
 
 \begin{figure}[H]
     \centering
@@ -545,7 +549,7 @@ Az útkeresés a kiindulócsúcsban kezd, és a szomszédos csúcsokat egy sorba
 
 A BFS nem tesz különbséget a különböző súlyú élek között, így általában nem szokás súlyozott gráfokon alkalmazni\cite{russell2020artificial}.
 
-Az algoritmus pszeudokódja a következő: \\
+Az algoritmus pszeudokódja a \ref{src:bfs}. forráskódban látható. \\
 
 \lstset{caption={BFS algoritmus pszeudokódja}, label=src:bfs}
 \begin{minipage}{\textwidth}
@@ -578,7 +582,7 @@ Az algoritmus egy prioritási sor adatszerkezetet használ, ami a következő m�
 
 A csúcs távolságát az indulóállomásból $g(n)$ jelöli (ez az indulóállomás esetében értelemszerűen $0$). Új csúcs súlyát egy $f(n)$-nel jelölt \textit{kiértékelőfüggvény} számítja ki. mivel az algoritmus csak a távolságot veszi figyelembe, a Dijkstra algoritmusnál a kiértékelőfüggvény $f(n) = g(n)$.
 
-Az algoritmus pszeudokódja a következő: \\
+Az algoritmus pszeudokódja a \ref{src:dijkstra}. forráskódban látható. \\
 
 \lstset{caption={Dijkstra algoritmus pszeudokódja}, label=src:dijkstra}
 \begin{minipage}{\textwidth}
@@ -610,7 +614,9 @@ A programban használt heurisztika a két pont közötti távolság a Föld\foot
     \item Egyetlen képlet segítségével, gyorsan kiszámítható.
 \end{compactenum}
 
-Ez az algoritmus a legtöbb esetben sokkal gyorsabban találja meg a célt, mint a Dijkstra algoritmus, viszont nem garantálja, hogy a talált út a legrövidebb lesz --- sőt, egy olyan hálózaton, mint a tömegközlekedés, az utazási idő figyelmen kívül hagyása a tapasztalataim szerint még többet ront az eredmény minőségén, mint például egy gyalogos útvonaltervezésnél. \\
+Ez az algoritmus a legtöbb esetben sokkal gyorsabban találja meg a célt, mint a Dijkstra algoritmus, viszont nem garantálja, hogy a talált út a legrövidebb lesz --- sőt, egy olyan hálózaton, mint a tömegközlekedés, az utazási idő figyelmen kívül hagyása a tapasztalataim szerint még többet ront az eredmény minőségén, mint például egy gyalogos útvonaltervezésnél.
+
+Az A* és a Dijkstra algoritmus összehasonlítása a \ref{src:greedy}. forráskódban látható. \\
 
 \lstset{caption={Különbség a Dijkstra és a mohó algoritmus között}, label=src:greedy}
 \begin{minipage}{\textwidth}
@@ -643,7 +649,7 @@ $$f(n) = g(n) + W \times h(n)$$
 
 A súly értékének változtatásával az algoritmus többet vagy kevesebbet fog támaszkodni a heurisztikára, tehát a súly csökkentéséhez közelebb kerülhetünk a Dijkstra algoritmushoz pontos eredményeihez, míg a súly növelésével a mohó algoritmus gyorsaságához.
 
-Az algoritmus pszeudokódja a következő: \\
+Az A* és a Dijkstra algoritmus összehasonlítása a \ref{src:astar}. forráskódban látható. \\
 
 \lstset{caption={Különbség a Dijkstra és az A* algoritmus között}, label=src:astar}
 \begin{minipage}{\textwidth}
@@ -703,7 +709,7 @@ Megfigyelhető, hogy az algoritmusok szerkezetükben nagyon hasonlóak egymásho
 
 Mint látható, a program folyása teljes azonos köztük, az egyetlen különbség, hogy a prioritási sor alapú algoritmusok súlyt társítanak a sor elemeihez. Ez azt jelenti, hogy akár a BFS algoritmust is át lehetne írni úgy, hogy prioritási sort használjon, ha a minden csúcs súlyát eggyel nagyobbra állítanánk az előzőénél, hiszen így garantáltan a prioritási sor végére kerülne. Ezt egyszerűen el lehetne érni, hiszen az összes ismert csúcs száma soha nem csökken, és a p. sorba\footnote{Prioritási sor} való beillesztéskor mindig a p. sor hosszának és a látogatott csúcsok számának az összege.
 
-Bár ez működne, hatékonysági megfontolásból nem emellett a megoldás mellett döntöttem. Helyette az algoritmusokat megvalósító absztrakt osztályhoz egy absztrakt \textit{data} adattagot vettem fel. Ennek típusa, az \textit{IDataStructure} interfész néhány alapvető függvényt tartalmaz; többek közt az új elem hozzáadását és az elem kivételét. A heurisztika, forrástól való távolság, és hasonló információk egy csúcsról az útkereső osztály helyett a csúcs (\textit{Vertex}) osztályban kerülnek kiszámításra, így az útkeresés (\textit{Pathfinding}) szabadon használhatja ezeket.
+Bár ez működne, hatékonysági megfontolásból nem emellett a megoldás mellett döntöttem. Helyette az algoritmusokat megvalósító absztrakt osztályhoz egy absztrakt \textit{data} adattagot vettem fel. Ennek típusa, az \textit{IDataStructure} interfész néhány alapvető függvényt tartalmaz; többek közt az új elem hozzáadását és az elem kivételét. A heurisztika, forrástól való távolság, és hasonló információk egy csúcsról az útkereső osztály helyett a csúcs (\textit{Vertex}) osztályban kerülnek kiszámításra, így az útkeresés (\textit{Pathfinding}) szabadon használhatja ezeket (\ref{fig:frontend-models}).
 
 \begin{figure}[H]
     \centering
@@ -718,14 +724,14 @@ A felhasználói felület React komponenseket használ, amelyek a \textit{Materi
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{screenshot_components_settings}
+    \includegraphics[width=0.8\textwidth]{screenshot_components_settings}
     \caption{Beállítások komponense}
     \label{fig:screenshot-components-settings}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth]{screenshot_components_route}
+    \includegraphics[width=0.8\textwidth]{screenshot_components_route}
     \caption{Keresés komponense}
     \label{fig:screenshot-components-route}
 \end{figure}
