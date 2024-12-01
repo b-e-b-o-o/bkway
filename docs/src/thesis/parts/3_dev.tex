@@ -376,7 +376,7 @@ A backend könyvtárszerkezete a következő:
     \item \texttt{test/}: Teszteléshez szükséges fájlok.
     \item \texttt{.dockerignore}: \texttt{.gitignore}-hoz hasonlóan a Docker által figyelmen kívül hagyott fájlok listája.
     \item \texttt{Dockerfile}: A Docker image felépítéséhez szükséges fájl.
-    \item \texttt{drizzle.config.ts}: A \textit{drizzle-kit} konfigurációs fájlja (részletek a \ref{TODO} fejezetben).
+    \item \texttt{drizzle.config.ts}: A \textit{drizzle-kit} konfigurációs fájlja (részletek: \ref{sec:database}).
     \item \texttt{package.json}: A függőségeket és egyéb metainformációkat tartalmazó fájl.
     \item \texttt{package-lock.json}: Az \texttt{npm} csomagkezelő által generált fájl, mely a telepített függőségek pontos verzióit tartalmazza.
     \item \texttt{generate-types.ts}: Segédscript, mely az adatbázis sémából TypeScript típusokat generál a frontend számára.
@@ -384,6 +384,7 @@ A backend könyvtárszerkezete a következő:
 \end{compactitem}
 
 \subsection{Adatbázis}
+\label{sec:database}
 
 A program indításakor az első lépés az adatbázis létrehozása és feltöltése a GTFS adatokkal. Az adatok betöltésére és lekérdezésére a korábban említett \textit{node-gtfs} csomagot használom. (NPM-en és kódban egyszerűen \textit{gtfs}-nek hívják, korábban a GitHub-on szereplő nevét használtam a szabványtól való megkülönböztetés végett. A továbbiakban kisbetűvel írva, gtfs-ként fogok hivatkozni rá.)
 
@@ -460,7 +461,7 @@ Az alkalmazás REST API-jának végpontjai a következők:
     \item \texttt{GET /stops/:stopId/neighbors}: Egy megállótól az adott időpont utáni 1 órás intervallumban induló járatokkal elérhető megállók lekérdezése.
 \end{itemize}
 
-Teljes dokumentáció sémával és példákkal a TODO csatolmányban OpenAPI 3 formátumban található.
+Teljes dokumentáció sémával és példákkal a \textit{BKWay.yml} fájlban, OpenAPI 3 formátumban található.
 
 \subsection{Tesztelés}
 
