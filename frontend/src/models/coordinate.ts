@@ -31,6 +31,7 @@ export class Coordinate {
         }
         catch (e) {
             // if distance is 0 .in() throws an error for some reason
+            // (sometimes. i couldn't reproduce it, but that's what the logs showed)
             return 0;
         }
     }

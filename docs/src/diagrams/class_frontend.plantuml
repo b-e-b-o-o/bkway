@@ -5,32 +5,110 @@
 ' 0 to turn off icons, default 10
 ' skinparam classAttributeIconSize 0
 
-top to bottom direction
-
 package Models {
+    Pathfinding.HeapDataStructure -[hidden]- Graph
+
+    package Pathfinding {
+        abstract class Pathfinding {
+            + {static} name: string {readOnly}
+            + graph: Graph {readOnly}
+            + start: Vertex {readOnly}
+            + end: Vertex {readOnly}
+            + isFinished: boolean {readOnly}
+            + Pathfinding(start: Stop, end: Stop, tme: Time)
+            - visit(e: DirectedWeightedEdge)
+            # init()
+            + next()
+            + nextWalking()
+            + {abstract} getWeight(v: Vertex): number
+            + reset()
+            + getCompletePath() Path[]?
+            + getCompletePathVertices(): Vertex[]?
+            + getIncompletePaths(): Path[]
+        }
+
+        Pathfinding o-- IDataStructure : "<i>data</i>"
+
+        interface IDataStructure {
+            + size: number
+            + push(v: Vertex)
+            + peek(): Vertex?
+            + pop(): Vertex?
+            + remove(v: Vertex): boolean
+            + elements(): Iterable<Vertex>
+            + clear(): void
+        }
+
+        IDataStructure <|-- HeapDataStructure
+        IDataStructure <|-- QueueDataStructure
+
+        package algorithms {
+            class BFS
+            class Dijkstra
+            class Greedy
+            class AStar
+        }
+
+        abstract class HeapPathfinding
+
+        Pathfinding <|-- BFS
+        Pathfinding <|-- HeapPathfinding
+        HeapPathfinding <|-- Greedy
+        HeapPathfinding <|-- Dijkstra
+        HeapPathfinding <|-- AStar
+    }
+
+    class Time {
+        + hours: number {readOnly}
+        + minutes: number {readOnly}
+        + seconds: number {readOnly}
+        + Time(hours: number, minutes: number, seconds: number)
+        + valueOf(): number
+        + toString({hours = true, seconds = true}): string
+        + before(other: Time): boolean
+        + after(other: Time): boolean
+        + equals(other: Time): boolean
+        + compare(other: Time): number
+        + plus(other: Time): Time
+        + minus(other: Time): Time
+    }
+
     class Coordinate {
+        + latLon: [number, number] {readOnly}
         + lat: number {readOnly}
         + lon: number {readOnly}
-        + distance(other: Coordinate): number
+        + Coordinate(lat: number, lon: number)
+        + distanceMeters(other: Coordinate): number
     }
 
     class Vertex {
-        + id: string {readOnly}
+        + id: number {readOnly}
         + location: Coordinate {readOnly}
+        + stepsFromRoot: number {readOnly}
         + visited: boolean
-        + heuristic: number
         + distance: number?
-        + parent: Vertex?
-        + getChildren(): Vertex[]
+        + heuristic: number
+        + weightedHeuristic: number {readOnly}
+        + parentEdge: DirectedWeightedEdge
+        + parentVertex: Vertex? {readOnly}
+        + isRoot: boolean {readOnly}
+        + stop: Stop
     }
 
-    note left of Vertex::id
-        a csúcshoz tartozó
-        megálló stopId-ja
-    end note
+    class Graph {
+        + vertices: Map<string, Vertex> {readOnly}
+        + Graph(time: Time)
+        + getVertex(id: string): Vertex?
+        + getOrAddVertex(stop: Stop): Vertex
+    }
+    Vertex o-- Coordinate : "location {readOnly}"
+    Vertex o-- Time : "time {readOnly}"
+    Graph o-- Time : "time {readOnly}"
+    Graph -- Vertex
 
-    Vertex o-- "*" DirectedWeightedEdge : "inEdges" 
-    Vertex o-- "*" DirectedWeightedEdge : "outEdges"
+    Vertex o-- "*" DirectedWeightedEdge : "inEdges {readOnly}"
+    Vertex o-- "*" DirectedWeightedEdge : "transitEdges {readOnly}"
+    Vertex o-- "*" DirectedWeightedEdge : "walkingEdges {readOnly}"
 
     class DirectedWeightedEdge {
         + path: Coordinate[] {readOnly}
@@ -39,54 +117,6 @@ package Models {
         + target: Vertex {readOnly}
         + visited: boolean
     }
-
-    package Pathfinding {
-        class BFS {
-            ...
-        }
-
-        class Dijkstra {
-            ...
-        }
-
-        class Greedy {
-            ...
-        }
-
-        class AStar {
-            ...
-        }
-
-        interface Pathfinding {
-            + finished: boolean
-            + startVertex: Vertex {readOnly}
-            + endVertex: Vertex {readOnly}
-            + Pathfinding(startVertex: Vertex, endVertex: Vertex, startTime: DateTime)
-            + visitNext(): Vertex[]
-            + getDuration(): number?
-            + getPath(): Coordinate[]?
-        }
-
-        Pathfinding <|-- BFS
-        Pathfinding <|-- Greedy
-        Pathfinding <|-- Dijkstra
-        Pathfinding <|-- AStar
-    }
 }
-
-package Services {
-    class GraphService {
-        + startTime: DateTime
-        + setNeighbours(vertex: Vertex)
-    }
-}
-
-package Utils {
-    class Distance {
-        + distance(from: Coordinate, to: Coordinate): number
-    }
-}
-
-Models.Pathfinding.Pathfinding *-- GraphService : graphService {readOnly}
 
 @enduml

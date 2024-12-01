@@ -56,7 +56,7 @@ export abstract class Pathfinding {
 
     public get isFinished(): boolean {
         // This also checks for edge case where end === start
-        return this.end.parentVertex !== undefined || this.end === this.start;
+        return this.end.visited || this.end === this.start;
     }
 
     public abstract getWeight(v: Vertex): number;
@@ -118,6 +118,8 @@ export abstract class Pathfinding {
         }
 
         const current = this.data.pop()!;
+        current.visited = true;
+        if (current === this.end) return;
         const outEdges = await current.getTransitEdges();
         for (const e of outEdges) {
             this.visit(e);
@@ -148,10 +150,6 @@ export abstract class Pathfinding {
                 for (const e of v.getKnownWalkingEdges())
                     this.visit(e);
             }
-        }
-        v.visited = true;
-        if (v.id === this.end.id) {
-            this.end = v;
         }
     }
 }

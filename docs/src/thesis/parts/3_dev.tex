@@ -463,7 +463,7 @@ Teljes dokumentáció sémával és példákkal a TODO csatolmányban OpenAPI 3 
 
 \subsection{Tesztelés}
 
-A backend tesztelésénél a cél az összes API végpont kimerítő tesztelése volt. A tesztek futtatásához Postman\footnote{A Postman egy API tesztelő alkalmazás, amely lehetővé teszi az API végpontok tesztelését és a tesztek automatizálását.} nevű alkalmazást használtam, melynek segítségével a végpontok különböző paramétereivel tesztelhetőek. A tesztek futtatásához a Postman lehetőséget ad a tesztek automatizálására, így a tesztek futtatása egyszerűen megismételhető.
+A backend tesztelésénél a cél az összes API végpont kimerítő tesztelése volt. A tesztek futtatásához Postman\footnote{A Postman egy API tesztelő alkalmazás, amely lehetővé a tesztek automatizálását.} nevű alkalmazást használtam, melynek segítségével a végpontok különböző paramétereivel tesztelhetőek.
 
 A teszteléshez egy külön gtfs adatbázist használtam, mely a BKK GTFS adatbázisának egy részét tartalmazza. Erre azért volt szükség, mert az éles adatbázis bármikor változhat, és a tesztek konkrét megállók azonosítóira hagyatkoznak.
 
@@ -494,6 +494,7 @@ A frontend az algoritmusok futtatásáért felelős, és a felhasználói felül
 \paragraph{Heurisztika:} A heurisztika egy olyan $h(n)$ függvény, amely egy algoritmus számára egy becslést ad egy adott csúcsból ($n$) a célig vezető legrövidebb út hosszáról\cite{russell2020artificial}.
 
 \subsection{Algoritmusok}
+\label{ch:algo}
 
 Az algoritmusok két fő csoportba sorolhatók: informált és informálatlan algoritmusok\cite{russell2020artificial}. Az informálatlan algoritmusok keresés közben nem veszik figyelembe a célt, csak a kezdőpontot, és a gráfot járják be. Az informált algoritmusok a célt is figyelembe veszik, és ennek megfelelően működnek.
 
@@ -501,18 +502,19 @@ Az algoritmusok két fő csoportba sorolhatók: informált és informálatlan al
 
 A BFS algoritmus egy ún. \textit{sor} adatszerkezetet használ\cite{russell2020artificial}, ami a következő műveleteket támogatja:
 
-\begin{itemize}
+\begin{compactitem}
     \item \texttt{push(elem)}: Egy elem hozzáadása a sor végéhez.
     \item \texttt{pop()}: Az első elem kivétele a sor elejéről.
-\end{itemize}
+\end{compactitem}
 
-Az útkeresés a kiindulócsúcsban kezd, és a szomszédos csúcsokat egy sorba helyezi. Ezt követően minden lépésében kivesz egy csúcsot a sor elejéről, majd annak szomszédjait a sor végére helyezi. Ennek eredményeként először azokat a csúcsokat fedezi fel, amik 1 élre vannak a kiindulóponttól, majd azokat, amikhez 2 megállót kell utazni, és így tovább\cite{russell2020artificial}.A z algoritmus addig fut, amíg el nem éri a célt, vagy nincs több csúcs a sorban.
+Az útkeresés a kiindulócsúcsban kezd, és a szomszédos csúcsokat egy sorba helyezi. Ezt követően minden lépésében kivesz egy csúcsot a sor elejéről, majd annak szomszédjait a sor végére helyezi. Ennek eredményeként először azokat a csúcsokat fedezi fel, amik 1 élre vannak a kiindulóponttól, majd azokat, amikhez 2 megállót kell utazni, és így tovább\cite{russell2020artificial}. Az algoritmus addig fut, amíg el nem éri a célt, vagy nincs több csúcs a sorban.
 
 A BFS nem tesz különbséget a különböző súlyú élek között, így általában nem szokás súlyozott gráfokon alkalmazni\cite{russell2020artificial}.
 
-Az algoritmus pszeudokódja a következő:
+Az algoritmus pszeudokódja a következő: \\
 
 \lstset{caption={BFS algoritmus pszeudokódja}, label=src:bfs}
+\begin{minipage}{\textwidth}
 \begin{lstlisting}[language={Python}]
 function BFS(graph, start, goal):
     queue = [start]
@@ -527,6 +529,7 @@ function BFS(graph, start, goal):
             if neighbor not in visited:
                 queue.append(neighbor)
 \end{lstlisting}
+\end{minipage}
 
 \subsubsection{Dijkstra algoritmus}
 
@@ -536,14 +539,15 @@ Az algoritmus egy prioritási sor adatszerkezetet használ, ami a következő m�
 
 \begin{compactitem}
     \item \texttt{insert(elem, weight)}: Egy elem hozzáadása a sorba adott súllyal.
-    \item \texttt{extract\_min}: A legkisebb elem kivétele a sorból.
+    \item \texttt{extract\_min()}: A legkisebb elem kivétele a sorból.
 \end{compactitem}
 
 A csúcs távolságát az indulóállomásból $g(n)$ jelöli (ez az indulóállomás esetében értelemszerűen $0$). Új csúcs súlyát egy $f(n)$-nel jelölt \textit{kiértékelőfüggvény} számítja ki. mivel az algoritmus csak a távolságot veszi figyelembe, a Dijkstra algoritmusnál a kiértékelőfüggvény $f(n) = g(n)$.
 
-Az algoritmus pszeudokódja a következő:
+Az algoritmus pszeudokódja a következő: \\
 
 \lstset{caption={Dijkstra algoritmus pszeudokódja}, label=src:dijkstra}
+\begin{minipage}{\textwidth}
 \begin{lstlisting}[language={Python}]
 function Dijkstra(graph, start, goal):
     pq = PriorityQueue()
@@ -560,6 +564,7 @@ function Dijkstra(graph, start, goal):
                 new_distance = current_distance + distance(current, neighbor)
                 pq.insert((neighbor, new_distance))
 \end{lstlisting}
+\end{minipage}
 
 \subsubsection{Mohó algoritmus}
 
@@ -571,9 +576,10 @@ A programban használt heurisztika a két pont közötti távolság a Föld\foot
     \item Egyetlen képlet segítségével, gyorsan kiszámítható.
 \end{compactenum}
 
-Ez az algoritmus a legtöbb esetben sokkal gyorsabban találja meg a célt, mint a Dijkstra algoritmus, viszont nem garantálja, hogy a talált út a legrövidebb lesz --- sőt, egy olyan hálózaton, mint a tömegközlekedés, az utazási idő figyelmen kívül hagyása a tapasztalataim szerint még többet ront az eredmény minőségén, mint például egy gyalogos útvonaltervezésnél.
+Ez az algoritmus a legtöbb esetben sokkal gyorsabban találja meg a célt, mint a Dijkstra algoritmus, viszont nem garantálja, hogy a talált út a legrövidebb lesz --- sőt, egy olyan hálózaton, mint a tömegközlekedés, az utazási idő figyelmen kívül hagyása a tapasztalataim szerint még többet ront az eredmény minőségén, mint például egy gyalogos útvonaltervezésnél. \\
 
 \lstset{caption={Különbség a Dijkstra és a mohó algoritmus között}, label=src:greedy}
+\begin{minipage}{\textwidth}
 \begin{lstlisting}[language={Python}, style=gitdiff]
 function Greedy(graph, start, goal):
     pq = PriorityQueue()
@@ -591,10 +597,11 @@ function Greedy(graph, start, goal):
 - \-              pq.insert((neighbor, new_distance)) -
 + \+              pq.insert((neighbor, heuristic(neighbor))) +
 \end{lstlisting}
+\end{minipage}
 
 \subsubsection{A* algoritmus}
 
-Az A* algoritmus\footnote{A szakirodalomban az A* algoritmus nem mindig tartalmazza a heurisztika súlyozását, ilyenkor ezt a változatot \textit{súlyozott A*}-nak nevezik\cite{russell2020artificial}. Én az egyszerűség kedvéért erre a variánsra egyszerűen A*-ként hivatkozom, a "súlyozatlan" változatot pedig nem említem meg.} a Dijkstra és a mohó algoritmusok kombinációja, amely a Dijkstra algoritmus pontosságát ötvözi a mohó algoritmus gyorsaságával. Ezt úgy éri el, hogy a prioritási sor elemeit a súlyok és a súlyozott heurisztika összege szerint rendezi.
+Az A* algoritmus\footnote{A szakirodalomban az A* algoritmus nem mindig tartalmazza a heurisztika súlyozását, ilyenkor ezt a változatot \textit{súlyozott A*}-nak nevezik\cite{russell2020artificial}. Én az egyszerűség kedvéért erre a variánsra egyszerűen A*-ként hivatkozom, a "súlyozatlan" változatot pedig a továbbiakban nem említem meg.} a Dijkstra és a mohó algoritmusok kombinációja, amely a Dijkstra algoritmus pontosságát ötvözi a mohó algoritmus gyorsaságával. Ezt úgy éri el, hogy a prioritási sor elemeit a súlyok és a súlyozott heurisztika összege szerint rendezi.
 
 "Súlyozott heurisztika" alatt egyszerűen a heurisztika és egy $W$ súly szorzatát értem. Az A* kiértékelőfüggvénye tehát a következő\cite{russell2020artificial}:
 
@@ -602,9 +609,10 @@ $$f(n) = g(n) + W \times h(n)$$
 
 A súly értékének változtatásával az algoritmus többet vagy kevesebbet fog támaszkodni a heurisztikára, tehát a súly csökkentéséhez közelebb kerülhetünk a Dijkstra algoritmushoz pontos eredményeihez, míg a súly növelésével a mohó algoritmus gyorsaságához.
 
-Az algoritmus pszeudokódja a következő:
+Az algoritmus pszeudokódja a következő: \\
 
 \lstset{caption={Különbség a Dijkstra és az A* algoritmus között}, label=src:astar}
+\begin{minipage}{\textwidth}
 \begin{lstlisting}[language={Python}, style=gitdiff]
 function Greedy(graph, start, goal):
     pq = PriorityQueue()
@@ -622,15 +630,19 @@ function Greedy(graph, start, goal):
 - \-              pq.insert((neighbor, new_distance)) -
 + \+              pq.insert((neighbor, new_distance \+ heuristic(neighbor))) +
 \end{lstlisting}
+\end{minipage}
 
-\subsection{Implementálás}
+\section{Implementáció}
 
-Megfigyelhető, hogy az algoritmusok szerkezetükben nagyon hasonlóak egymáshoz. A prioritási sor-alapú algoritmusok esetében egyértelmű, hiszen csak egy-két sorban különböznek egymástól, ám a BFS sem különbözik sokban ezektől. Néhány triviális változó- illetve metódus-átnevezés után láthatjuk, hogy a BFS és a mohó algoritmus mindössze ennyiben különbözik:
+\subsection{Algoritmusok}
+
+Megfigyelhető, hogy az algoritmusok szerkezetükben nagyon hasonlóak egymáshoz. A prioritási sor-alapú algoritmusok esetében egyértelmű, hiszen csak egy-két sor változtatásra vannak egymástól, ám a BFS sem különbözik sokban ezektől. Néhány triviális változó- illetve metódus-átnevezés után a \ref{src:dijkstra-diff}. kódrészletben látható, hogy a BFS és a mohó algoritmus mennyire hasonlít. \\
 
 \lstset{
-    caption={Különbség a Dijkstra és a mohó algoritmus között},
-    label=src:asd,
+    caption={Különbségek a Dijkstra és a mohó algoritmus pszeudokódja között},
+    label=src:dijkstra-diff,
     escapechar=§}
+\begin{minipage}{\textwidth}
 \begin{lstlisting}[language={Python}, style=gitdiff]
 
 - \-  function BFS(graph, start, goal): -
@@ -653,5 +665,63 @@ Megfigyelhető, hogy az algoritmusok szerkezetükben nagyon hasonlóak egymásho
 - \-                  queue.insert(neighbor) -
 + \+                  queue.insert((neighbor, heuristic(neighbor))) +
 \end{lstlisting}
+\end{minipage}
 
-Mint látható, a program folyása teljes azonos köztük, az egyetlen különbség, hogy a prioritási sor alapú algoritmusok súlyt társítanak a sor elemeihez.
+Mint látható, a program folyása teljes azonos köztük, az egyetlen különbség, hogy a prioritási sor alapú algoritmusok súlyt társítanak a sor elemeihez. Ez azt jelenti, hogy akár a BFS algoritmust is át lehetne írni úgy, hogy prioritási sort használjon, ha a minden csúcs súlyát eggyel nagyobbra állítanánk az előzőénél, hiszen így garantáltan a prioritási sor végére kerülne. Ezt egyszerűen el lehetne érni, hiszen az összes ismert csúcs száma soha nem csökken, és a p. sorba\footnote{Prioritási sor} való beillesztéskor mindig a p. sor hosszának és a látogatott csúcsok számának az összege.
+
+Bár ez működne, hatékonysági megfontolásból nem emellett a megoldás mellett döntöttem. Helyette az algoritmusokat megvalósító absztrakt osztályhoz egy absztrakt \textit{data} adattagot vettem fel. Ennek típusa, az \textit{IDataStructure} interfész néhány alapvető függvényt tartalmaz; többek közt az új elem hozzáadását, és az elem kivételét. A heurisztika, forrástól való távolság, és hasonló információk egy csúcsról az útkereső osztály helyett a csúcs (\textit{Vertex}) osztályban kerülnek kiszámításra, így az útkeresés (\textit{Pathfinding}) szabadon használhatja ezeket.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{class_frontend_models}
+    \caption{Frontend modellek}
+    \label{fig:frontend-models}
+\end{figure}
+
+\subsection{Felhasználói felület}
+
+A felhasználói felület React komponenseket használ, amelyek a \textit{Material UI} React komponens könyvtár komponenseivel épülnek fel. Ez a könyvtár előre elkészített, egységes dizájnelemeket tartalmaz, amelyek a Google Material Design irányelvei alapján készültek\cite{mui}. A Material UI-hoz kapcsolódó \textit{MUI X} könyvtár az indulási idő beállításához használt \textit{TimePicker} komponenst biztosítja. A felhasználói felület főbb komponensei a \ref{fig:screenshot-components-settings}. és \ref{fig:screenshot-components-route}. ábrákon láthatóak.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{screenshot_components_settings}
+    \caption{Beállítások komponense}
+    \label{fig:screenshot-components-settings}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{screenshot_components_route}
+    \caption{Keresés komponense}
+    \label{fig:screenshot-components-route}
+\end{figure}
+
+\textit{Megjegyzés: A} StopMap \textit{komponenes nem tartalmazza magában a} Controls \textit{komponenst,} de a többi komponens egymásba ágyazása úgy történik, ahogy vizuálisan látható --- A \textit{Controls} foglalja magában a bal oldali irányítópanel összes elemét, ezen belül az \textit{OptionsTab} és a \textit{PathfindingTab} komponenseket, melyek a két fül elemeit tartalmazzák.
+
+\subsection{API hívások}
+
+Az API hívásokért az \textit{api.service.ts} felel, amely \textit{fetch} hívásokkal kommunikál a backenddel. A visszatérési típusok a backendben definiált adatbázis sémájából lettek generálva, így megegyeznek a backend által küldött adatok típusával.
+
+\subsection{Tesztelés}
+
+Az útvonaltervezés tesztelése manuálisan történik, néhány példaútvonalon keresztül. Minden útvonaltervezést \textit{12:00}-kor kezdünk, ha nem szerepel más időpont. A sétálási távolságot is hagyjuk az alapértelmezett 150 méteren, ha nem szerepel más érték.
+
+\subsubsection{Útkeresés önmagába}
+
+Adjuk meg induló- és érkező állomásnak is ugyanazt az állomást. Erre jó alany a \textit{Csobánc utca}, mert ilyen nevű állomásból csak egy van a térképen. Ekkor egyik algoritmusnak sem szabad elindulnia, és azonnal jelezniük kell, hogy megtalálta a célt.
+
+\subsubsection{BFS útkeresés}
+
+A BFS nem veszi figyelembe az élek súlyát, csak a megállók számát. Tervezzünk utat a \textit{Népliget} (\textit{F01282}\footnote{Az indulási- és érkezési megállók azonosítója a kiválasztást követően a böngésző konzolában is megjelenik}) és a \textit{Kőris utca (Korányi Sándor utca)} megállók között 175m gyaloglási távolsággal. Az algoritmusnak hamarabb kell felfedeznie a Kálvin tér-ből induló járatokat, mint megtalálnia a célállomást, hiszen az M3 vonalán ez ugyanúgy 4 megállóra van, mint a 83-as vonalán a Kőris utca (Korányi Sándor utca) megálló, és az M3 indulóállomásából terveztünk utat. Az algoritmusnak a 83-as trolival kell eljutnia a célállomásra.
+
+\subsubsection{Dijkstra útkeresés}
+
+Használjuk a BFS beállításait. A Dijkstra algoritmusnak hamarabb kell hozzáadnia a Deák Ferenc tér (\textit{F00954}) M3 metrómegállót a prioritási sorba, mint megtalálnia az utat, de nem szabad a Kálvin tér többi megállóját meglátogatnia (ami nem az M3 megállója), mert azokhoz több idő sétálni, mint a célállomásra.
+
+\subsubsection{Mohó útkeresés}
+
+A mohó útvonaltervezés gyakorlatilag bármilyen útvonalon ellenőrizhető, mert látványosan figyelmen kívül hagyja az utazási időt (ellenben a távolsággal). Tervezzünk utat Ráckeve és Szentendre között. Az útkeresés belátható időn belül végezni fog, és nem fedezi fel Budapest nagy részét, mielőtt célba ér.
+
+\subsubsection{A* útkeresés}
+
+Az A* algoritmus tesztelésekor fontos, hogy a súlyozott heurisztika helyesen működjön. Tervezzünk utat a \textit{Margit híd, budai hídfő H} (\textit{F00189}) és a \textit{Petőfi híd, budai hídfő} (\textit{F02224}) megállók között, ahol megáll a 4-es és a 6-os villamos. Az algoritmus $0.3\times$ heurisztika súly esetén a 4-es vagy 6-os villamossal fogja megtalálni a célt. $0.7\times$ súly esetén az út Budapest \textit{Kiskörút}ján fog áthaladni, részben a 9-es busz vonalán. $2.5\times$ súly esetén a talált út a 15-ös busz vonalán lévő a \textit{Kossuth Lajos tér M} és a \textit{Petőfi tér} megállókat is tartalmazni fogja.
