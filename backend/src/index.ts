@@ -16,7 +16,7 @@ if (process.env.NODE_ENV?.toLowerCase() === 'development') {
 }
 else {
   app.use(cors({
-    origin: 'https://bee-612.space',
+    origin: process.env.BKWAY_FRONTEND,
     methods: 'GET'
   }));
 }

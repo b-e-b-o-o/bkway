@@ -24,7 +24,8 @@ services:
       - 3333:3333
     environment:
       - PORT=3333
-    # Do not mount if database is in memory. Optional otherwise.
+      - BKWAY_FRONTEND=https://bee-612.space
+    # Do not mount if database is in memory (which is currently not possible). Optional otherwise.
     volumes:
       - ./data:/usr/data
     restart: unless-stopped

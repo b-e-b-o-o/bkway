@@ -19,7 +19,7 @@ Az adatok a BKK\nomenclature{BKK}{Budapesti Közlekedési Központ} által szolg
     \item Hatékonyság
     \begin{compactitem}     
         \item A szoftver kezdeti megnyitásakor legkésőbb 5 másodperc alatt teljesen betöltődik és használhatóvá válik
-        \item A szoftver általános használat közben folyamatosan, megakadás közben fut egy középkategóriás számítógépen, egy modern böngészőben
+        \item A szoftver általános használat közben folyamatosan, megakadás nélkül fut egy középkategóriás számítógépen, egy modern böngészőben
         \begin{compactitem}     
             \item Kivétel ez alól az animált útvonaltervezés, amelynek a futása közben a szoftver akadozhat, de nem annyira, hogy használhatatlanná váljon, vagy megakadályozza az animáció leállítását
         \end{compactitem}
@@ -51,7 +51,7 @@ Az adatok a BKK\nomenclature{BKK}{Budapesti Közlekedési Központ} által szolg
         \item A szoftver intuitív és könnyen használható
         \item A szoftver kliens oldalának a használatához nem szükséges külön telepítés, komoly számítógépes tapasztalattal nem rendelkező felhasználók számára is egyértelmű
         \item A weboldal felülete egy átlagos számítógéphasználó számára külső segítség nélkül elsajátítható, amennyiben ismerik a szoftver által bemutatott útkereső algoritmusokat
-        \item A szoftver szerver oldalának az üzemeltetése hálózati és Docker-compose ismeretségeket igényel
+        \item A szoftver szerver oldalának az üzemeltetése hálózati és Docker-compose ismereteket igényel
     \end{compactitem}
 \end{enumerate}
 
@@ -336,6 +336,7 @@ Az alkalmazás fejlesztéséhez a következő programok telepítése szükséges
 Függőségek telepítéséhez a backend és a frontend mappákban a \texttt{npm install} parancsot kell futtatni.
 
 \subsection{Alkalmazás futtatása}
+\label{sec:run-app}
 
 Az alkalmazást fejlesztéshez is Dockerben futtatjuk, hogy a program írásakor feltételezhessük, hogy mindig ugyanaz a környezet áll rendelkezésre. A Dockerfile a frontend és a backend esetében egyaránt négy stage-et tartalmaz:
 
@@ -346,18 +347,18 @@ Az alkalmazást fejlesztéshez is Dockerben futtatjuk, hogy a program írásakor
     \item \texttt{production}: A \texttt{build}-ből lemásolja a lefordított kódot és futtatja azt.
 \end{compactenum}
 
-A stage-ek külön bontásának köszönhetően a \texttt{production} image a lehető legkisebb lesz, és a Docker építéskor gyorsítótárban tudja tárolni a lépések közös elemeit. A különválasztott fejlesztői és a produkciós környezetnek megfelelően két külön Docker Compose fájl is található a projektben: a \texttt{docker-compose.debug.yml} a fejlesztői környezetet állítja fel, míg a \texttt{docker-compose.yml} a produkciós környezetet. Az indításkor az ennek megfelelő parancs használandó (\ref{src:compose-dev}).
+A stage-ek külön bontásának köszönhetően a \texttt{production} image a lehető legkisebb lesz, és a Docker építéskor gyorsítótárban tudja tárolni a lépések közös elemeit. A különválasztott fejlesztői és a telepítési környezetnek megfelelően két külön Docker Compose fájl is található a projektben: a \texttt{docker-compose.debug.yml} a fejlesztői környezetet állítja fel, míg a \texttt{docker-compose.yml} a telepítési környezetet. Az indításkor az ennek megfelelő parancs használandó (\ref{src:compose-dev}).
 
 \lstset{caption={Alkalmazás indítása különböző konfigurációkban}, label=src:compose-dev}
 \begin{lstlisting}[language={bash}]
     # Fejlesztői környezet indítása
     docker compose -f docker-compose.debug.yml up -d --build
 
-    # Produkciós környezet indítása
+    # Telepítési környezet indítása
     docker compose up -d --build
 \end{lstlisting}
 
-Bár produkciós környezethez minden adott, hogy Dockerből futtatható legyen az alkalmazás mindkét része, a frontend statikusan kiszolgálható fájlokra fordul le, így ezt nem érdemes egy Docker konténerben futtatni. Ehelyett javasolt az \texttt{npm run build} által a \textit{dist} könyvtárba lefordított fájlokat egy webszerveren keresztül kiszolgálni, például Nginx vagy Apache HTTP szerver segítségével.
+Bár telepítési környezethez minden adott, hogy Dockerből futtatható legyen az alkalmazás mindkét része, a frontend statikusan kiszolgálható fájlokra fordul le, így ezt nem érdemes egy Docker konténerben futtatni. Ehelyett javasolt az \texttt{npm run build} által a \textit{dist} könyvtárba lefordított fájlokat egy webszerveren keresztül kiszolgálni, például Nginx vagy Apache HTTP szerver segítségével.
 
 \section{Backend}
 
@@ -463,11 +464,43 @@ Teljes dokumentáció sémával és példákkal a TODO csatolmányban OpenAPI 3 
 
 \subsection{Tesztelés}
 
-A backend tesztelésénél a cél az összes API végpont kimerítő tesztelése volt. A tesztek futtatásához Postman\footnote{A Postman egy API tesztelő alkalmazás, amely lehetővé a tesztek automatizálását.} nevű alkalmazást használtam, melynek segítségével a végpontok különböző paramétereivel tesztelhetőek.
+A backend tesztelésénél a cél az API végpontok kimerítő tesztelése volt. A tesztek futtatásához \textit{Postman}-t alkalmaztam.
 
-A teszteléshez egy külön gtfs adatbázist használtam, mely a BKK GTFS adatbázisának egy részét tartalmazza. Erre azért volt szükség, mert az éles adatbázis bármikor változhat, és a tesztek konkrét megállók azonosítóira hagyatkoznak.
+A teszteléshez egy külön gtfs adatbázist használtam, mely a BKK GTFS adatbázisának egy részét tartalmazza. Erre azért volt szükség, mert az éles adatbázis bármikor változhat, és a tesztek konkrét megállók azonosítóira hagyatkoznak. Az adatbázist a backend \textit{test} mappájában található \textit{generate\_sample.sh} segítségével generáltam egy kicsomagolt GTFS-ből.
 
-A Postman-be betölthető ún. \textit{collection} fájlt a \textit{backend} mappában található \textit{postman} mappában található \textit{collection.json} fájl tartalmazza. A tesztek futtatásához a Postman Collection Runner használható.
+A tesztelés folyamata a következő:
+
+\begin{enumerate}
+    \item Backend konfigurálása teszt adatbázis használatára:
+    \begin{compactenum}
+        \item a \texttt{src/configs/gtfs.config.ts} fájlban az adatforrás átállítása a teszt zip fájlra az ott leírtak szerint
+        \item a \texttt{data} mappában a \texttt{db.sqlite} fájl törlése (ha létezik)
+        \item a \textit{docker-compose.debug.yml} indítása (\ref{sec:run-app})
+    \end{compactenum}
+    \item A Postman Collection importálása a \textit{backend/test} mappából Postman-be az \href{https://learning.postman.com/docs/getting-started/importing-and-exporting/importing-data/#import-postman-data}{itt leírtak} szerint
+    \begin{compactitem}
+        \item Az importáláshoz Postman fiók létrehozása szükséges.
+    \end{compactitem}
+    \item A tesztek futtatása a Postman-ben.
+    \begin{compactitem}
+        \item Az importált collection-t megnyitva, jobb felül található a "Run" gomb.
+    \end{compactitem}
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{screenshot_postman}
+    \caption{Sikeres teszteredmények}
+    \label{fig:screenshot-postman}
+\end{figure}
+
+A tesztek többek között a következőket ellenőrzik:
+\begin{compactenum}
+    \item A válasz gyorsasága
+    \item A válasz státusz kódja (érvénytelen üzenetek esetén is, pl. 400 vagy 404)
+    \item A válaszban szereplő pl. megállók száma
+    \item A válasz megfelelése az OpenAPI sémának
+\end{compactenum}
 
 \section{Frontend}
 
@@ -496,7 +529,7 @@ A frontend az algoritmusok futtatásáért felelős, és a felhasználói felül
 \subsection{Algoritmusok}
 \label{ch:algo}
 
-Az algoritmusok két fő csoportba sorolhatók: informált és informálatlan algoritmusok\cite{russell2020artificial}. Az informálatlan algoritmusok keresés közben nem veszik figyelembe a célt, csak a kezdőpontot, és a gráfot járják be. Az informált algoritmusok a célt is figyelembe veszik, és ennek megfelelően működnek.
+Az algoritmusok két fő csoportba sorolhatók: informált és informálatlan algoritmusok\cite{russell2020artificial}. Az informálatlan algoritmusok keresés közben nem veszik figyelembe a célt, csak a kezdőpontot és a gráfot járják be. Az informált algoritmusok a célt is figyelembe veszik, és ennek megfelelően működnek.
 
 \subsubsection{BFS (Breadth-First Search) útkeresés}
 
@@ -669,7 +702,7 @@ Megfigyelhető, hogy az algoritmusok szerkezetükben nagyon hasonlóak egymásho
 
 Mint látható, a program folyása teljes azonos köztük, az egyetlen különbség, hogy a prioritási sor alapú algoritmusok súlyt társítanak a sor elemeihez. Ez azt jelenti, hogy akár a BFS algoritmust is át lehetne írni úgy, hogy prioritási sort használjon, ha a minden csúcs súlyát eggyel nagyobbra állítanánk az előzőénél, hiszen így garantáltan a prioritási sor végére kerülne. Ezt egyszerűen el lehetne érni, hiszen az összes ismert csúcs száma soha nem csökken, és a p. sorba\footnote{Prioritási sor} való beillesztéskor mindig a p. sor hosszának és a látogatott csúcsok számának az összege.
 
-Bár ez működne, hatékonysági megfontolásból nem emellett a megoldás mellett döntöttem. Helyette az algoritmusokat megvalósító absztrakt osztályhoz egy absztrakt \textit{data} adattagot vettem fel. Ennek típusa, az \textit{IDataStructure} interfész néhány alapvető függvényt tartalmaz; többek közt az új elem hozzáadását, és az elem kivételét. A heurisztika, forrástól való távolság, és hasonló információk egy csúcsról az útkereső osztály helyett a csúcs (\textit{Vertex}) osztályban kerülnek kiszámításra, így az útkeresés (\textit{Pathfinding}) szabadon használhatja ezeket.
+Bár ez működne, hatékonysági megfontolásból nem emellett a megoldás mellett döntöttem. Helyette az algoritmusokat megvalósító absztrakt osztályhoz egy absztrakt \textit{data} adattagot vettem fel. Ennek típusa, az \textit{IDataStructure} interfész néhány alapvető függvényt tartalmaz; többek közt az új elem hozzáadását és az elem kivételét. A heurisztika, forrástól való távolság, és hasonló információk egy csúcsról az útkereső osztály helyett a csúcs (\textit{Vertex}) osztályban kerülnek kiszámításra, így az útkeresés (\textit{Pathfinding}) szabadon használhatja ezeket.
 
 \begin{figure}[H]
     \centering
@@ -725,3 +758,39 @@ A mohó útvonaltervezés gyakorlatilag bármilyen útvonalon ellenőrizhető, m
 \subsubsection{A* útkeresés}
 
 Az A* algoritmus tesztelésekor fontos, hogy a súlyozott heurisztika helyesen működjön. Tervezzünk utat a \textit{Margit híd, budai hídfő H} (\textit{F00189}) és a \textit{Petőfi híd, budai hídfő} (\textit{F02224}) megállók között, ahol megáll a 4-es és a 6-os villamos. Az algoritmus $0.3\times$ heurisztika súly esetén a 4-es vagy 6-os villamossal fogja megtalálni a célt. $0.7\times$ súly esetén az út Budapest \textit{Kiskörút}ján fog áthaladni, részben a 9-es busz vonalán. $2.5\times$ súly esetén a talált út a 15-ös busz vonalán lévő a \textit{Kossuth Lajos tér M} és a \textit{Petőfi tér} megállókat is tartalmazni fogja.
+
+\section{Telepítés}
+
+A programot az itthoni szerveremen futtatom, jelenleg a \mbox{\url{https://bee-612.space/bkway/}} címen elérhető. Más szerveren való futtatáshoz a \ref{sec:run-app} alatt található használati utasítást kell követni, illetve a következő helyeken a megfelelő változókat beállítani:
+
+\begin{itemize}
+    \item A \textit{docker-compose.yml} fájlban a bkway-back szolgáltatásnál a \texttt{BKWAY\_FRONTEND} környezeti változót a frontend domainjére állítani,
+    \item a frontend \textit{.env} fájljában a \texttt{BKWAY\_BACKEND} változót a backend címére állítani,
+    \item végül opcionálisan a frontend \textit{vite.config.ts} fájljában a konfiguráció \texttt{base} értékét átállítani. Jelenlegi értéke \textit{/bkway/}, ami azt jelenti, hogy a \mbox{\texttt{https://your.domain.com/bkway/}} elérési úton lesz kiszolgálva.
+\end{itemize}
+
+\section{További fejlesztési lehetőségek}
+
+\subsubsection{Adatbázis lekérdezések gyorsítása}
+
+Jelenleg a megállókra való keresésnél az adatbázis lekérdezés költséges táblaösszekapcsolásokat végez el. Bár ezeknek az eredménye gyorsítótárazva van a szerveren, még sokszor lehetnek lassúak a lekérdezések. Mivel az adatbázis nem változik a létrehozása után, nem lenne nehéz egy kapcsolótábla létrehozása, ami a \textit{stops} és a \textit{routes} táblát köti össze. Ezzel azt gondolom, hogy a lekérdezések 10-100-szoros gyorsulást érhetnének el.
+
+\subsubsection{Animáció gyorsítása}
+
+Jelenleg a frontend az útvonaltervezés minden egyes lépése után újra kiszámítja a forrásból az összes sorban szereplő elembe vezető utat. Ez hosszú sor és folyamatos animáció esetén lassú tud lenni. Ha az algoritmus számon tartaná az egy lépésen belül történt változtásokat, és csak azokat frissítené, akkor a program jelentősen gyorsabb lenne.
+
+\subsubsection{További részletek megjelenítése}
+
+Jelenleg a felhasználói felület "ÚTVONAL" fülén csak a felfedezésre váró megállók és az azokhoz tartozó információk jelennek meg. Hasznos információ lenne itt többek között az algoritmus által megtett lépések száma és a már felfedezett megállók (akár kereshető) listája is.
+
+\subsubsection{Új algoritmusok hozzáadása}
+
+Az A* algoritmus egy gyakori példa hatékony útvonaltervezésre, de elérhetőek újabb, modernebb és hatékonyabb algoritmusok is. Ilyen például a RAPTOR\cite{raptor}, amely különösen tömegközlekedési hálózatokra van kifejlesztve, vagy egyszerűen az A* algoritmus súlyozott változata.
+
+\subsubsection{Új beállítások hozzáadása}
+
+További hasznos beállítások lehetnek az átszállások száma, a tömegközlekedési eszközök szűrése, vagy az akadálymentes útvonaltervezés.
+
+\subsubsection{Valós idejű adatok megjelenítése}
+
+A BKK Futár API GTFS-Realtime formátumban szolgáltat valós idejű adatokat a járatokról\cite{bkkopendata}, amelyeket fel lehetne használni az útvonaltervezés során.
