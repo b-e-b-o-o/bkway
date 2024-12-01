@@ -12,6 +12,7 @@ const app: Express = express();
 const port: string | number = process.env.PORT ?? 3000;
 
 if (process.env.NODE_ENV?.toLowerCase() === 'development') {
+  console.warn('Running in development mode, CORS is enabled for all origins');
   app.use(cors());
 }
 else {
