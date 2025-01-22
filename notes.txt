@@ -55,3 +55,16 @@ queries:
         WHERE
             s1.stop_name = s2.stop_name
         ORDER BY distance DESC;
+
+    fastest (average) speed between two stops:
+        SELECT DISTINCT
+            s1.stop_id AS from_stop,
+            s2.stop_id AS to_stop,
+            s2.shape_dist_traveled - s1.shape_dist_traveled AS m,
+            s2.arrival_timestamp - s1.departure_timestamp AS s,
+            (s2.shape_dist_traveled - s1.shape_dist_traveled) / (s2.arrival_timestamp - s1.departure_timestamp) AS v
+        FROM stop_times s1
+        JOIN stop_times s2 ON s1.trip_id = s2.trip_id
+        WHERE s1.stop_sequence = s2.stop_sequence - 1
+        ORDER BY v DESC
+        LIMIT 100;
